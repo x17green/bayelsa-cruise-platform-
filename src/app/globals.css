@@ -1,0 +1,90 @@
+@import 'tailwindcss';
+@import 'uniwind';
+
+@import 'heroui-native/styles';
+
+:root {
+  /* Blue Waters Theme - 40% Primary Blue, 10% Accent (Sunset/Coral), 60% Neutral (White/Light) */
+  --background: 205 100% 97%;
+  --foreground: 207 33% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 207 33% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 207 33% 15%;
+  /* Primary: Deep Ocean Blue */
+  --primary: 207 89% 34%;
+  --primary-foreground: 0 0% 100%;
+  /* Secondary: Light Sky Blue */
+  --secondary: 200 100% 86%;
+  --secondary-foreground: 207 33% 15%;
+  /* Muted: Soft Gray */
+  --muted: 210 40% 85%;
+  --muted-foreground: 207 20% 50%;
+  /* Accent: Calypso Orange/Coral */
+  --accent: 18 100% 54%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 205 50% 88%;
+  --input: 205 50% 92%;
+  --ring: 207 89% 34%;
+  /* Chart colors - Ocean themed */
+  --chart-1: 207 89% 34%;
+  --chart-2: 184 80% 45%;
+  --chart-3: 18 100% 54%;
+  --chart-4: 210 100% 72%;
+  --chart-5: 190 70% 60%;
+  --radius: 0.75rem;
+  --sidebar-background: 207 89% 34%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 18 100% 54%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 200 100% 86%;
+  --sidebar-accent-foreground: 207 33% 15%;
+  --sidebar-border: 207 70% 50%;
+  --sidebar-ring: 18 100% 54%;
+}
+.dark {
+  --background: 207 33% 12%;
+  --foreground: 205 100% 97%;
+  --card: 207 40% 18%;
+  --card-foreground: 205 100% 97%;
+  --popover: 207 40% 18%;
+  --popover-foreground: 205 100% 97%;
+  --primary: 207 100% 55%;
+  --primary-foreground: 207 33% 12%;
+  --secondary: 184 80% 45%;
+  --secondary-foreground: 205 100% 97%;
+  --muted: 207 40% 30%;
+  --muted-foreground: 205 50% 70%;
+  --accent: 18 100% 54%;
+  --accent-foreground: 207 33% 12%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 207 40% 28%;
+  --input: 207 40% 25%;
+  --ring: 18 100% 54%;
+  --chart-1: 207 100% 55%;
+  --chart-2: 184 80% 45%;
+  --chart-3: 18 100% 54%;
+  --chart-4: 200 80% 60%;
+  --chart-5: 190 70% 65%;
+  --sidebar-background: 207 33% 12%;
+  --sidebar-foreground: 205 100% 97%;
+  --sidebar-primary: 207 100% 55%;
+  --sidebar-primary-foreground: 207 33% 12%;
+  --sidebar-accent: 18 100% 54%;
+  --sidebar-accent-foreground: 205 100% 97%;
+  --sidebar-border: 207 40% 28%;
+  --sidebar-ring: 18 100% 54%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  font-family: Arial, Helvetica, sans-serif;
+  color: hsl(var(--foreground));
+}

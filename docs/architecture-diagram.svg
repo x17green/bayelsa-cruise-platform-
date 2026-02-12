@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- architecture-diagram.svg -->
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#ffffff" />
+  <!-- Frontend box -->
+  <g id="frontend">
+    <rect x="50" y="40" width="350" height="140" rx="8" ry="8" fill="#e8f0ff" stroke="#2f4f9b" />
+    <text x="70" y="70" font-size="16" font-weight="700" fill="#0b2a66">Frontend (Next.js / PWA)</text>
+    <text x="70" y="95" font-size="12" fill="#0b2a66">Booking UI • Operator UI • Check-in</text>
+    <text x="70" y="115" font-size="12" fill="#0b2a66">SEO • Offline PWA</text>
+  </g>
+
+  <!-- Backend box -->
+  <g id="backend">
+    <rect x="450" y="20" width="420" height="260" rx="8" ry="8" fill="#f3fff0" stroke="#2a7a2a" />
+    <text x="470" y="50" font-size="16" font-weight="700" fill="#115d11">Backend API (Node.js)</text>
+    <text x="470" y="78" font-size="12" fill="#115d11">Bookings, Payments, Webhooks, Admin</text>
+    <!-- Internal components list -->
+    <text x="470" y="105" font-size="12" fill="#115d11">• Booking Service</text>
+    <text x="470" y="125" font-size="12" fill="#115d11">• Seat Locking (Redis)</text>
+    <text x="470" y="145" font-size="12" fill="#115d11">• Webhook Processor</text>
+    <text x="470" y="165" font-size="12" fill="#115d11">• Operator Dashboard</text>
+  </g>
+
+  <!-- Database box -->
+  <g id="db">
+    <rect x="450" y="300" width="300" height="180" rx="8" ry="8" fill="#fff8e8" stroke="#8a5a00" />
+    <text x="470" y="330" font-size="16" font-weight="700" fill="#5a3b00">PostgreSQL</text>
+    <text x="470" y="355" font-size="12" fill="#5a3b00">Users • Bookings • Trips • Payments • Webhooks</text>
+  </g>
+
+  <!-- Redis box -->
+  <g id="redis">
+    <rect x="800" y="320" width="220" height="120" rx="8" ry="8" fill="#fff0f6" stroke="#8b2a54" />
+    <text x="820" y="350" font-size="16" font-weight="700" fill="#6a1436">Redis</text>
+    <text x="820" y="375" font-size="12" fill="#6a1436">Seat Holds • Queues • Caching</text>
+  </g>
+
+  <!-- MetaTickets box -->
+  <g id="metatickets">
+    <rect x="50" y="220" width="320" height="120" rx="8" ry="8" fill="#f0f7ff" stroke="#1a73e8" />
+    <text x="70" y="250" font-size="16" font-weight="700" fill="#0b3d91">MetaTickets</text>
+    <text x="70" y="275" font-size="12" fill="#0b3d91">Checkout • Ticket minting • Webhooks</text>
+  </g>
+
+  <!-- PSPs box -->
+  <g id="psp">
+    <rect x="50" y="360" width="320" height="100" rx="8" ry="8" fill="#fff8f0" stroke="#e68a00" />
+    <text x="70" y="390" font-size="16" font-weight="700" fill="#8a4700">Local PSPs</text>
+    <text x="70" y="415" font-size="12" fill="#8a4700">Paystack • Flutterwave (Fallback)</text>
+  </g>
+
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Frontend -> Backend -->
+  <line x1="400" y1="110" x2="450" y2="110" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Backend -> Postgres -->
+  <line x1="600" y1="280" x2="600" y2="300" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Backend -> Redis -->
+  <line x1="720" y1="170" x2="800" y2="350" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Backend -> MetaTickets -->
+  <line x1="540" y1="150" x2="370" y2="240" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Backend -> PSPs -->
+  <line x1="540" y1="200" x2="370" y2="380" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- MetaTickets -> Backend (webhook) -->
+  <line x1="370" y1="340" x2="450" y2="260" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="260" y="340" font-size="11" fill="#333">webhooks</text>
+
+  <!-- Notes -->
+  <text x="50" y="520" font-size="12" fill="#333">Generated: Bayelsa Boat Cruise Booking System — Architecture Diagram</text>
+</svg>

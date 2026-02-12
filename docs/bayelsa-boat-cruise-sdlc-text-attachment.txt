@@ -1,0 +1,1896 @@
+# Complete SDLC for Bayelsa Boat Booking Platform
+I’ll walk you through the full Software Development Life Cycle with stage-specific deliverables, timelines, and best practices for this product.
+
+PHASE 1: PLANNING & REQUIREMENTS (Weeks 1-2)
+Activities
+1.1 Project Initiation
+	∙	Business case development
+	∙	Market size estimation (Bayelsa population, tourist numbers, existing boat operators)
+	∙	Revenue projections (Year 1-3)
+	∙	Investment requirements
+	∙	Break-even analysis
+	∙	Stakeholder identification
+	∙	Primary: Green (product owner), Stella (MetaTickets partner)
+	∙	Secondary: Boat operators, Bayelsa Ministry of Marine, end customers
+	∙	Development team roles needed
+	∙	Project charter
+	∙	Vision statement
+	∙	Success criteria
+	∙	Constraints (budget, timeline, regulatory)
+	∙	Risk register
+1.2 Requirements Gathering
+Business Requirements (BR)
+	∙	BR-001: Platform must process bookings 24/7 with 99.5% uptime
+	∙	BR-002: Support minimum 50 concurrent bookings
+	∙	BR-003: Generate revenue via 8% commission model
+	∙	BR-004: Achieve 60% booking conversion rate
+	∙	BR-005: Comply with Nigerian maritime passenger manifest regulations
+Functional Requirements (FR)
+User Management
+	∙	FR-001: Users can register via email/phone/social login
+	∙	FR-002: Users can view booking history
+	∙	FR-003: Users can cancel bookings within policy window
+	∙	FR-004: Users receive email/SMS confirmations
+Booking Flow
+	∙	FR-005: Display available trips with real-time capacity
+	∙	FR-006: Support seat selection for vessels with assigned seating
+	∙	FR-007: Hold seats for 10 minutes during checkout
+	∙	FR-008: Process payments via MetaTickets + Paystack fallback
+	∙	FR-009: Generate QR code tickets upon payment confirmation
+	∙	FR-010: Support group bookings (up to 20 passengers)
+Operator Portal
+	∙	FR-011: Operators can create/edit trip schedules
+	∙	FR-012: Operators can set dynamic pricing by date/tier
+	∙	FR-013: Operators can view revenue dashboard
+	∙	FR-014: Operators can export passenger manifests (PDF/CSV)
+	∙	FR-015: Operators can mark trips as cancelled due to weather
+Safety & Compliance
+	∙	FR-016: Capture passenger name + phone for all bookings
+	∙	FR-017: Display vessel safety certification status
+	∙	FR-018: Require liability waiver acceptance before checkout
+	∙	FR-019: Generate manifest with emergency contact info
+	∙	FR-020: Crew can complete pre-departure safety checklist
+Check-in System
+	∙	FR-021: Support QR code scanning at dock
+	∙	FR-022: Manual check-in fallback (search by phone/booking ID)
+	∙	FR-023: Display live boarding count vs capacity
+	∙	FR-024: Alert if passenger attempts duplicate check-in
+Non-Functional Requirements (NFR)
+Performance
+	∙	NFR-001: Page load time < 2 seconds (3G connection)
+	∙	NFR-002: Booking transaction completion < 5 seconds
+	∙	NFR-003: Support 500 daily active users (scale to 5,000 in Year 2)
+	∙	NFR-004: Database queries < 100ms (95th percentile)
+Security
+	∙	NFR-005: PCI-DSS compliant payment handling (via PSP)
+	∙	NFR-006: HTTPS/TLS 1.3 for all connections
+	∙	NFR-007: Password hashing with bcrypt (cost factor 12)
+	∙	NFR-008: Webhook signature verification (HMAC-SHA256)
+	∙	NFR-009: Rate limiting (100 requests/minute per IP)
+	∙	NFR-010: GDPR/NDPR compliant data handling
+Reliability
+	∙	NFR-011: 99.5% uptime SLA
+	∙	NFR-012: Automated database backups every 6 hours
+	∙	NFR-013: Point-in-time recovery capability (7-day window)
+	∙	NFR-014: Graceful degradation (read-only mode if payment provider down)
+Usability
+	∙	NFR-015: Mobile-first responsive design
+	∙	NFR-016: Support English + Pidgin English languages
+	∙	NFR-017: WCAG 2.1 Level AA accessibility compliance
+	∙	NFR-018: Maximum 3 clicks from homepage to checkout
+Scalability
+	∙	NFR-019: Horizontal scaling capability for backend services
+	∙	NFR-020: CDN for static assets
+	∙	NFR-021: Database connection pooling (min 10, max 50 connections)
+1.3 Feasibility Study
+Technical Feasibility
+	∙	✅ MetaTickets API availability (pending Stella confirmation)
+	∙	✅ Paystack/Flutterwave integration documented
+	∙	✅ Postgres + Redis stack proven for booking systems
+	∙	✅ QR code generation libraries mature (qrcode.js, node-qrcode)
+	∙	⚠️ Offline check-in capability (requires PWA + IndexedDB)
+Operational Feasibility
+	∙	✅ Boat operators have smartphones for manifest export
+	∙	⚠️ Internet connectivity at docks (investigate backup solutions)
+	∙	✅ Email/SMS infrastructure (Twilio, Termii for Nigeria)
+	∙	⚠️ Customer support capacity (need 2 FTE by month 3)
+Economic Feasibility
+	∙	Development cost: ₦8-12M ($12-18K USD) for MVP
+	∙	Monthly operational cost: ₦500K-800K ($750-1,200)
+	∙	Break-even: 250 bookings/month @ ₦15K average booking value
+	∙	ROI projection: 18-24 months
+Legal/Regulatory Feasibility
+	∙	✅ Nigerian maritime regulations researched
+	∙	⚠️ Data protection registration with NITDA required
+	∙	⚠️ Payment license requirements (handled by PSPs)
+	∙	✅ Terms of service + privacy policy templates available
+1.4 Project Planning Documents
+Deliverables:
+	1.	Product Requirements Document (PRD) - 15-20 pages
+	2.	Technical Requirements Specification (TRS) - 10-15 pages
+	3.	Project plan with Gantt chart (12-week timeline)
+	4.	Risk assessment matrix with mitigation strategies
+	5.	Resource allocation plan (team structure, budget)
+
+PHASE 2: ANALYSIS & DESIGN (Weeks 2-4)
+2.1 System Analysis
+Use Case Development
+UC-001: Customer Books Cruise
+	∙	Actor: Registered customer
+	∙	Preconditions: Trip has available capacity, user logged in
+	∙	Main Flow:
+	1.	User searches trips by date/location
+	2.	System displays available trips with pricing tiers
+	3.	User selects trip + tier + number of passengers
+	4.	System checks real-time capacity
+	5.	System creates held booking (10-minute timer)
+	6.	User enters passenger details
+	7.	System redirects to MetaTickets checkout
+	8.	User completes payment
+	9.	MetaTickets sends webhook to system
+	10.	System confirms booking, releases hold
+	11.	System generates QR tickets
+	12.	System sends confirmation email/SMS
+	∙	Alternative Flows:
+	∙	4a. Insufficient capacity → notify user, suggest alternatives
+	∙	8a. Payment fails → release hold, notify user, offer retry
+	∙	8b. Timer expires → release hold, redirect to trip page
+	∙	Postconditions: Booking confirmed, seat allocated, manifest updated
+UC-002: Operator Creates Trip Schedule
+UC-003: Staff Checks In Passenger
+UC-004: System Processes Refund
+UC-005: Operator Exports Manifest
+(Develop 15-20 core use cases total)
+Data Flow Diagrams (DFD)
+Level 0 - Context Diagram
+
+[Customer] ←→ [Boat Booking System] ←→ [MetaTickets API]
+                      ↕
+            [Operator Portal]
+                      ↕
+            [Ministry of Marine]
+                      ↕
+            [Payment Providers]
+
+
+Level 1 - Major Processes
+	∙	Process 1.0: User Registration & Authentication
+	∙	Process 2.0: Trip Search & Discovery
+	∙	Process 3.0: Booking & Payment Processing
+	∙	Process 4.0: Manifest Management
+	∙	Process 5.0: Check-in Operations
+	∙	Process 6.0: Reporting & Analytics
+Level 2 - Detailed DFDs for each major process
+2.2 System Design
+2.2.1 Architecture Design
+High-Level Architecture (3-Tier)
+
+┌─────────────────────────────────────────────────────┐
+│              PRESENTATION TIER                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌───────────┐ │
+│  │  Web App     │  │  Mobile PWA  │  │ Operator  │ │
+│  │  (Next.js)   │  │  (React)     │  │ Dashboard │ │
+│  └──────────────┘  └──────────────┘  └───────────┘ │
+└─────────────────────────────────────────────────────┘
+                         ↓ HTTPS/REST
+┌─────────────────────────────────────────────────────┐
+│              APPLICATION TIER                        │
+│  ┌──────────────────────────────────────────────┐  │
+│  │         API Gateway (Node.js/Express)        │  │
+│  └──────────────────────────────────────────────┘  │
+│  ┌──────────┐ ┌──────────┐ ┌───────────────────┐  │
+│  │ Auth     │ │ Booking  │ │ Payment           │  │
+│  │ Service  │ │ Service  │ │ Service           │  │
+│  └──────────┘ └──────────┘ └───────────────────┘  │
+│  ┌──────────┐ ┌──────────┐ ┌───────────────────┐  │
+│  │ Manifest │ │ Notif.   │ │ Analytics         │  │
+│  │ Service  │ │ Service  │ │ Service           │  │
+│  └──────────┘ └──────────┘ └───────────────────┘  │
+└─────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────┐
+│              DATA TIER                               │
+│  ┌──────────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  PostgreSQL  │  │  Redis   │  │  S3/Blob     │  │
+│  │  (Primary)   │  │  (Cache) │  │  (Files)     │  │
+│  └──────────────┘  └──────────┘  └──────────────┘  │
+└─────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────┐
+│         EXTERNAL INTEGRATIONS                        │
+│  ┌──────────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │ MetaTickets  │  │ Paystack │  │ Twilio/      │  │
+│  │ API          │  │ API      │  │ Termii       │  │
+│  └──────────────┘  └──────────┘  └──────────────┘  │
+└─────────────────────────────────────────────────────┘
+
+
+Microservices Design (if scaling beyond MVP)
+Each service gets its own:
+	∙	Independent database schema/database
+	∙	API endpoints
+	∙	Docker container
+	∙	Scaling policy
+2.2.2 Database Design
+Already provided in the chat, but add:
+Normalization Level: 3NF (Third Normal Form)
+Indexing Strategy:
+
+-- Composite indexes for common queries
+CREATE INDEX idx_trip_schedules_search 
+ON trip_schedules(start_time, capacity) 
+WHERE capacity > 0;
+
+CREATE INDEX idx_bookings_user_status 
+ON bookings(user_id, status) 
+INCLUDE (created_at, total_amount_kobo);
+
+CREATE INDEX idx_webhook_events_processing 
+ON webhook_events(provider, processed) 
+WHERE processed = false;
+
+-- Full-text search for trip discovery
+CREATE INDEX idx_trips_fulltext 
+ON trips USING gin(to_tsvector('english', title || ' ' || description));
+
+
+Partitioning Strategy (for scale):
+
+-- Monthly partitioning for bookings
+CREATE TABLE bookings_2026_02 PARTITION OF bookings
+FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');
+
+
+Database Backup Strategy:
+	∙	Continuous WAL archiving to S3
+	∙	Daily full backups at 2 AM WAT
+	∙	Retention: 7 daily, 4 weekly, 3 monthly
+	∙	Test restore monthly
+2.2.3 API Design
+RESTful API Specification (OpenAPI 3.0)
+
+openapi: 3.0.0
+info:
+  title: Bayelsa Boat Booking API
+  version: 1.0.0
+  description: API for booking boat cruises in Bayelsa State
+
+servers:
+  - url: https://api.bayelsaboats.com/v1
+    description: Production
+  - url: https://staging-api.bayelsaboats.com/v1
+    description: Staging
+
+paths:
+  /trips:
+    get:
+      summary: Search available trips
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: capacity_min
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of trips
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trip'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+  /bookings:
+    post:
+      summary: Create a new booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      responses:
+        201:
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        409:
+          description: Insufficient capacity
+
+  /webhooks/metatickets:
+    post:
+      summary: MetaTickets webhook endpoint
+      security:
+        - webhookSignature: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookPayload'
+      responses:
+        200:
+          description: Webhook processed
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    webhookSignature:
+      type: apiKey
+      in: header
+      name: X-Webhook-Signature
+
+  schemas:
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        vessel:
+          $ref: '#/components/schemas/Vessel'
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TripSchedule'
+    # ... more schemas
+
+
+API Endpoints Summary:
+Public endpoints (no auth)
+	∙	GET /trips - Search trips
+	∙	GET /trips/:id - Trip details
+	∙	GET /vessels/:id - Vessel info
+	∙	POST /auth/register - User registration
+	∙	POST /auth/login - User login
+Authenticated endpoints
+	∙	POST /bookings - Create booking
+	∙	GET /bookings - User’s bookings
+	∙	GET /bookings/:id - Booking details
+	∙	POST /bookings/:id/cancel - Cancel booking
+	∙	GET /users/me - Current user profile
+Operator endpoints
+	∙	POST /operator/trips - Create trip
+	∙	PUT /operator/trips/:id - Update trip
+	∙	GET /operator/manifests/:schedule_id - Export manifest
+	∙	GET /operator/analytics - Revenue dashboard
+Webhook endpoints
+	∙	POST /webhooks/metatickets - Payment webhooks
+	∙	POST /webhooks/paystack - Fallback webhooks
+Internal/Staff endpoints
+	∙	POST /checkin/verify - QR scan verification
+	∙	GET /checkin/status/:schedule_id - Live boarding status
+2.2.4 UI/UX Design
+Design System
+Color Palette
+	∙	Primary: #0066CC (Ocean Blue) - CTAs, links
+	∙	Secondary: #FFB900 (Sunset Gold) - Highlights, badges
+	∙	Success: #10B981 - Confirmations
+	∙	Warning: #F59E0B - Alerts
+	∙	Error: #EF4444 - Errors
+	∙	Neutral: #6B7280, #F3F4F6 - Text, backgrounds
+Typography
+	∙	Headings: Inter Bold (28px, 24px, 20px)
+	∙	Body: Inter Regular (16px)
+	∙	Small: Inter Regular (14px)
+	∙	Mobile: Scale down 2px for each level
+Component Library
+	∙	Button variants: Primary, Secondary, Outline, Ghost
+	∙	Input fields: Text, Number, Date, Phone
+	∙	Cards: Trip card, Booking card
+	∙	Modals: Confirmation, Error, Information
+	∙	Alerts: Success, Warning, Error, Info
+Wireframes (Key Screens)
+	1.	Homepage
+	∙	Hero section with search (date + location)
+	∙	Featured trips carousel
+	∙	How it works (3 steps)
+	∙	Trust badges (safety certified, secure payments)
+	∙	Footer
+	2.	Trip Listing Page
+	∙	Filters sidebar (date, price range, capacity, vessel type)
+	∙	Trip cards grid (image, title, price from, duration, capacity)
+	∙	Pagination
+	∙	Sort options (price, date, popularity)
+	3.	Trip Detail Page
+	∙	Image gallery
+	∙	Title, description, duration
+	∙	Vessel details (capacity, amenities)
+	∙	Pricing tiers (tabs: General, VIP, Cabin)
+	∙	Date selector with availability calendar
+	∙	Reviews/ratings
+	∙	Safety information accordion
+	∙	Book now CTA (sticky on mobile)
+	4.	Booking Flow (Multi-step)
+	∙	Step 1: Select tier + quantity
+	∙	Step 2: Passenger details (name, phone per passenger)
+	∙	Step 3: Review + liability waiver checkbox
+	∙	Step 4: Payment (redirect to MetaTickets)
+	∙	Step 5: Confirmation (booking ID, QR code, email sent)
+	5.	Operator Dashboard
+	∙	Stats cards (today’s bookings, revenue, occupancy)
+	∙	Upcoming trips table
+	∙	Quick actions (create trip, export manifest)
+	∙	Revenue chart (last 30 days)
+	6.	Check-in Interface (Staff)
+	∙	QR scanner viewport
+	∙	Manual search fallback
+	∙	Live passenger count (checked in / total capacity)
+	∙	Passenger list with status indicators
+Mockups/Prototypes
+	∙	Tool: Figma (collaborative design)
+	∙	Deliverables:
+	∙	Low-fidelity wireframes (Week 2)
+	∙	High-fidelity mockups (Week 3)
+	∙	Interactive prototype (Week 4)
+	∙	Design handoff with CSS tokens (Week 4)
+2.2.5 Security Design
+Authentication & Authorization
+Strategy: JWT-based auth with refresh tokens
+
+// Token structure
+{
+  "access_token": {
+    "user_id": "uuid",
+    "role": "customer|operator|staff|admin",
+    "exp": 1800  // 30 minutes
+  },
+  "refresh_token": {
+    "user_id": "uuid",
+    "exp": 604800  // 7 days
+  }
+}
+
+
+Role-based access control (RBAC):
+	∙	Customer: CRUD own bookings, view trips
+	∙	Operator: CRUD own trips/vessels, view own analytics
+	∙	Staff: Check-in operations, view manifests
+	∙	Admin: Full system access, user management
+Data Protection
+Encryption:
+	∙	Data in transit: TLS 1.3
+	∙	Data at rest: PostgreSQL transparent data encryption (TDE)
+	∙	PII fields: AES-256 encryption for sensitive data (ID numbers, payment info)
+	∙	Passwords: bcrypt with salt rounds = 12
+PII Handling:
+	∙	Collect minimum necessary data
+	∙	Anonymization for analytics (aggregate only)
+	∙	Right to deletion (GDPR/NDPR compliance)
+	∙	Data retention: 7 years for financial records, 2 years for manifests
+Threat Model
+
+
+
+|Threat            |Impact|Likelihood|Mitigation                                |
+|------------------|------|----------|------------------------------------------|
+|SQL Injection     |High  |Medium    |Parameterized queries, ORM                |
+|XSS               |Medium|High      |Input sanitization, CSP headers           |
+|CSRF              |Medium|Medium    |CSRF tokens, SameSite cookies             |
+|DDoS              |High  |Medium    |Cloudflare, rate limiting                 |
+|Payment fraud     |High  |Medium    |3DS, address verification, velocity checks|
+|Double booking    |High  |Low       |Optimistic locking, atomic operations     |
+|Manifest tampering|Medium|Low       |Digital signatures, audit logs            |
+
+Compliance Requirements
+Nigeria Data Protection Regulation (NDPR):
+	∙	Privacy policy with clear consent mechanisms
+	∙	Data processing agreement with third parties
+	∙	Designated Data Protection Officer (DPO)
+	∙	Breach notification within 72 hours
+	∙	Annual compliance audit
+PCI-DSS (via PSPs):
+	∙	Never store card numbers/CVV
+	∙	Use tokenization for saved cards
+	∙	SAQ-A compliance (redirect to PSP)
+Design Deliverables
+	1.	System Architecture Document - 25-30 pages
+	2.	Database Schema with ER diagrams - 10-15 pages
+	3.	API Specification (OpenAPI) - Auto-generated docs
+	4.	UI/UX Design System - Figma file + documentation
+	5.	Security & Compliance Plan - 15-20 pages
+	6.	Infrastructure Diagram - AWS/Azure/GCP architecture
+
+PHASE 3: DEVELOPMENT (Weeks 4-10)
+3.1 Development Environment Setup
+Infrastructure as Code (IaC)
+Docker Compose for local development:
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: boat_booking_dev
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://dev:dev123@postgres:5432/boat_booking_dev
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+
+
+Git Workflow
+Branching Strategy (Gitflow):
+
+main (production)
+  ├── develop (integration)
+  │     ├── feature/user-authentication
+  │     ├── feature/booking-flow
+  │     ├── feature/payment-integration
+  │     └── feature/operator-dashboard
+  ├── release/v1.0.0 (release candidate)
+  └── hotfix/payment-webhook-fix
+
+
+Commit Convention (Conventional Commits):
+
+feat(booking): add seat selection UI
+fix(webhook): handle duplicate payment events
+docs(api): update booking endpoint examples
+test(manifest): add export validation tests
+chore(deps): upgrade postgres driver to v8.11
+
+
+3.2 Sprint Planning (2-week sprints)
+Sprint 1 (Weeks 4-5): Foundation
+	∙	Project scaffolding (monorepo setup with Nx/Turborepo)
+	∙	Database migrations (Prisma/TypeORM)
+	∙	CI/CD pipeline setup (GitHub Actions)
+	∙	Authentication service (JWT + refresh tokens)
+	∙	User registration/login endpoints
+	∙	Basic test framework setup (Jest + Supertest)
+Sprint 2 (Weeks 5-6): Trip Management
+	∙	Trip CRUD operations (operator portal)
+	∙	Vessel management
+	∙	Trip schedule creation with capacity
+	∙	Pricing tier configuration
+	∙	Trip search API with filters
+	∙	Trip detail page frontend
+Sprint 3 (Weeks 6-7): Booking Engine
+	∙	Seat locking mechanism (Redis)
+	∙	Booking creation with hold logic
+	∙	Real-time capacity checks
+	∙	Booking state machine (pending → held → paid → confirmed)
+	∙	Passenger details collection
+	∙	Booking summary page
+Sprint 4 (Weeks 7-8): Payment Integration
+	∙	MetaTickets API integration (or Paystack)
+	∙	Webhook endpoint with signature verification
+	∙	Payment event processing
+	∙	Idempotency handling (duplicate webhook prevention)
+	∙	QR code generation
+	∙	Email notification service (SendGrid/Mailgun)
+	∙	SMS notifications (Twilio/Termii)
+Sprint 5 (Weeks 8-9): Manifest & Check-in
+	∙	Manifest generation (PDF/CSV export)
+	∙	Safety checklist templates
+	∙	QR scanner implementation (frontend)
+	∙	Check-in verification endpoint
+	∙	Live boarding status dashboard
+	∙	Manual check-in fallback
+Sprint 6 (Weeks 9-10): Polish & Operator Tools
+	∙	Operator analytics dashboard
+	∙	Refund processing workflow
+	∙	Cancellation policies
+	∙	Trip listing page with filters
+	∙	Responsive mobile optimization
+	∙	Performance optimization (lazy loading, caching)
+3.3 Development Standards
+Code Quality Standards
+Linting & Formatting:
+
+// .eslintrc.json
+{
+  "extends": ["next/core-web-vitals", "prettier"],
+  "rules": {
+    "no-console": "warn",
+    "no-unused-vars": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn"
+  }
+}
+
+// .prettierrc
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2
+}
+
+
+Code Review Checklist:
+	∙	Follows TypeScript strict mode
+	∙	All functions have JSDoc comments
+	∙	No hardcoded secrets (use environment variables)
+	∙	Error handling for all async operations
+	∙	Input validation on all endpoints
+	∙	Unit tests for business logic (>80% coverage)
+	∙	Integration tests for API endpoints
+	∙	Database queries use parameterized statements
+	∙	Logging for critical operations (Winston/Pino)
+Testing Strategy
+Unit Tests (70% coverage target):
+
+// Example: booking.service.test.ts
+describe('BookingService', () => {
+  describe('createBooking', () => {
+    it('should create booking with valid inputs', async () => {
+      const mockSchedule = { id: 'uuid', capacity: 10 };
+      const result = await bookingService.createBooking({
+        scheduleId: mockSchedule.id,
+        userId: 'user-uuid',
+        tierIds: ['tier-uuid'],
+        passengers: [{ name: 'John Doe', phone: '+2348012345678' }]
+      });
+      
+      expect(result.status).toBe('held');
+      expect(result.holdExpiresAt).toBeDefined();
+    });
+
+    it('should throw error if capacity exceeded', async () => {
+      const mockSchedule = { id: 'uuid', capacity: 0 };
+      
+      await expect(
+        bookingService.createBooking({ scheduleId: mockSchedule.id })
+      ).rejects.toThrow('Insufficient capacity');
+    });
+  });
+});
+
+
+Integration Tests:
+
+// Example: booking.api.test.ts
+describe('POST /bookings', () => {
+  it('should create booking and return checkout URL', async () => {
+    const response = await request(app)
+      .post('/v1/bookings')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({
+        trip_schedule_id: existingScheduleId,
+        price_tier_ids: [tierId],
+        passengers: [{ name: 'Jane Doe', phone: '+2348087654321' }]
+      })
+      .expect(201);
+
+    expect(response.body.data).toHaveProperty('id');
+    expect(response.body.data).toHaveProperty('checkout_url');
+    expect(response.body.data.status).toBe('held');
+  });
+});
+
+
+End-to-End Tests (Playwright/Cypress):
+
+// Example: booking-flow.e2e.ts
+test('complete booking flow', async ({ page }) => {
+  await page.goto('/trips');
+  await page.click('text=Beach Cruise - Feb 20');
+  await page.click('button:has-text("Book Now")');
+  
+  // Select tier
+  await page.click('text=VIP Deck');
+  await page.fill('input[name="passenger_0_name"]', 'John Doe');
+  await page.fill('input[name="passenger_0_phone"]', '+2348012345678');
+  
+  // Accept waiver
+  await page.check('input[name="liability_waiver"]');
+  await page.click('button:has-text("Proceed to Payment")');
+  
+  // Should redirect to payment page
+  await expect(page).toHaveURL(/metatickets|paystack/);
+});
+
+
+Load Testing (k6):
+
+// load-test.js
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+  stages: [
+    { duration: '2m', target: 50 },   // Ramp up to 50 users
+    { duration: '5m', target: 50 },   // Stay at 50 users
+    { duration: '2m', target: 100 },  // Ramp up to 100 users
+    { duration: '5m', target: 100 },  // Stay at 100 users
+    { duration: '2m', target: 0 },    // Ramp down
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95% of requests under 500ms
+    http_req_failed: ['rate<0.01'],   // Error rate < 1%
+  },
+};
+
+export default function () {
+  const res = http.get('https://api.bayelsaboats.com/v1/trips');
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 500ms': (r) => r.timings.duration < 500,
+  });
+  sleep(1);
+}
+
+
+3.4 CI/CD Pipeline
+GitHub Actions Workflow:
+
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint
+      
+      - name: Run unit tests
+        run: npm run test:unit
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+      
+      - name: Run integration tests
+        run: npm run test:integration
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build Docker image
+        run: docker build -t bayelsaboats/api:${{ github.sha }} .
+      
+      - name: Push to registry
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push bayelsaboats/api:${{ github.sha }}
+          docker tag bayelsaboats/api:${{ github.sha }} bayelsaboats/api:latest
+          docker push bayelsaboats/api:latest
+
+  deploy-staging:
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to staging
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /opt/bayelsaboats
+            docker-compose pull
+            docker-compose up -d
+            docker-compose exec api npm run migrate
+
+  deploy-production:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /opt/bayelsaboats
+            docker-compose pull
+            docker-compose up -d --no-deps api
+            docker-compose exec api npm run migrate
+
+
+Development Phase Deliverables
+	1.	Functional application (all MVP features)
+	2.	Test suite with >70% code coverage
+	3.	API documentation (Swagger/ReDoc)
+	4.	CI/CD pipeline with automated testing
+	5.	Docker images pushed to registry
+	6.	Database migration scripts
+	7.	Environment configuration templates
+
+PHASE 4: TESTING (Weeks 10-11)
+4.1 Testing Types & Execution
+4.1.1 Functional Testing
+Test Cases by Feature Area:
+Authentication (20 test cases)
+	∙	TC-AUTH-001: User registers with valid email
+	∙	TC-AUTH-002: Registration fails with duplicate email
+	∙	TC-AUTH-003: Login succeeds with correct credentials
+	∙	TC-AUTH-004: Login fails with incorrect password
+	∙	TC-AUTH-005: JWT token expires after 30 minutes
+	∙	TC-AUTH-006: Refresh token works within 7 days
+	∙	TC-AUTH-007: Password reset email sent
+	∙	TC-AUTH-008: Password reset with valid token
+	∙	… (continue for all edge cases)
+Booking Flow (40 test cases)
+	∙	TC-BOOK-001: Create booking with available capacity
+	∙	TC-BOOK-002: Booking fails when capacity = 0
+	∙	TC-BOOK-003: Seat hold expires after 10 minutes
+	∙	TC-BOOK-004: Concurrent bookings don’t oversell
+	∙	TC-BOOK-005: QR code generated on payment success
+	∙	TC-BOOK-006: Email notification sent on confirmation
+	∙	TC-BOOK-007: Refund processed within policy window
+	∙	TC-BOOK-008: Cancellation rejected outside policy window
+	∙	… (continue)
+Payment Processing (30 test cases)
+	∙	TC-PAY-001: MetaTickets webhook verified successfully
+	∙	TC-PAY-002: Invalid signature rejected
+	∙	TC-PAY-003: Duplicate webhook ignored (idempotent)
+	∙	TC-PAY-004: Payment failure releases seat hold
+	∙	TC-PAY-005: Partial refund processed correctly
+	∙	… (continue)
+Test Execution Tracking:
+
+
+
+|Test ID    |Status|Assignee|Executed Date|Defects|
+|-----------|------|--------|-------------|-------|
+|TC-BOOK-001|PASS  |John    |2026-02-20   |-      |
+|TC-BOOK-004|FAIL  |Jane    |2026-02-20   |BUG-045|
+|TC-PAY-002 |PASS  |Mike    |2026-02-21   |-      |
+
+4.1.2 Non-Functional Testing
+Performance Testing:
+	∙	Load Test: 100 concurrent users booking trips
+	∙	Target: 95% requests < 500ms
+	∙	Result: Avg 320ms, P95 480ms ✅
+	∙	Stress Test: 500 concurrent users
+	∙	Target: Graceful degradation, no data loss
+	∙	Result: Queue builds but processes, no errors ✅
+	∙	Spike Test: Sudden 1000 user spike
+	∙	Target: Auto-scaling triggers within 2 minutes
+	∙	Result: Scaled at 1:45, handled load ✅
+Security Testing:
+	∙	Penetration Testing (OWASP Top 10):
+	∙	SQL Injection: ✅ PASS (parameterized queries)
+	∙	XSS: ✅ PASS (input sanitization)
+	∙	CSRF: ✅ PASS (tokens implemented)
+	∙	Broken Authentication: ⚠️ WARN (add rate limiting on login)
+	∙	Security Misconfiguration: ✅ PASS
+	∙	Vulnerability Scanning (npm audit, Snyk):
+
+npm audit
+# 0 vulnerabilities found
+
+snyk test
+# ✓ Tested for known issues, no vulnerable paths found
+
+
+Usability Testing:
+	∙	Task Success Rate: 95% of users complete booking without assistance
+	∙	Time on Task: Average 3.5 minutes from search to confirmation
+	∙	Error Rate: 2% (mostly incorrect phone number format)
+	∙	User Satisfaction: 4.3/5 average rating
+Accessibility Testing (WCAG 2.1 AA):
+	∙	Automated (axe DevTools):
+	∙	0 violations found
+	∙	3 warnings (color contrast on secondary buttons)
+	∙	Manual:
+	∙	Keyboard navigation: ✅ PASS
+	∙	Screen reader (NVDA): ✅ PASS
+	∙	High contrast mode: ⚠️ Some labels need improvement
+Compatibility Testing:
+
+
+
+|Browser|Version|Desktop|Mobile|Status         |
+|-------|-------|-------|------|---------------|
+|Chrome |121+   |✅      |✅     |PASS           |
+|Safari |17+    |✅      |✅     |PASS           |
+|Firefox|122+   |✅      |⚠️     |Minor CSS issue|
+|Edge   |121+   |✅      |✅     |PASS           |
+|Opera  |106+   |✅      |N/A   |PASS           |
+
+Mobile Devices:
+	∙	iPhone 13/14/15 (iOS 17): ✅
+	∙	Samsung Galaxy S23 (Android 14): ✅
+	∙	Google Pixel 7 (Android 13): ✅
+4.2 User Acceptance Testing (UAT)
+UAT Plan:
+Participants:
+	∙	3 boat operators (create trips, view manifests)
+	∙	10 end customers (search, book, check-in simulation)
+	∙	2 dock staff (check-in operations)
+Test Scenarios:
+	1.	Operator creates and publishes trip (30 mins)
+	∙	Create vessel profile
+	∙	Set up trip schedule for next week
+	∙	Configure pricing tiers (General ₦10K, VIP ₦20K)
+	∙	Verify trip appears in public search
+	2.	Customer books VIP ticket (15 mins)
+	∙	Search trips by date
+	∙	Select VIP tier
+	∙	Complete passenger details
+	∙	Process payment (test mode)
+	∙	Receive QR code via email
+	3.	Staff checks in passengers (20 mins)
+	∙	Scan 5 QR codes
+	∙	Handle 1 failed scan (manual lookup)
+	∙	View live boarding count
+	∙	Export final manifest before departure
+UAT Feedback Collection:
+
+**Operator Feedback (Week 10)**
+- ✅ "Trip creation is intuitive"
+- ⚠️ "Bulk upload for recurring trips would save time"
+- ❌ "Can't edit trip after first booking - too restrictive"
+
+**Customer Feedback**
+- ✅ "Booking flow is fast and clear"
+- ✅ "Love the QR code - very convenient"
+- ⚠️ "Want to see boat photos before booking"
+
+**Staff Feedback**
+- ✅ "Check-in scanner works great in sunlight"
+- ❌ "Manual search is slow when searching by name"
+
+
+UAT Sign-off Criteria:
+	∙	All critical scenarios completed successfully
+	∙	No severity 1 or 2 defects remaining
+	∙	Operator approval documented
+	∙	Customer satisfaction >4/5
+4.3 Defect Management
+Bug Tracking (Linear/Jira):
+
+
+
+|ID     |Severity|Component|Description                  |Status     |Assignee|
+|-------|--------|---------|-----------------------------|-----------|--------|
+|BUG-001|Critical|Payment  |Webhook timeout after 25s    |FIXED      |Mike    |
+|BUG-012|High    |Booking  |Race condition in seat lock  |FIXED      |Sarah   |
+|BUG-023|Medium  |UI       |Mobile keyboard covers input |IN_PROGRESS|John    |
+|BUG-031|Low     |Email    |Typo in confirmation template|OPEN       |Jane    |
+
+Severity Definitions:
+	∙	Critical: System crash, data loss, payment failure
+	∙	High: Feature unusable, major UI break, security issue
+	∙	Medium: Feature works but with workaround needed
+	∙	Low: Cosmetic, typos, minor inconvenience
+Defect Resolution SLA:
+	∙	Critical: 4 hours
+	∙	High: 24 hours
+	∙	Medium: 3 days
+	∙	Low: Next sprint
+Testing Phase Deliverables
+	1.	Test plan document - 15-20 pages
+	2.	Test cases - 150+ documented cases
+	3.	Test execution report - Pass/fail rates, coverage
+	4.	Performance test results - k6 reports, metrics
+	5.	Security audit report - Penetration test findings
+	6.	UAT sign-off document - Stakeholder approvals
+	7.	Bug tracking export - All defects and resolutions
+	8.	Test automation suite - Regression test scripts
+
+PHASE 5: DEPLOYMENT (Week 11-12)
+5.1 Infrastructure Provisioning
+5.1.1 Cloud Architecture (AWS Example)
+
+┌─────────────────────────────────────────────────────────┐
+│                      AWS CLOUD                           │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Route 53 (DNS)                                     │ │
+│  │  bayelsaboats.com → CloudFront                      │ │
+│  └────────────────────────────────────────────────────┘ │
+│                         ↓                                │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  CloudFront CDN                                     │ │
+│  │  - Static assets (images, CSS, JS)                 │ │
+│  │  - Edge caching for Next.js pages                  │ │
+│  └────────────────────────────────────────────────────┘ │
+│                         ↓                                │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Application Load Balancer (ALB)                   │ │
+│  │  - SSL/TLS termination                             │ │
+│  │  - Health checks                                    │ │
+│  │  - Auto-scaling integration                        │ │
+│  └────────────────────────────────────────────────────┘ │
+│                         ↓                                │
+│  ┌─────────────────────────────────────┐                │
+│  │  ECS Fargate (Container Orchestration)              │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │  │  API     │  │  API     │  │  API     │          │
+│  │  │  Task 1  │  │  Task 2  │  │  Task 3  │          │
+│  │  └──────────┘  └──────────┘  └──────────┘          │
+│  │  Auto-scaling: 2-10 tasks                           │
+│  └─────────────────────────────────────┘                │
+│                         ↓                                │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Data Layer                                       │  │
+│  │  ┌─────────────┐  ┌──────────┐  ┌─────────────┐ │  │
+│  │  │  RDS         │  │  ElastiCache│  │  S3        │ │  │
+│  │  │  (Postgres)  │  │  (Redis)  │  │  (Files)   │ │  │
+│  │  │  Multi-AZ    │  │           │  │            │ │  │
+│  │  └─────────────┘  └──────────┘  └─────────────┘ │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Monitoring & Logging                             │  │
+│  │  - CloudWatch (metrics, logs, alarms)            │  │
+│  │  - X-Ray (distributed tracing)                   │  │
+│  │  - SNS (alerting)                                │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+
+
+Infrastructure as Code (Terraform):
+
+# terraform/main.tf
+provider "aws" {
+  region = "eu-west-1"  # Closest to Nigeria
+}
+
+# VPC
+resource "aws_vpc" "main" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  
+  tags = {
+    Name = "bayelsaboats-vpc"
+    Environment = var.environment
+  }
+}
+
+# RDS Postgres
+resource "aws_db_instance" "postgres" {
+  identifier           = "bayelsaboats-db-${var.environment}"
+  engine               = "postgres"
+  engine_version       = "15.4"
+  instance_class       = "db.t3.medium"
+  allocated_storage    = 100
+  storage_encrypted    = true
+  multi_az             = var.environment == "production"
+  
+  db_name  = "boat_booking"
+  username = var.db_username
+  password = var.db_password
+  
+  backup_retention_period = 7
+  backup_window          = "03:00-04:00"
+  maintenance_window     = "Mon:04:00-Mon:05:00"
+  
+  tags = {
+    Name = "bayelsaboats-postgres"
+    Environment = var.environment
+  }
+}
+
+# ElastiCache Redis
+resource "aws_elasticache_cluster" "redis" {
+  cluster_id           = "bayelsaboats-redis-${var.environment}"
+  engine               = "redis"
+  engine_version       = "7.0"
+  node_type            = "cache.t3.micro"
+  num_cache_nodes      = 1
+  parameter_group_name = "default.redis7"
+  port                 = 6379
+  
+  tags = {
+    Name = "bayelsaboats-redis"
+    Environment = var.environment
+  }
+}
+
+# ECS Cluster
+resource "aws_ecs_cluster" "main" {
+  name = "bayelsaboats-cluster-${var.environment}"
+  
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+}
+
+# ECS Task Definition
+resource "aws_ecs_task_definition" "api" {
+  family                   = "bayelsaboats-api"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  
+  container_definitions = jsonencode([{
+    name  = "api"
+    image = "${var.ecr_repository}:${var.image_tag}"
+    
+    portMappings = [{
+      containerPort = 3001
+      protocol      = "tcp"
+    }]
+    
+    environment = [
+      {
+        name  = "NODE_ENV"
+        value = var.environment
+      },
+      {
+        name  = "DATABASE_URL"
+        value = "postgresql://${var.db_username}:${var.db_password}@${aws_db_instance.postgres.endpoint}/boat_booking"
+      },
+      {
+        name  = "REDIS_URL"
+        value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+      }
+    ]
+    
+    secrets = [
+      {
+        name      = "METATICKETS_API_KEY"
+        valueFrom = aws_secretsmanager_secret.metatickets_key.arn
+      },
+      {
+        name      = "PAYSTACK_SECRET_KEY"
+        valueFrom = aws_secretsmanager_secret.paystack_key.arn
+      }
+    ]
+    
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = "/ecs/bayelsaboats-api"
+        "awslogs-region"        = "eu-west-1"
+        "awslogs-stream-prefix" = "ecs"
+      }
+    }
+    
+    healthCheck = {
+      command     = ["CMD-SHELL", "curl -f http://localhost:3001/health || exit 1"]
+      interval    = 30
+      timeout     = 5
+      retries     = 3
+      startPeriod = 60
+    }
+  }])
+}
+
+# Auto Scaling
+resource "aws_appautoscaling_target" "ecs_target" {
+  max_capacity       = 10
+  min_capacity       = 2
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.api.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs_cpu" {
+  name               = "cpu-autoscaling"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+  
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value = 70.0
+  }
+}
+
+
+5.1.2 Environment Configuration
+Environments:
+	1.	Development (local Docker Compose)
+	2.	Staging (AWS, single instance)
+	3.	Production (AWS, multi-AZ, auto-scaling)
+Environment Variables (AWS Secrets Manager):
+
+# Production .env (stored in Secrets Manager)
+NODE_ENV=production
+PORT=3001
+
+# Database
+DATABASE_URL=postgresql://user:pass@rds-endpoint:5432/boat_booking
+DATABASE_POOL_MIN=10
+DATABASE_POOL_MAX=50
+
+# Redis
+REDIS_URL=redis://elasticache-endpoint:6379
+REDIS_TTL=900
+
+# Payment Providers
+METATICKETS_API_KEY=sk_live_xxxxx
+METATICKETS_WEBHOOK_SECRET=whsec_xxxxx
+PAYSTACK_SECRET_KEY=sk_live_xxxxx
+PAYSTACK_PUBLIC_KEY=pk_live_xxxxx
+
+# Notifications
+SENDGRID_API_KEY=SG.xxxxx
+TWILIO_ACCOUNT_SID=ACxxxxx
+TWILIO_AUTH_TOKEN=xxxxx
+TERMII_API_KEY=TLxxxxx
+
+# JWT
+JWT_SECRET=super-secret-key-rotate-monthly
+JWT_EXPIRES_IN=1800
+JWT_REFRESH_EXPIRES_IN=604800
+
+# CORS
+ALLOWED_ORIGINS=https://bayelsaboats.com,https://www.bayelsaboats.com
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Monitoring
+SENTRY_DSN=https://xxxxx@sentry.io/xxxxx
+NEW_RELIC_LICENSE_KEY=xxxxx
+
+
+5.2 Deployment Strategy
+5.2.1 Blue-Green Deployment
+
+# Step 1: Deploy green environment
+aws ecs update-service \
+  --cluster bayelsaboats-cluster-prod \
+  --service api-green \
+  --task-definition bayelsaboats-api:25 \
+  --desired-count 3
+
+# Step 2: Wait for health checks (5 minutes)
+aws ecs wait services-stable \
+  --cluster bayelsaboats-cluster-prod \
+  --services api-green
+
+# Step 3: Run smoke tests on green
+curl https://green.bayelsaboats.com/health
+./scripts/smoke-tests.sh green.bayelsaboats.com
+
+# Step 4: Switch traffic (ALB target group swap)
+aws elbv2 modify-listener \
+  --listener-arn $LISTENER_ARN \
+  --default-actions Type=forward,TargetGroupArn=$GREEN_TG_ARN
+
+# Step 5: Monitor for 30 minutes
+# If issues detected → rollback
+aws elbv2 modify-listener \
+  --listener-arn $LISTENER_ARN \
+  --default-actions Type=forward,TargetGroupArn=$BLUE_TG_ARN
+
+# Step 6: Scale down blue (if green is stable)
+aws ecs update-service \
+  --cluster bayelsaboats-cluster-prod \
+  --service api-blue \
+  --desired-count 0
+
+
+5.2.2 Database Migration Strategy
+Zero-Downtime Migrations:
+
+-- BAD: Locks table
+ALTER TABLE bookings ADD COLUMN notes TEXT;
+
+-- GOOD: Non-blocking (Postgres 11+)
+ALTER TABLE bookings ADD COLUMN notes TEXT DEFAULT NULL;
+
+-- BAD: Locks during index creation
+CREATE INDEX idx_bookings_user ON bookings(user_id);
+
+-- GOOD: Create concurrently
+CREATE INDEX CONCURRENTLY idx_bookings_user ON bookings(user_id);
+
+
+Migration Rollback Plan:
+
+# Automatic rollback if migration fails
+#!/bin/bash
+set -e
+
+echo "Starting migration..."
+npm run migrate:up
+
+if [ $? -ne 0 ]; then
+  echo "Migration failed, rolling back..."
+  npm run migrate:down
+  exit 1
+fi
+
+echo "Migration successful"
+
+
+5.3 Go-Live Checklist
+Pre-Deployment (T-7 days):
+	∙	All UAT sign-offs received
+	∙	Performance tests passed (>95% SLA)
+	∙	Security scan clean (0 high/critical vulnerabilities)
+	∙	Database backups verified (test restore)
+	∙	SSL certificates installed and valid (90+ days)
+	∙	DNS configured (A records, CNAME, SSL)
+	∙	Monitoring dashboards set up (CloudWatch, Sentry)
+	∙	On-call rotation scheduled
+	∙	Rollback plan documented and rehearsed
+Deployment Day (T-0):
+	∙	Notify stakeholders (scheduled maintenance window)
+	∙	Freeze code changes (no commits to main)
+	∙	Database backup (pre-deployment snapshot)
+	∙	Deploy to staging (smoke tests)
+	∙	Deploy to production (blue-green)
+	∙	Run post-deployment smoke tests
+	∙	Monitor error rates for 2 hours
+	∙	Send all-clear notification
+Post-Deployment (T+1 hour):
+	∙	Verify critical user flows (booking, payment, check-in)
+	∙	Check payment webhook processing (test transaction)
+	∙	Monitor database performance (query latency)
+	∙	Verify email/SMS notifications working
+	∙	Check SSL/security headers
+	∙	Review application logs (no critical errors)
+Post-Deployment (T+24 hours):
+	∙	Review metrics dashboard (bookings, revenue, errors)
+	∙	Customer support tickets (any deployment-related issues?)
+	∙	Performance comparison (pre vs post deployment)
+	∙	Celebrate with team 🎉
+5.4 Monitoring & Alerting
+CloudWatch Alarms:
+
+# terraform/monitoring.tf
+resource "aws_cloudwatch_metric_alarm" "api_cpu_high" {
+  alarm_name          = "bayelsaboats-api-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "80"
+  alarm_description   = "This metric monitors ECS CPU utilization"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  
+  dimensions = {
+    ClusterName = aws_ecs_cluster.main.name
+    ServiceName = aws_ecs_service.api.name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "api_5xx_errors" {
+  alarm_name          = "bayelsaboats-api-5xx-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "HTTPCode_Target_5XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Sum"
+  threshold           = "10"
+  alarm_description   = "This metric monitors 5xx error rate"
+  alarm_actions       = [aws_sns_topic.critical_alerts.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "rds_connection_count" {
+  alarm_name          = "bayelsaboats-rds-connections-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "DatabaseConnections"
+  namespace           = "AWS/RDS"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "80"
+  alarm_description   = "High DB connection count"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+}
+
+
+Application Performance Monitoring (New Relic/Datadog):
+
+// src/monitoring/apm.ts
+import newrelic from 'newrelic';
+
+export function trackBookingCreation(booking: Booking) {
+  newrelic.recordCustomEvent('BookingCreated', {
+    bookingId: booking.id,
+    amount: booking.totalAmountKobo / 100,
+    scheduleId: booking.tripScheduleId,
+    userId: booking.userId,
+  });
+}
+
+export function trackPaymentWebhook(provider: string, status: string) {
+  newrelic.recordMetric(`Custom/Webhook/${provider}/${status}`, 1);
+}
+
+// Custom transaction tracing
+newrelic.startWebTransaction('booking/create', async function() {
+  // ... booking logic
+  await newrelic.endTransaction();
+});
+
+
+Error Tracking (Sentry):
+
+// src/monitoring/sentry.ts
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 0.1,
+  
+  beforeSend(event, hint) {
+    // Don't send 404s
+    if (event.exception?.values?.[0]?.value?.includes('NotFound')) {
+      return null;
+    }
+    return event;
+  },
+});
+
+// Usage in error handler
+app.use((err, req, res, next) => {
+  Sentry.captureException(err, {
+    extra: {
+      userId: req.user?.id,
+      path: req.path,
+      method: req.method,
+    },
+  });
+  
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+
+Deployment Phase Deliverables
+	1.	Infrastructure provisioning (Terraform scripts)
+	2.	Deployment automation (CI/CD pipelines)
+	3.	Environment configurations (dev, staging, prod)
+	4.	Monitoring dashboards (CloudWatch, APM)
+	5.	Runbook (incident response procedures)
+	6.	Deployment post-mortem (lessons learned)
+	7.	Production access controls (IAM policies, SSH keys)
+
+PHASE 6: MAINTENANCE & SUPPORT (Ongoing)
+6.1 Support Structure
+Support Tiers
+Tier 1 - Customer Support (Response time: 4 hours)
+	∙	Team: 2 FTE customer service reps
+	∙	Responsibilities:
+	∙	Handle booking inquiries
+	∙	Process refund requests
+	∙	Reset passwords
+	∙	Basic troubleshooting (payment issues, login problems)
+	∙	Tools: Zendesk, Intercom live chat
+	∙	Escalation path: If unresolved in 2 hours → Tier 2
+Tier 2 - Technical Support (Response time: 2 hours)
+	∙	Team: 2 FTE developers on rotation
+	∙	Responsibilities:
+	∙	Investigate technical issues (webhook failures, booking bugs)
+	∙	Database query troubleshooting
+	∙	Integration issues (MetaTickets, Paystack)
+	∙	Performance degradation
+	∙	Tools: AWS Console, database access, application logs
+	∙	Escalation path: If critical → Tier 3
+Tier 3 - Engineering (Response time: 30 minutes for critical)
+	∙	Team: Senior developers + DevOps
+	∙	Responsibilities:
+	∙	Critical system outages
+	∙	Data corruption/loss
+	∙	Security breaches
+	∙	Infrastructure failures
+	∙	Tools: Full production access, on-call rotation
+SLA Definitions
+
+
+
+|Severity     |Description                              |Response Time|Resolution Time|
+|-------------|-----------------------------------------|-------------|---------------|
+|P0 (Critical)|Payment processing down, site unreachable|15 min       |2 hours        |
+|P1 (High)    |Booking flow broken, webhook delays      |1 hour       |8 hours        |
+|P2 (Medium)  |Feature degraded, slow performance       |4 hours      |48 hours       |
+|P3 (Low)     |Cosmetic issues, minor bugs              |24 hours     |1 week         |
+
+6.2 Incident Management
+Incident Response Playbook:
+Step 1: Detection (Auto-alert triggers)
+
+CloudWatch alarm → SNS → PagerDuty → On-call engineer
+
+
+Step 2: Triage (5 minutes)
+	∙	Assess severity (P0-P3)
+	∙	Create incident ticket (Linear/Jira)
+	∙	Page appropriate team
+	∙	Start incident channel (Slack: #incident-YYYY-MM-DD)
+Step 3: Investigation (15-30 minutes)
+
+# Check application logs
+aws logs tail /aws/ecs/bayelsaboats-api --follow
+
+# Check database status
+psql -h $DB_HOST -U $DB_USER -c "SELECT * FROM pg_stat_activity;"
+
+# Check Redis
+redis-cli INFO stats
+
+# Review recent deployments
+git log --oneline -10
+
+# Check error rates
+# Sentry dashboard, CloudWatch metrics
+
+
+Step 4: Mitigation (ASAP)
+	∙	Rollback if recent deployment
+	∙	Scale up resources if capacity issue
+	∙	Enable maintenance mode if data integrity risk
+	∙	Communicate with users (status page)
+Step 5: Root Cause Analysis (Post-incident)
+	∙	Document timeline
+	∙	Identify root cause
+	∙	Create action items (preventive measures)
+	∙	Update runbook
+Example Incident Report:
+
+## Incident Report: Payment Webhook Delays
+
+**Date**: 2026-03-15
+**Duration**: 14:30 - 16:45 WAT (2h 15m)
+**Severity**: P1 (High)
+**Impact**: 45 bookings delayed confirmation, 3 customer complaints
+
+### Timeline
+- 14:30 - First CloudWatch alarm (webhook processing >60s)
+- 14:35 - On-call engineer paged
+- 14:40 - Investigation started
+- 15:00 - Root cause identified (Redis connection pool exhausted)
+- 15:10 - Mitigation applied (increased pool size 20→50)
+- 15:30 - Metrics normalized
+- 16:45 - All backlogged webhooks processed
+
+### Root Cause
+Redis connection pool limit (20) insufficient for spike in traffic
+during promotional campaign (100 concurrent bookings).
+
+### Resolution
+- Increased Redis connection pool max to 50
+- Added connection pool metrics to dashboard
+- Set up alarm for pool utilization >80%
+
+### Action Items
+- [ ] Implement connection pool auto-scaling
+- [ ] Load test with 200 concurrent bookings
+- [ ] Document capacity planning guidelines
+- [ ] Review other resource limits
+
+### Lessons Learned
+- Need better load testing before marketing campaigns
+- Connection pool metrics should be standard monitoring
+
+
+6.3 Maintenance Activities
+Weekly Maintenance
+	∙	Review error logs (Sentry, CloudWatch)
+	∙	Check disk usage (RDS storage, ECS container storage)
+	∙	Verify backup completion (RDS automated backups)
+	∙	Update security patches (OS, dependencies)
+	∙	Review performance metrics (API latency, DB query times)
+Monthly Maintenance
+	∙	Database optimization (vacuum, reindex)
+	∙	SSL certificate renewal check (30 days before expiry)
+	∙	Review and archive old logs (>90 days)
+	∙	Dependency updates (npm audit fix)
+	∙	Capacity planning review (traffic growth trends)
+	∙	Security vulnerability scan (Snyk, npm audit)
+Quarterly Maintenance
+	∙	Database performance tuning (slow query analysis)
+	∙	Infrastructure cost optimization (reserved instances, spot instances)
+	∙	Disaster recovery drill (restore from backup)
+	∙	Security audit (penetration testing)
+	∙	User feedback review (feature requests, bug reports)
+	∙	Technical debt assessment
+Database Maintenance:
+
+-- Weekly vacuum and analyze
+VACUUM ANALYZE bookings;
+VACUUM ANALYZE booking_items;
+VACUUM ANALYZE webhook_events;
+
+-- Monthly index rebuild (if bloated)
+REINDEX INDEX CONCURRENTLY idx_bookings_user_status;
+
+-- Slow query identification
+SELECT 
+  query,
+  calls,
+  total_time / calls AS avg_time_ms,
+  stddev_time,
+  rows / calls AS avg_rows
+FROM pg_stat_statements
+WHERE calls > 100
+ORDER BY total_time DESC
+LIMIT 20;
+
+-- Archive old webhook events (keep 90 days)
+DELETE FROM webhook_events 
+WHERE received_at < NOW() - INTERVAL '90 days'
+  AND processed = true;
+
+
+6.4 Continuous Improvement
+Feature Roadmap (Post-MVP):
+Q2 2026 (Months 4-6):
+	∙	Mobile app (React Native) with offline check-in
+	∙	Dynamic pricing (based on demand, weather)
+	∙	Multi-language support (Yoruba, Igbo, Pidgin)
+	∙	Group booking discounts
+	∙	Loyalty program (points for frequent travelers)
+Q3 2026 (Months 7-9):
+	∙	Corporate booking accounts (bulk credits)
+	∙	API for third-party travel agents
+	∙	Waitlist for sold-out trips
+	∙	Trip insurance add-on
+	∙	In-app chat support
+Q4 2026 (Months 10-12):
+	∙	Fleet management module (maintenance tracking)
+	∙	Crew scheduling and payroll
+	∙	Predictive analytics (demand forecasting)
+	∙	Expansion to Lagos, Port Harcourt routes
+	∙	Partnership with hotels/restaurants
+Performance Optimization Backlog:
+	∙	Implement GraphQL for flexible data fetching
+	∙	Add Redis caching layer for trip listings
+	∙	Optimize database queries (N+1 elimination)
+	∙	Implement CDN for API responses (Cloudflare)
+	∙	Progressive Web App (PWA) offline capabilities
+	∙	Image optimization (WebP, lazy loading)
+Maintenance Phase Deliverables
+	1.	Support documentation (user guides, FAQs)
+	2.	Incident response playbook
+	3.	Runbook (common tasks, troubleshooting)
+	4.	Monthly maintenance reports
+	5.	Performance optimization reports
+	6.	Feature roadmap updates
+	7.	Customer feedback analysis
+
+ADDITIONAL SDLC BEST PRACTICES
+Documentation Standards
+Code Documentation:
+
+/**
+ * Creates a new booking with seat hold.
+ * 
+ * @param {CreateBookingDTO} dto - Booking creation parameters
+ * @param {string} dto.userId - ID of the user making the booking
+ * @param {string} dto.tripScheduleId - ID of the trip schedule
+ * @param {string[]} dto.priceTierIds - IDs of selected pricing tiers
+ * @param {PassengerInfo[]} dto.passengers - Passenger details
+ * 
+ * @returns {Promise<Booking>} Created booking with status 'held'
+ * 
+ * @throws {InsufficientCapacityError} When capacity is fully booked
+ * @throws {InvalidTierError} When tier doesn't belong to schedule
+ * 
+ * @example
+ * const booking = await bookingService.createBooking({
+ *   userId: 'user-uuid',
+ *   tripScheduleId: 'schedule-uuid',
+ *   priceTierIds: ['tier-uuid'],
+ *   passengers: [{ name: 'John Doe', phone: '+2348012345678' }]
+ * });
+ */
+async createBooking(dto: CreateBookingDTO): Promise<Booking> {
+  // Implementation
+}
+
+
+API Documentation (Swagger/OpenAPI):
+	∙	Auto-generated from code annotations
+	∙	Include examples for all endpoints
+	∙	Document error responses
+	∙	Provide Postman collection
+Architecture Decision Records (ADR):
+
+# ADR-003: Use Redis for Seat Locking
+
+## Status
+Accepted
+
+## Context
+We need to prevent double-booking during the 10-minute checkout hold period.
+Options considered:
+1. Database row-level locks
+2. Redis distributed locks
+3. In-memory locks (single instance)
+
+## Decision
+Use Redis with TTL-based locks.
+
+## Consequences
+**Positive:**
+- Fast lock acquisition (<1ms)
+- Automatic expiration (no cleanup needed)
+- Horizontal scaling support
+
+**Negative:**
+- Additional infrastructure dependency
+- Redis failure = no bookings (mitigated with persistence)
+
+## Implementation
+- Use SET with NX and EX options
+- 10-minute TTL
+- Retry logic with exponential backoff
+
+
+Change Management
+Change Request Process:
+	1.	Submit change request (Linear/Jira)
+	2.	Impact assessment (affected systems, downtime)
+	3.	Approval (product owner + tech lead)
+	4.	Schedule change window
+	5.	Execute with rollback plan ready
+	6.	Post-change review
+Version Control:
+	∙	Semantic versioning (MAJOR.MINOR.PATCH)
+	∙	Changelog maintained (CHANGELOG.md)
+	∙	Git tags for releases
+	∙	Release notes for each version
+Quality Assurance Throughout SDLC
+Definition of Done (DoD):
+	∙	Code written and reviewed
+	∙	Unit tests written (>80% coverage)
+	∙	Integration tests pass
+	∙	Documentation updated
+	∙	UI/UX approved
+	∙	Performance tested (no regression)
+	∙	Security reviewed (no new vulnerabilities)
+	∙	Deployed to staging
+	∙	QA tested and approved
+	∙	Product owner approved
+
+TIMELINE SUMMARY
+
+Week 1-2:   Planning & Requirements
+Week 2-4:   Analysis & Design
+Week 4-10:  Development (6 sprints)
+Week 10-11: Testing (QA + UAT)
+Week 11-12: Deployment
+Week 12+:   Maintenance & Iteration
+
+
+Total Time to MVP: 12 weeks (3 months)
+
+BUDGET ESTIMATION
+Development Costs:
+	∙	Backend Developer (Senior): ₦1.5M/month × 3 months = ₦4.5M
+	∙	Frontend Developer: ₦1M/month × 3 months = ₦3M
+	∙	UI/UX Designer: ₦800K/month × 2 months = ₦1.6M
+	∙	QA Engineer: ₦600K/month × 2 months = ₦1.2M
+	∙	DevOps Engineer: ₦1.2M/month × 1.5 months = ₦1.8M
+Subtotal: ₦12.1M ($18K USD)
+Infrastructure Costs (Monthly):
+	∙	AWS EC2/ECS: ₦150K
+	∙	RDS (Postgres): ₦100K
+	∙	ElastiCache (Redis): ₦40K
+	∙	S3 + CloudFront: ₦20K
+	∙	Monitoring (Sentry, New Relic): ₦50K
+	∙	Domain + SSL: ₦10K
+Subtotal: ₦370K/month
+Third-party Services (Monthly):
+	∙	MetaTickets fees: Variable (per transaction)
+	∙	Paystack fees: 1.5% + ₦100 per transaction
+	∙	SendGrid (emails): ₦20K
+	∙	Twilio/Termii (SMS): ₦30K
+Subtotal: ₦50K + transaction fees
+Total First-Year Cost: ₦12.1M (dev) + ₦370K × 12 (infra) + ₦50K × 12 (services) = ₦17.14M (~$26K USD)
+
+This is a complete, production-ready SDLC framework for building the Bayelsa Boat Booking Platform. Each phase includes specific deliverables, timelines, and best practices. The process is iterative, allowing for continuous improvement based on user feedback and market conditions.
+Would you like me to drill deeper into any specific phase or create additional artifacts (e.g., detailed sprint backlogs, test case templates, deployment checklists)?​​​​​​​​​​​​​​​​
