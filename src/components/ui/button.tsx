@@ -445,7 +445,7 @@ const ButtonLabel = React.forwardRef<
 ButtonLabel.displayName = 'Button.Label'
 
 // Export with proper TypeScript types
-export { Button, ButtonIcon, ButtonLabel, buttonVariants }
+export { ButtonIcon, ButtonLabel, buttonVariants }
 
 // Augment Button type with compound components (for TypeScript)
 export type ButtonComponent = typeof Button & {
@@ -458,4 +458,8 @@ const ButtonWithCompounds = Button as ButtonComponent
 ButtonWithCompounds.Icon = ButtonIcon
 ButtonWithCompounds.Label = ButtonLabel
 
+// Named export with compounds
+export { ButtonWithCompounds as Button }
+
+// Default export with compounds
 export default ButtonWithCompounds
