@@ -7,6 +7,30 @@ import * as React from 'react'
 import { toggleVariants } from '@/src/components/ui/toggle'
 import { cn } from '@/src/lib/utils'
 
+/**
+ * ToggleGroup Component - Blue Waters Design System
+ * 
+ * Glassmorphism-enhanced toggle group with design token integration.
+ * Manages multiple toggle buttons with single or multiple selection modes.
+ * Inherits variants and styling from Toggle component.
+ * 
+ * @accessibility
+ * - role="group" for single selection
+ * - Keyboard navigation (Arrow keys, Tab)
+ * - aria-pressed on each item
+ * - Focus management across items
+ * - Screen reader friendly
+ * 
+ * @example
+ * ```tsx
+ * <ToggleGroup type="single" variant="glass">
+ *   <ToggleGroupItem value="left">Left</ToggleGroupItem>
+ *   <ToggleGroupItem value="center">Center</ToggleGroupItem>
+ *   <ToggleGroupItem value="right">Right</ToggleGroupItem>
+ * </ToggleGroup>
+ * ```
+ */
+
 const ToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants>
 >({
