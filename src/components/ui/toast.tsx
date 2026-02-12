@@ -24,14 +24,69 @@ const ToastViewport = React.forwardRef<
 ))
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
+/**
+ * Toast Variants using CVA
+ * 
+ * Glassmorphism toasts with semantic color variants
+ */
 const toastVariants = cva(
-  'group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full',
+  [
+    'group pointer-events-auto relative',
+    'flex w-full items-center justify-between space-x-4',
+    'overflow-hidden rounded-md p-6 pr-8',
+    'shadow-large',
+    'transition-all duration-normal',
+    // Swipe and state animations
+    'data-[swipe=cancel]:translate-x-0',
+    'data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)]',
+    'data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)]',
+    'data-[swipe=move]:transition-none',
+    'data-[state=open]:animate-in',
+    'data-[state=closed]:animate-out',
+    'data-[swipe=end]:animate-out',
+    'data-[state=closed]:fade-out-80',
+    'data-[state=closed]:slide-out-to-right-full',
+    'data-[state=open]:slide-in-from-top-full',
+    'data-[state=open]:sm:slide-in-from-bottom-full',
+  ],
   {
     variants: {
       variant: {
-        default: 'border bg-background text-foreground',
-        destructive:
-          'destructive group border-destructive bg-destructive text-destructive-foreground',
+        default: [
+          'bg-bg-800',
+          'border border-border-default',
+          'text-fg',
+        ],
+        glass: [
+          'bg-glass-02',
+          'backdrop-blur-base',
+          'border border-border-subtle',
+          'text-fg',
+        ],
+        success: [
+          'bg-success-900/50',
+          'border border-success-700/50',
+          'text-success-300',
+          'backdrop-blur-subtle',
+        ],
+        warning: [
+          'bg-warning-900/50',
+          'border border-warning-700/50',
+          'text-warning-300',
+          'backdrop-blur-subtle',
+        ],
+        error: [
+          'bg-error-900/50',
+          'border border-error-700/50',
+          'text-error-300',
+          'backdrop-blur-subtle',
+        ],
+        info: [
+          'bg-info-900/50',
+          'border border-info-700/50',
+          'text-info-300',
+          'backdrop-blur-subtle',
+        ],
       },
     },
     defaultVariants: {
@@ -62,7 +117,33 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      'inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive',
+      'inline-flex h-8 shrink-0',
+      'items-center justify-center',
+      'rounded-md px-3',
+      // Glassmorphism
+      'bg-glass-01',
+      'border border-border-subtle',
+      'backdrop-blur-subtle',
+      // Text
+      'text-sm font-medium',
+      // Transitions
+      'transition-colors',
+      'hover:bg-glass-02',
+      // Focus ring
+      'focus:outline-none',
+      'focus:ring-2 focus:ring-accent-400/30',
+      'focus:ring-offset-2 focus:ring-offset-bg-800',
+      // States
+      'disabled:pointer-events-none disabled:opacity-50',
+      // Semantic group variants
+      'group-[.success]:border-success-700/30',
+      'group-[.success]:hover:bg-success-900/30',
+      'group-[.warning]:border-warning-700/30',
+      'group-[.warning]:hover:bg-warning-900/30',
+      'group-[.error]:border-error-700/30',
+      'group-[.error]:hover:bg-error-900/30',
+      'group-[.info]:border-info-700/30',
+      'group-[.info]:hover:bg-info-900/30',
       className,
     )}
     {...props}
@@ -77,13 +158,29 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      'absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600',
+      'absolute right-2 top-2',
+      'rounded-md p-1',
+      // Colors
+      'text-fg-muted opacity-0',
+      // Transitions
+      'transition-opacity',
+      'hover:text-fg',
+      // Focus
+      'focus:opacity-100',
+      'focus:outline-none',
+      'focus:ring-2 focus:ring-accent-400/30',
+      // Group hover
+      'group-hover:opacity-100',
+      // Semantic variants
+      'group-[.error]:text-error-300',
+      'group-[.error]:hover:text-error-100',
+      'group-[.error]:focus:ring-error-400',
       className,
     )}
     toast-close=""
     {...props}
   >
-    <X className="h-4 w-4" />
+    <X className="size-4" />
   </ToastPrimitives.Close>
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName
