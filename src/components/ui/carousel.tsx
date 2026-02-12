@@ -1,3 +1,92 @@
+/**
+ * Carousel - Embla Carousel integration with navigation
+ * 
+ * Built on Embla Carousel with glassmorphism design system.
+ * Responsive image/content carousel with arrow navigation and keyboard support.
+ * Integrates with migrated Button component for navigation arrows.
+ * 
+ * @example
+ * ```tsx
+ * import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel'
+ * 
+ * function ImageCarousel() {
+ *   return (
+ *     <Carousel className="w-full max-w-xs">
+ *       <CarouselContent>
+ *         <CarouselItem>
+ *           <div className="p-1">
+ *             <img src="/image1.jpg" alt="Slide 1" className="rounded-lg" />
+ *           </div>
+ *         </CarouselItem>
+ *         <CarouselItem>
+ *           <div className="p-1">
+ *             <img src="/image2.jpg" alt="Slide 2" className="rounded-lg" />
+ *           </div>
+ *         </CarouselItem>
+ *         <CarouselItem>
+ *           <div className="p-1">
+ *             <img src="/image3.jpg" alt="Slide 3" className="rounded-lg" />
+ *           </div>
+ *         </CarouselItem>
+ *       </CarouselContent>
+ *       <CarouselPrevious />
+ *       <CarouselNext />
+ *     </Carousel>
+ *   )
+ * }
+ * 
+ * // With custom options
+ * function AutoplayCarousel() {
+ *   return (
+ *     <Carousel
+ *       opts={{
+ *         align: 'start',
+ *         loop: true,
+ *       }}
+ *       className="w-full max-w-sm"
+ *     >
+ *       <CarouselContent>
+ *         {Array.from({ length: 5 }).map((_, index) => (
+ *           <CarouselItem key={index}>
+ *             <Card>
+ *               <CardContent className="flex aspect-square items-center justify-center p-6">
+ *                 <span className="text-4xl font-semibold">{index + 1}</span>
+ *               </CardContent>
+ *             </Card>
+ *           </CarouselItem>
+ *         ))}
+ *       </CarouselContent>
+ *       <CarouselPrevious />
+ *       <CarouselNext />
+ *     </Carousel>
+ *   )
+ * }
+ * ```
+ * 
+ * @features
+ * - Smooth horizontal/vertical scrolling with Embla
+ * - Arrow navigation buttons (Previous/Next)
+ * - Keyboard navigation (ArrowLeft/ArrowRight)
+ * - Responsive and mobile-friendly
+ * - Loop and autoplay support via options
+ * - Touch/swipe gestures on mobile
+ * - Custom slide alignment
+ * - API access for programmatic control
+ * 
+ * @accessibility
+ * - ARIA carousel landmark
+ * - ARIA slide role on each item
+ * - Screen reader announcements
+ * - Keyboard navigation support
+ * - Disabled state for navigation buttons
+ * 
+ * @components
+ * - Carousel: Container with context provider
+ * - CarouselContent: Viewport for slides
+ * - CarouselItem: Individual slide wrapper
+ * - CarouselPrevious: Previous slide button (uses Button outline variant)
+ * - CarouselNext: Next slide button (uses Button outline variant)
+ */
 'use client'
 
 import useEmblaCarousel, {
