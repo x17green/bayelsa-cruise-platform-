@@ -1,3 +1,50 @@
+/**
+ * Navigation Menu - Multi-level navigation with dropdown menus
+ * 
+ * Built on Radix UI Navigation Menu with glassmorphism design system.
+ * Perfect for desktop site navigation with keyboard and screen reader support.
+ * 
+ * @example
+ * ```tsx
+ * <NavigationMenu>
+ *   <NavigationMenuList>
+ *     <NavigationMenuItem>
+ *       <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+ *       <NavigationMenuContent>
+ *         <ul className="grid w-[400px] gap-3 p-4">
+ *           <li>
+ *             <NavigationMenuLink asChild>
+ *               <a href="/product-1">Product 1</a>
+ *             </NavigationMenuLink>
+ *           </li>
+ *         </ul>
+ *       </NavigationMenuContent>
+ *     </NavigationMenuItem>
+ *     
+ *     <NavigationMenuItem>
+ *       <NavigationMenuLink href="/about">
+ *         About
+ *       </NavigationMenuLink>
+ *     </NavigationMenuItem>
+ *   </NavigationMenuList>
+ * </NavigationMenu>
+ * ```
+ * 
+ * @features
+ * - Multi-level dropdown menus with smooth animations
+ * - Keyboard navigation (arrow keys, Esc to close)
+ * - Hover intent detection (prevents accidental opens)
+ * - Glassmorphism viewport with backdrop blur
+ * - Auto-positioning to stay within viewport
+ * - Screen reader announcements
+ * - Active state indicators
+ * 
+ * @accessibility
+ * - ARIA navigation landmark
+ * - Keyboard navigation support
+ * - Focus visible indicators
+ * - Screen reader friendly
+ */
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu'
 import { cva } from 'class-variance-authority'
 import { ChevronDown } from 'lucide-react'
@@ -41,7 +88,7 @@ NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName
 const NavigationMenuItem = NavigationMenuPrimitive.Item
 
 const navigationMenuTriggerStyle = cva(
-  'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50',
+  'group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-fg-DEFAULT transition-all hover:bg-glass-02 hover:text-fg-DEFAULT focus:bg-glass-02 focus:text-fg-DEFAULT focus:outline-none focus-visible:ring-4 focus-visible:ring-accent-400/30 focus-visible:ring-offset-4 focus-visible:ring-offset-bg-950 disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-glass-02 data-[state=open]:bg-glass-02',
 )
 
 const NavigationMenuTrigger = React.forwardRef<
@@ -86,7 +133,7 @@ const NavigationMenuViewport = React.forwardRef<
   <div className={cn('absolute left-0 top-full flex justify-center')}>
     <NavigationMenuPrimitive.Viewport
       className={cn(
-        'origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]',
+        'origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border border-glass bg-glass-03 text-fg-DEFAULT backdrop-blur-base shadow-[0_8px_32px_rgba(0,0,0,0.4)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]',
         className,
       )}
       ref={ref}
@@ -109,7 +156,7 @@ const NavigationMenuIndicator = React.forwardRef<
     )}
     {...props}
   >
-    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
+    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-glass-01 shadow-md" />
   </NavigationMenuPrimitive.Indicator>
 ))
 NavigationMenuIndicator.displayName =
