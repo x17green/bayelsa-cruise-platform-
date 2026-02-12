@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Card, CardBody, CardHeader, Checkbox, Input, Navbar, NavbarBrand, NavbarContent, NavbarItem, Button as NextUIButton, Tabs as NextUITabs, Select, SelectItem, Tab } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { Card, CardBody, CardHeader, Button as NextUIButton, Input, Select, SelectItem, Tabs as NextUITabs, Tab, Checkbox, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { Button } from '@/src/components/ui/button'
+import { ArrowLeft, Building2, CheckCircle, CreditCard, Smartphone } from 'lucide-react'
 import Link from 'next/link'
-import { ArrowLeft, CreditCard, Smartphone, Building2, CheckCircle } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+import { Button } from '@/src/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { supabase } from '@/src/lib/supabase'
 
 const mockTrips: any = {

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Lock, Mail } from 'lucide-react'
 import Link from 'next/link'
-import { Mail, Lock } from 'lucide-react'
+import { useState } from 'react'
+
 import { supabase } from '@/src/lib/supabase'
 
 export default function LogIn() {

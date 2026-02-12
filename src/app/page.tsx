@@ -1,12 +1,13 @@
 'use client'
 
-import Link from 'next/link'
 import { motion } from 'framer-motion'
-import Hero from '@/src/components/hero'
+import Link from 'next/link'
+
 import FeaturedTrips from '@/src/components/featured-trips'
+import Footer from '@/src/components/footer'
+import Hero from '@/src/components/hero'
 import HowItWorks from '@/src/components/how-it-works'
 import Testimonials from '@/src/components/testimonials'
-import Footer from '@/src/components/footer'
 
 export default function Home() {
   return (

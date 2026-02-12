@@ -97,7 +97,7 @@ export const colors = {
     '03': 'rgba(255, 255, 255, 0.08)', // Medium glass
     '04': 'rgba(255, 255, 255, 0.12)', // Strong glass
   },
-} as const;
+} as const
 
 // ============================================================================
 // SPACING TOKENS (8px base scale)
@@ -123,7 +123,7 @@ export const spacing = {
   48: '12rem',       // 192px
   56: '14rem',       // 224px
   64: '16rem',       // 256px
-} as const;
+} as const
 
 // ============================================================================
 // TYPOGRAPHY TOKENS
@@ -162,7 +162,7 @@ export const typography = {
     normal: '0',
     wide: '0.025em',
   },
-} as const;
+} as const
 
 // ============================================================================
 // BORDER RADIUS TOKENS
@@ -176,7 +176,7 @@ export const borderRadius = {
   xl: '1.5rem',      // 24px
   '2xl': '2rem',     // 32px
   full: '9999px',
-} as const;
+} as const
 
 // ============================================================================
 // SHADOW TOKENS
@@ -186,7 +186,7 @@ export const shadows = {
   soft: '0 6px 20px rgba(4, 8, 16, 0.6)',
   medium: '0 10px 40px rgba(4, 8, 16, 0.7)',
   strong: '0 20px 60px rgba(4, 8, 16, 0.8)',
-} as const;
+} as const
 
 // ============================================================================
 // GLASSMORPHISM TOKENS
@@ -204,7 +204,7 @@ export const glassmorphism = {
     default: '100%',  // Standard saturation
     enhanced: '120%', // Enhanced for emphasis
   },
-} as const;
+} as const
 
 // ============================================================================
 // Z-INDEX TOKENS
@@ -221,7 +221,7 @@ export const zIndex = {
   popover: 1200,
   modal: 1400,
   tooltip: 1600,
-} as const;
+} as const
 
 // ============================================================================
 // TRANSITION TOKENS
@@ -240,7 +240,7 @@ export const transitions = {
     out: 'cubic-bezier(0, 0, 0.2, 1)',
     inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
-} as const;
+} as const
 
 // ============================================================================
 // BREAKPOINTS (Tailwind defaults)
@@ -252,7 +252,7 @@ export const breakpoints = {
   lg: '1024px',
   xl: '1280px',
   '2xl': '1536px',
-} as const;
+} as const
 
 // ============================================================================
 // CONSOLIDATED EXPORT
@@ -268,6 +268,6 @@ export const tokens = {
   zIndex,
   transitions,
   breakpoints,
-} as const;
+} as const
 
-export default tokens;
+export default tokens

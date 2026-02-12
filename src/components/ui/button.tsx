@@ -1,8 +1,9 @@
-import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '@/src/lib/utils'
 import Link from 'next/link'
+import * as React from 'react'
+
+import { cn } from '@/src/lib/utils'
 
 /**
  * Blue Waters Button Component
@@ -332,7 +333,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       : asChild
       ? { 
           className: cn(buttonVariants({ variant, size, reducedMotion: prefersReducedMotion, className })),
-          ...props
+          ...props,
         }
       : {
           className: cn(buttonVariants({ variant, size, reducedMotion: prefersReducedMotion, className })),

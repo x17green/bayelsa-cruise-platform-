@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { Button, Card, CardBody, Checkbox, Input, Select, SelectItem } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { Button, Input, Card, CardBody, Select, SelectItem, Checkbox } from '@nextui-org/react'
+import { Lock, Mail, Phone, User } from 'lucide-react'
 import Link from 'next/link'
-import { Mail, Lock, User, Phone } from 'lucide-react'
+import { useState } from 'react'
+
 import { supabase } from '@/src/lib/supabase'
 
 export default function SignUp() {

@@ -1,12 +1,11 @@
 'use client'
 
-import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
-import { VariantProps, cva } from 'class-variance-authority'
+// eslint-disable-next-line import/named
+import { cva, VariantProps } from 'class-variance-authority'
 import { PanelLeft } from 'lucide-react'
+import * as React from 'react'
 
-import { useIsMobile } from '@/src/hooks/use-mobile'
-import { cn } from '@/src/lib/utils'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { Separator } from '@/src/components/ui/separator'
@@ -18,6 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/src/components/ui/tooltip'
+import { useIsMobile } from '@/src/hooks/use-mobile'
+import { cn } from '@/src/lib/utils'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -36,6 +37,7 @@ type SidebarContext = {
   toggleSidebar: () => void
 }
 
+// eslint-disable-next-line no-redeclare
 const SidebarContext = React.createContext<SidebarContext | null>(null)
 
 function useSidebar() {
@@ -343,15 +345,15 @@ SidebarInset.displayName = 'SidebarInset'
 const SidebarInput = React.forwardRef<
   React.ElementRef<typeof Input>,
   React.ComponentProps<typeof Input>
->(({ className, ...props }, ref) => {
+>(({ className, wrapperClassName, ...props }, ref) => {
   return (
     <Input
       ref={ref}
       data-sidebar="input"
-      className={cn(
-        'h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-        className,
-      )}
+      size="sm"
+      variant="glass"
+      wrapperClassName={cn('w-full', wrapperClassName)}
+      className={cn(className)}
       {...props}
     />
   )

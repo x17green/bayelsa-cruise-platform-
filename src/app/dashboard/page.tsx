@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Card, CardBody, CardHeader, Navbar, NavbarBrand, NavbarContent, NavbarItem, Button as NextUIButton, Tabs as NextUITabs, Tab } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { Card, CardBody, CardHeader, Button as NextUIButton, Tabs as NextUITabs, Tab, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { Button } from '@/src/components/ui/button'
+import { Bookmark, Calendar, LogOut, MapPin, Users } from 'lucide-react'
 import Link from 'next/link'
-import { LogOut, Bookmark, MapPin, Users, Calendar } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { Button } from '@/src/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { supabase } from '@/src/lib/supabase'
 
 interface Booking {

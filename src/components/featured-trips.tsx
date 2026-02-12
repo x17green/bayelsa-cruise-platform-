@@ -1,9 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Clock, MapPin, Star, Users } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, MapPin, Users, Clock } from 'lucide-react'
 
 const trips = [
   {

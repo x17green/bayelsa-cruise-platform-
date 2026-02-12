@@ -10,6 +10,7 @@
 'use client'
 
 import * as React from 'react'
+
 import ButtonWithCompounds, { type ButtonComponent } from '@/src/components/ui/button'
 
 // Use the properly typed Button with compound components

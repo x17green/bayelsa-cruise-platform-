@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Search, CreditCard, CheckCircle, Ship } from 'lucide-react'
+import { CheckCircle, CreditCard, Search, Ship } from 'lucide-react'
 
 const steps = [
   {

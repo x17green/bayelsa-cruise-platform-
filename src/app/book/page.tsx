@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Button, Card, CardBody, CardHeader, Chip, Input, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { Card, CardBody, CardHeader, Button, Input, Navbar, NavbarBrand, NavbarContent, NavbarItem, Chip } from '@nextui-org/react'
-import Link from 'next/link'
-import { ArrowLeft, Clock, MapPin, Users, Fuel, Star } from 'lucide-react'
+import { ArrowLeft, Clock, Fuel, MapPin, Star, Users } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 // Mock trip data
 const mockTrips = [
