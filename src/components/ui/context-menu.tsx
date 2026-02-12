@@ -6,6 +6,51 @@ import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
 
+/**
+ * ContextMenu - Right-click context menu component.
+ *
+ * @description
+ * A menu that appears when right-clicking on an element (contextmenu event).
+ * Built on Radix UI ContextMenu primitive with glassmorphism design.
+ * Commonly used for providing contextual actions like Copy, Paste, Delete, etc.
+ *
+ * Features:
+ * - Glassmorphism design with backdrop blur
+ * - Right-click activation (desktop) or long-press (mobile)
+ * - Keyboard navigation (Arrow keys, Enter, Escape)
+ * - Nested sub-menus with chevron indicators
+ * - Checkbox and radio items with visual indicators
+ * - Keyboard shortcuts display
+ * - Full ARIA support for screen readers
+ *
+ * @example
+ * ```tsx
+ * <ContextMenu>
+ *   <ContextMenuTrigger className=\"flex h-[150px] w-[300px] items-center justify-center rounded-md border border-glass\">
+ *     Right click here
+ *   </ContextMenuTrigger>
+ *   <ContextMenuContent className=\"w-64\">
+ *     <ContextMenuItem inset>
+ *       Back <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+ *     </ContextMenuItem>
+ *     <ContextMenuItem inset disabled>
+ *       Forward <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+ *     </ContextMenuItem>
+ *     <ContextMenuItem inset>
+ *       Reload <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+ *     </ContextMenuItem>
+ *     <ContextMenuSeparator />
+ *     <ContextMenuCheckboxItem checked>
+ *       Show Bookmarks Bar <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
+ *     </ContextMenuCheckboxItem>
+ *     <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
+ *   </ContextMenuContent>
+ * </ContextMenu>
+ * ```
+ *
+ * @see {@link https://www.radix-ui.com/docs/primitives/components/context-menu | Radix UI ContextMenu}
+ */
+
 const ContextMenu = ContextMenuPrimitive.Root
 
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger
@@ -18,6 +63,9 @@ const ContextMenuSub = ContextMenuPrimitive.Sub
 
 const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup
 
+/**
+ * ContextMenuSubTrigger - Trigger for nested sub-menu.
+ */
 const ContextMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubTrigger>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> & {
@@ -27,18 +75,34 @@ const ContextMenuSubTrigger = React.forwardRef<
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      'flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground',
+      // Base styling
+      'flex cursor-default select-none items-center',
+      'rounded-sm px-2 py-1.5',
+      // Typography
+      'text-sm text-fg-DEFAULT',
+      'outline-none',
+      // Focus state
+      'focus:bg-glass-02 focus:text-fg-DEFAULT',
+      // Open state
+      'data-[state=open]:bg-glass-02 data-[state=open]:text-fg-DEFAULT',
+      // Inset option for alignment with checkboxes
       inset && 'pl-8',
+      // Transitions
+      'transition-colors duration-200',
+      'motion-reduce:transition-none',
       className,
     )}
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto h-4 w-4" />
+    <ChevronRight className="ml-auto h-4 w-4 text-fg-muted" />
   </ContextMenuPrimitive.SubTrigger>
 ))
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName
 
+/**
+ * ContextMenuSubContent - Content panel for nested sub-menu.
+ */
 const ContextMenuSubContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubContent>
@@ -46,7 +110,26 @@ const ContextMenuSubContent = React.forwardRef<
   <ContextMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+      // Base styling
+      'z-50 min-w-[8rem] overflow-hidden',
+      'rounded-md p-1',
+      // Glassmorphism
+      'bg-glass-03 backdrop-blur-base',
+      'border border-glass',
+      'shadow-[0_8px_32px_rgba(0,0,0,0.3)]',
+      // Typography
+      'text-fg-DEFAULT',
+      // Animations entry
+      'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+      // Animations - exit
+      'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+      // Animations - directional slide
+      'data-[side=bottom]:slide-in-from-top-2',
+      'data-[side=left]:slide-in-from-right-2',
+      'data-[side=right]:slide-in-from-left-2',
+      'data-[side=top]:slide-in-from-bottom-2',
+      // Reduced motion
+      'motion-reduce:transition-none',
       className,
     )}
     {...props}
@@ -54,6 +137,9 @@ const ContextMenuSubContent = React.forwardRef<
 ))
 ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName
 
+/**
+ * ContextMenuContent - Main content panel for the context menu.
+ */
 const ContextMenuContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Content>
@@ -62,7 +148,27 @@ const ContextMenuContent = React.forwardRef<
     <ContextMenuPrimitive.Content
       ref={ref}
       className={cn(
-        'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+        // Base styling
+        'z-50 min-w-[8rem] overflow-hidden',
+        'rounded-md p-1',
+        // Glassmorphism
+        'bg-glass-03 backdrop-blur-base',
+        'border border-glass',
+        'shadow-[0_8px_32px_rgba(0,0,0,0.3)]',
+        // Typography
+        'text-fg-DEFAULT',
+        // Animations - entry (includes fade-in-80 for initial appearance)
+        'animate-in fade-in-80',
+        'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+        // Animations - exit
+        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+        // Animations - directional slide
+        'data-[side=bottom]:slide-in-from-top-2',
+        'data-[side=left]:slide-in-from-right-2',
+        'data-[side=right]:slide-in-from-left-2',
+        'data-[side=top]:slide-in-from-bottom-2',
+        // Reduced motion
+        'motion-reduce:transition-none',
         className,
       )}
       {...props}
@@ -71,6 +177,9 @@ const ContextMenuContent = React.forwardRef<
 ))
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
 
+/**
+ * ContextMenuItem - Individual context menu item.
+ */
 const ContextMenuItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Item> & {
@@ -80,8 +189,21 @@ const ContextMenuItem = React.forwardRef<
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      // Base styling
+      'relative flex cursor-default select-none items-center',
+      'rounded-sm px-2 py-1.5',
+      // Typography
+      'text-sm text-fg-DEFAULT',
+      'outline-none',
+      // Focus state
+      'focus:bg-glass-02 focus:text-fg-DEFAULT',
+      // Disabled state
+      'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      // Inset option
       inset && 'pl-8',
+      // Transitions
+      'transition-colors duration-200',
+      'motion-reduce:transition-none',
       className,
     )}
     {...props}
@@ -89,6 +211,9 @@ const ContextMenuItem = React.forwardRef<
 ))
 ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName
 
+/**
+ * ContextMenuCheckboxItem - Context menu item with checkbox.
+ */
 const ContextMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.CheckboxItem>
@@ -96,7 +221,19 @@ const ContextMenuCheckboxItem = React.forwardRef<
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      // Base styling
+      'relative flex cursor-default select-none items-center',
+      'rounded-sm py-1.5 pl-8 pr-2',
+      // Typography
+      'text-sm text-fg-DEFAULT',
+      'outline-none',
+      // Focus state
+      'focus:bg-glass-02 focus:text-fg-DEFAULT',
+      // Disabled state
+      'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      // Transitions
+      'transition-colors duration-200',
+      'motion-reduce:transition-none',
       className,
     )}
     checked={checked}
@@ -104,7 +241,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <ContextMenuPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
+        <Check className="h-4 w-4 text-fg-DEFAULT" />
       </ContextMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -113,6 +250,9 @@ const ContextMenuCheckboxItem = React.forwardRef<
 ContextMenuCheckboxItem.displayName =
   ContextMenuPrimitive.CheckboxItem.displayName
 
+/**
+ * ContextMenuRadioItem - Context menu item with radio button.
+ */
 const ContextMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.RadioItem>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.RadioItem>
@@ -120,14 +260,26 @@ const ContextMenuRadioItem = React.forwardRef<
   <ContextMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      // Base styling
+      'relative flex cursor-default select-none items-center',
+      'rounded-sm py-1.5 pl-8 pr-2',
+      // Typography
+      'text-sm text-fg-DEFAULT',
+      'outline-none',
+      // Focus state
+      'focus:bg-glass-02 focus:text-fg-DEFAULT',
+      // Disabled state
+      'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      // Transitions
+      'transition-colors duration-200',
+      'motion-reduce:transition-none',
       className,
     )}
     {...props}
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <ContextMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
+        <Circle className="h-2 w-2 fill-current text-fg-DEFAULT" />
       </ContextMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -135,6 +287,9 @@ const ContextMenuRadioItem = React.forwardRef<
 ))
 ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName
 
+/**
+ * ContextMenuLabel - Label for grouping context menu items.
+ */
 const ContextMenuLabel = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Label> & {
@@ -144,7 +299,7 @@ const ContextMenuLabel = React.forwardRef<
   <ContextMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'px-2 py-1.5 text-sm font-semibold text-foreground',
+      'px-2 py-1.5 text-sm font-semibold text-fg-DEFAULT',
       inset && 'pl-8',
       className,
     )}
@@ -153,18 +308,24 @@ const ContextMenuLabel = React.forwardRef<
 ))
 ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName
 
+/**
+ * ContextMenuSeparator - Visual separator between menu items.
+ */
 const ContextMenuSeparator = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Separator>
 >(({ className, ...props }, ref) => (
   <ContextMenuPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-border', className)}
+    className={cn('-mx-1 my-1 h-px bg-glass-01', className)}
     {...props}
   />
 ))
 ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName
 
+/**
+ * ContextMenuShortcut - Keyboard shortcut display.
+ */
 const ContextMenuShortcut = ({
   className,
   ...props
@@ -172,7 +333,7 @@ const ContextMenuShortcut = ({
   return (
     <span
       className={cn(
-        'ml-auto text-xs tracking-widest text-muted-foreground',
+        'ml-auto text-xs tracking-widest text-fg-muted',
         className,
       )}
       {...props}
