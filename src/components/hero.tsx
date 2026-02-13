@@ -27,18 +27,18 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4 md:px-8 overflow-hidden">
       {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-50)] via-[var(--bg-100)] to-[var(--bg-900)]">
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-50)] via-[var(--bg-100)] to-bg-900">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.4 }}
           transition={{ duration: 2 }}
-          className="absolute top-20 left-10 w-72 h-72 bg-[var(--accent-600)]/20 rounded-full filter blur-3xl"
+          className="absolute top-20 left-10 w-72 h-72 bg-accent-600/20 rounded-full filter blur-3xl"
         />
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.3 }}
           transition={{ duration: 2, delay: 0.5 }}
-          className="absolute bottom-20 right-10 w-72 h-72 bg-[var(--accent-500)]/20 rounded-full filter blur-3xl"
+          className="absolute bottom-20 right-10 w-72 h-72 bg-accent-500/20 rounded-full filter blur-3xl"
         />
       </div>
 
@@ -51,11 +51,11 @@ export default function Hero() {
       >
         <motion.h1
           variants={itemVariants}
-          className="text-5xl md:text-7xl font-bold mb-6 text-[var(--fg)]"
+          className="text-5xl md:text-7xl font-bold mb-6 text-fg"
         >
           <span>Sail Across</span>
           <br />
-          <span className="bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-accent-600 to-accent-400 bg-clip-text text-transparent">
             Bayelsa Waterways
           </span>
         </motion.h1>
@@ -70,43 +70,43 @@ export default function Hero() {
         {/* Search Section */}
         <motion.div
           variants={itemVariants}
-          className="glass rounded-2xl shadow-2xl p-6 md:p-8 border border-[var(--border)] max-w-4xl mx-auto"
+          className="glass rounded-2xl shadow-2xl p-6 md:p-8 border border-border max-w-4xl mx-auto"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
-              <label className="text-sm font-semibold text-[var(--fg)] mb-2 block">From</label>
-              <div className="flex items-center border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-100)]/50">
-                <span className="text-[var(--accent-500)] mr-2">📍</span>
+              <label className="text-sm font-semibold text-fg mb-2 block">From</label>
+                  <div className="flex items-center border border-border rounded-lg px-3 py-2 bg-bg-600/50">
+                <span className="text-accent-500 mr-2">📍</span>
                 <input
                   type="text"
                   placeholder="Departure location"
-                  className="w-full bg-transparent outline-none text-[var(--fg)] placeholder:text-[var(--fg-muted)]"
+                  className="w-full bg-transparent outline-none text-fg placeholder:text-fg-muted"
                 />
               </div>
             </div>
             <div>
-              <label className="text-sm font-semibold text-[var(--fg)] mb-2 block">To</label>
-              <div className="flex items-center border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-100)]/50">
-                <span className="text-[var(--accent-500)] mr-2">📍</span>
+              <label className="text-sm font-semibold text-fg mb-2 block">To</label>
+              <div className="flex items-center border border-border rounded-lg px-3 py-2 bg-bg-600/50">
+                <span className="text-accent-500 mr-2">📍</span>
                 <input
                   type="text"
                   placeholder="Arrival location"
-                  className="w-full bg-transparent outline-none text-[var(--fg)] placeholder:text-[var(--fg-muted)]"
+                  className="w-full bg-transparent outline-none text-fg placeholder:text-fg-muted"
                 />
               </div>
             </div>
             <div>
-              <label className="text-sm font-semibold text-[var(--fg)] mb-2 block">Date</label>
+              <label className="text-sm font-semibold text-fg mb-2 block">Date</label>
               <input
                 type="date"
-                className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-100)]/50 text-[var(--fg)] outline-none focus:border-[var(--accent-500)] transition-colors"
+                className="w-full border border-border rounded-lg px-3 py-2 bg-bg-600/50 text-fg outline-none focus:border-accent-500 transition-colors"
               />
             </div>
           </div>
 
           <Link
             href="/search"
-            className="inline-block w-full bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white text-lg font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all text-center"
+            className="inline-block w-full bg-gradient-to-r from-accent-600 to-accent-400 text-white text-lg font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all text-center"
           >
             Search Trips
           </Link>
@@ -118,16 +118,16 @@ export default function Hero() {
           className="flex flex-wrap justify-center gap-8 mt-16 text-center"
         >
           <div>
-            <div className="text-3xl font-bold text-[var(--accent-500)]">10K+</div>
-            <div className="text-[var(--fg-muted)]">Happy Travelers</div>
+            <div className="text-3xl font-bold text-accent-500">10K+</div>
+            <div className="text-fg-muted">Happy Travelers</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-[var(--accent-500)]">500+</div>
-            <div className="text-[var(--fg-muted)]">Daily Trips</div>
+            <div className="text-3xl font-bold text-accent-500">500+</div>
+            <div className="text-fg-muted">Daily Trips</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-[var(--accent-500)]">100%</div>
-            <div className="text-[var(--fg-muted)]">Safe & Verified</div>
+            <div className="text-3xl font-bold text-accent-500">100%</div>
+            <div className="text-fg-muted">Safe & Verified</div>
           </div>
         </motion.div>
       </motion.div>

@@ -68,7 +68,7 @@ const radioGroupItemVariants = cva(
     'hover:bg-glass-02 hover:border-accent-400/50',
     'data-[state=checked]:bg-glass-02',
     'data-[state=checked]:border-accent-400',
-    'data-[state=checked]:shadow-[0_0_12px_rgba(109,167,200,0.15)]',
+    'data-[state=checked]:shadow-md',
     
     // Disabled
     'disabled:cursor-not-allowed',
@@ -101,13 +101,13 @@ const radioGroupItemVariants = cva(
           'border-border-default',
           'data-[state=checked]:border-success-500',
           'data-[state=checked]:bg-success-900/20',
-          'data-[state=checked]:shadow-[0_0_12px_rgba(34,179,92,0.15)]',
+          'data-[state=checked]:shadow-md',
         ],
         error: [
           'border-border-default',
           'data-[state=checked]:border-error-500',
           'data-[state=checked]:bg-error-900/20',
-          'data-[state=checked]:shadow-[0_0_12px_rgba(217,41,41,0.15)]',
+          'data-[state=checked]:shadow-md',
         ],
       },
       size: {

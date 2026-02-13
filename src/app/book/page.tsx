@@ -98,15 +98,15 @@ export default function Book() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[var(--bg-100)] to-[var(--bg-900)]">
+    <main className="min-h-screen bg-gradient-to-b from-bg-100 to-bg-900">
       {/* Navigation */}
-      <Navbar className="glass-subtle border-b border-[var(--border)]">
+      <Navbar className="glass-subtle border-b border-border">
         <NavbarBrand>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 flex items-center justify-center">
               <span className="text-white font-bold text-lg">⛵</span>
             </div>
-            <p className="font-bold text-xl text-[var(--accent-500)]">Blue Waters</p>
+            <p className="font-bold text-xl text-accent-500">Blue Waters</p>
           </Link>
         </NavbarBrand>
         <NavbarContent justify="end">
@@ -114,7 +114,7 @@ export default function Book() {
             <Button
               href="/login"
               variant="ghost"
-              className="text-[var(--accent-500)]"
+              className="text-accent-500"
             >
               Sign In
             </Button>
@@ -133,13 +133,13 @@ export default function Book() {
           <Button
             href="/"
             variant="ghost"
-            className="mb-4 text-[var(--accent-500)] flex items-center gap-2"
+            className="mb-4 text-accent-500 flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Button>
-          <h1 className="text-4xl font-bold text-[var(--accent-500)] mb-2">Book Your Journey</h1>
-          <p className="text-lg text-[var(--fg-muted)]">
+          <h1 className="text-4xl font-bold text-accent-500 mb-2">Book Your Journey</h1>
+          <p className="text-lg text-fg-muted">
             Browse and book from our available boat trips
           </p>
         </motion.div>
@@ -149,7 +149,7 @@ export default function Book() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="glass rounded-2xl p-6 shadow-lg mb-8 border border-[var(--border)]"
+          className="glass rounded-2xl p-6 shadow-lg mb-8 border border-border"
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Input
@@ -170,7 +170,7 @@ export default function Book() {
               placeholder="Search by route..."
               type="text"
             />
-            <Button className="bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white font-semibold">
+            <Button className="bg-gradient-to-r from-accent-600 to-accent-400 text-white font-semibold">
               Search
             </Button>
           </div>
@@ -180,7 +180,7 @@ export default function Book() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Trips List */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold text-[var(--accent-500)] mb-6">
+            <h2 className="text-2xl font-bold text-accent-500 mb-6">
               Available Trips ({filteredTrips.length})
             </h2>
 
@@ -197,11 +197,11 @@ export default function Book() {
                   onClick={() => setSelectedTrip(trip)}
                   className={`cursor-pointer transition-all duration-300 ${
                     selectedTrip?.id === trip.id
-                      ? 'ring-2 ring-[var(--accent-500)] shadow-lg'
+                      ? 'ring-2 ring-accent-500 shadow-lg'
                       : 'hover:shadow-lg'
                   }`}
                 >
-                  <Card className="border border-[var(--border)]">
+                  <Card className="border border-border">
                     <CardBody className="p-0">
                       <div className="flex flex-col md:flex-row h-full">
                         {/* Image */}
@@ -217,35 +217,35 @@ export default function Book() {
                         {/* Content */}
                         <div className="p-6 flex-1 flex flex-col justify-between">
                           <div>
-                            <h3 className="text-lg font-bold text-[var(--accent-500)] mb-2">
+                            <h3 className="text-lg font-bold text-accent-500 mb-2">
                               {trip.name}
                             </h3>
                             <div className="space-y-3 mb-4">
-                              <div className="flex items-center gap-2 text-[var(--fg-muted)]">
-                                <MapPin className="w-4 h-4 text-[var(--accent-500)]" />
+                              <div className="flex items-center gap-2 text-fg-muted">
+                                <MapPin className="w-4 h-4 text-accent-500" />
                                 <span className="font-semibold">{trip.route}</span>
                               </div>
-                              <div className="flex gap-6 text-sm text-[var(--fg-muted)]">
+                              <div className="flex gap-6 text-sm text-fg-muted">
                                 <div className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4 text-[var(--accent-500)]" />
+                                  <Clock className="w-4 h-4 text-accent-500" />
                                   {trip.departure} - {trip.arrival}
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <Users className="w-4 h-4 text-[var(--accent-500)]" />
+                                  <Users className="w-4 h-4 text-accent-500" />
                                   {trip.capacity} seats
                                 </div>
                               </div>
                             </div>
                             <div className="flex flex-wrap gap-2 mb-4">
                               {trip.amenities.map((amenity, idx) => (
-                                <Chip key={idx} size="sm" variant="flat" className="bg-[var(--accent-500)]/10 text-[var(--accent-500)]">
+                                <Chip key={idx} size="sm" variant="flat" className="bg-accent-500/10 text-accent-500">
                                   {amenity}
                                 </Chip>
                               ))}
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                          <div className="flex items-center justify-between pt-4 border-t border-border">
                             <div className="flex items-center gap-2">
                               <div className="flex">
                                 {[...Array(5)].map((_, i) => (
@@ -253,20 +253,20 @@ export default function Book() {
                                     key={i}
                                     className={`w-4 h-4 ${
                                       i < Math.floor(trip.rating)
-                                        ? 'fill-[var(--accent-500)] text-[var(--accent-500)]'
-                                        : 'text-[var(--fg-dim)]'
+                                        ? 'fill-accent-500 text-accent-500'
+                                        : 'text-fg-dim'
                                     }`}
                                   />
                                 ))}
                               </div>
-                              <span className="text-sm font-semibold text-[var(--fg)]">
+                              <span className="text-sm font-semibold text-fg">
                                 {trip.rating}
                               </span>
-                              <span className="text-xs text-[var(--fg-muted)]">
+                              <span className="text-xs text-fg-muted">
                                 ({trip.reviews})
                               </span>
                             </div>
-                            <p className="text-2xl font-bold text-[var(--accent-500)]">
+                            <p className="text-2xl font-bold text-accent-500">
                               ₦{trip.price.toLocaleString()}
                             </p>
                           </div>
@@ -288,31 +288,31 @@ export default function Book() {
               className="sticky top-8"
             >
               {selectedTrip ? (
-                <Card className="glass-subtle border-2 border-[var(--accent-500)] shadow-lg">
-                  <CardHeader className="flex flex-col items-start px-6 py-4 border-b border-[var(--border)]">
-                    <h3 className="text-xl font-bold text-[var(--accent-500)]">Booking Summary</h3>
+                <Card className="glass-subtle border-2 border-accent-500 shadow-lg">
+                  <CardHeader className="flex flex-col items-start px-6 py-4 border-b border-border">
+                    <h3 className="text-xl font-bold text-accent-500">Booking Summary</h3>
                   </CardHeader>
                   <CardBody className="p-6 space-y-4">
                     <div>
-                      <p className="text-sm text-[var(--fg-muted)] mb-1">Trip</p>
-                      <p className="font-bold text-[var(--fg)]">{selectedTrip.name}</p>
+                      <p className="text-sm text-fg-muted mb-1">Trip</p>
+                      <p className="font-bold text-fg">{selectedTrip.name}</p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-[var(--fg-muted)] mb-1">Route</p>
-                      <p className="font-semibold text-[var(--accent-500)]">{selectedTrip.route}</p>
+                      <p className="text-sm text-fg-muted mb-1">Route</p>
+                      <p className="font-semibold text-accent-500">{selectedTrip.route}</p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-[var(--fg-muted)] mb-1">Departure</p>
-                      <p className="font-semibold text-[var(--fg)]">
+                      <p className="text-sm text-fg-muted mb-1">Departure</p>
+                      <p className="font-semibold text-fg">
                         {selectedTrip.departure} - {selectedTrip.arrival}
                       </p>
                     </div>
 
-                    <div className="border-t border-[var(--border)] pt-4">
+                    <div className="border-t border-border pt-4">
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-[var(--fg)]">Passengers</span>
+                        <span className="text-fg">Passengers</span>
                         <div className="flex items-center gap-2">
                           <Button
                             isIconOnly
@@ -334,21 +334,21 @@ export default function Book() {
                         </div>
                       </div>
 
-                      <div className="space-y-2 pb-4 border-b border-[var(--border)]">
+                      <div className="space-y-2 pb-4 border-b border-border">
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Price per person</span>
+                          <span className="text-fg-muted">Price per person</span>
                           <span className="font-semibold">
                             ₦{selectedTrip.price.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Subtotal ({passengers}x)</span>
+                          <span className="text-fg-muted">Subtotal ({passengers}x)</span>
                           <span className="font-semibold">
                             ₦{(selectedTrip.price * passengers).toLocaleString()}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Service Fee</span>
+                          <span className="text-fg-muted">Service Fee</span>
                           <span className="font-semibold">
                             ₦{Math.round(selectedTrip.price * passengers * 0.05).toLocaleString()}
                           </span>
@@ -356,8 +356,8 @@ export default function Book() {
                       </div>
 
                       <div className="flex justify-between pt-4">
-                        <span className="font-bold text-lg text-[var(--accent-500)]">Total</span>
-                        <span className="font-bold text-2xl text-[var(--accent-500)]">
+                        <span className="font-bold text-lg text-accent-500">Total</span>
+                        <span className="font-bold text-2xl text-accent-500">
                           ₦{Math.round(selectedTrip.price * passengers * 1.05).toLocaleString()}
                         </span>
                       </div>
@@ -365,7 +365,7 @@ export default function Book() {
 
                     <Button
                       href={`/checkout?trip=${selectedTrip.id}&passengers=${passengers}`}
-                      className="w-full bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white font-bold text-lg py-3"
+                      className="w-full bg-gradient-to-r from-accent-600 to-accent-400 text-white font-bold text-lg py-3"
                       size="lg"
                     >
                       Proceed to Checkout
@@ -373,7 +373,7 @@ export default function Book() {
 
                     <Button
                       variant="bordered"
-                      className="w-full text-[var(--accent-500)] border-[var(--accent-500)]"
+                      className="w-full text-accent-500 border-accent-500"
                       onClick={() => setSelectedTrip(null)}
                     >
                       Clear Selection
@@ -381,10 +381,10 @@ export default function Book() {
                   </CardBody>
                 </Card>
               ) : (
-                <Card className="glass-subtle border border-[var(--border)]">
+                <Card className="glass-subtle border border-border">
                   <CardBody className="p-6 text-center">
-                    <Fuel className="w-16 h-16 text-[var(--accent-500)]/20 mx-auto mb-4" />
-                    <p className="text-[var(--fg-muted)] text-lg">
+                    <Fuel className="w-16 h-16 text-accent-500/20 mx-auto mb-4" />
+                    <p className="text-fg-muted text-lg">
                       Select a trip to see booking details
                     </p>
                   </CardBody>

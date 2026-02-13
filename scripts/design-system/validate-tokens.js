@@ -33,6 +33,7 @@ const ALLOWED_FILES = [
   'globals.css',
   'tokens.ts',
   'design-system/tokens.ts',
+  'manifest-pdf.tsx', // PDF generation requires hex values
 ];
 
 const ALLOWED_PATTERNS = [

@@ -45,29 +45,29 @@ export default function LogIn() {
         >
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] mb-6 ring-4 ring-[var(--accent-900)] ring-offset-4 ring-offset-[var(--bg-900)]">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 mb-6 ring-4 ring-accent-900 ring-offset-4 ring-offset-bg-900">
               <Waves className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-[var(--fg)] mb-3">
+            <h1 className="text-4xl md:text-5xl font-bold text-fg mb-3">
               Welcome Back
             </h1>
-            <p className="text-lg text-[var(--fg-muted)]">
+            <p className="text-lg text-fg-muted">
               Sign in to your Blue Waters account
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="glass border border-[var(--border-default)] rounded-[var(--radius-lg)] p-8 shadow-[var(--shadow-medium)]">
+          <div className="glass border border-border-default rounded-lg p-8 shadow-[var(--shadow-medium)]">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Error Alert */}
               {error && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="glass-subtle border border-[var(--error-600)] rounded-[var(--radius-md)] p-4 flex items-start gap-3"
+                  className="glass-subtle border border-error-600 rounded-md p-4 flex items-start gap-3"
                 >
-                  <AlertCircle className="w-5 h-5 text-[var(--error-500)] flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-[var(--error-300)] leading-relaxed">{error}</p>
+                  <AlertCircle className="w-5 h-5 text-error-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-error-300 leading-relaxed">{error}</p>
                 </motion.div>
               )}
 
@@ -75,20 +75,20 @@ export default function LogIn() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-semibold text-[var(--fg)] mb-2"
+                  className="block text-sm font-semibold text-fg mb-2"
                 >
                   Email Address
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <Mail className="w-5 h-5 text-[var(--accent-500)]" />
+                    <Mail className="w-5 h-5 text-accent-500" />
                   </div>
                   <input
                     id="email"
                     name="email"
                     type="email"
                     placeholder="you@example.com"
-                    className="w-full pl-12 pr-4 py-3 glass-subtle border border-[var(--border-default)] rounded-[var(--radius-md)] bg-[var(--glass-01)] text-[var(--fg)] placeholder:text-[var(--fg-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-500)] focus:border-transparent transition-all duration-200"
+                    className="w-full pl-12 pr-4 py-3 glass-subtle border border-border-default rounded-md bg-glass-01 text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all duration-200"
                     required
                     autoComplete="email"
                   />
@@ -99,20 +99,20 @@ export default function LogIn() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-semibold text-[var(--fg)] mb-2"
+                  className="block text-sm font-semibold text-fg mb-2"
                 >
                   Password
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <Lock className="w-5 h-5 text-[var(--accent-500)]" />
+                    <Lock className="w-5 h-5 text-accent-500" />
                   </div>
                   <input
                     id="password"
                     name="password"
                     type="password"
                     placeholder="Enter your password"
-                    className="w-full pl-12 pr-4 py-3 glass-subtle border border-[var(--border-default)] rounded-[var(--radius-md)] bg-[var(--glass-01)] text-[var(--fg)] placeholder:text-[var(--fg-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-500)] focus:border-transparent transition-all duration-200"
+                    className="w-full pl-12 pr-4 py-3 glass-subtle border border-border-default rounded-md bg-glass-01 text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all duration-200"
                     required
                     autoComplete="current-password"
                   />
@@ -126,15 +126,15 @@ export default function LogIn() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-[var(--border-default)] bg-[var(--glass-01)] text-[var(--accent-500)] focus:ring-2 focus:ring-[var(--accent-500)] focus:ring-offset-2 focus:ring-offset-[var(--bg-900)] transition-all duration-200"
+                    className="w-4 h-4 rounded border-border-default bg-glass-01 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-bg-900 transition-all duration-200"
                   />
-                  <span className="text-sm text-[var(--fg-muted)] group-hover:text-[var(--fg)] transition-colors duration-200">
+                  <span className="text-sm text-fg-muted group-hover:text-fg transition-colors duration-200">
                     Remember me
                   </span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-[var(--accent-400)] hover:text-[var(--accent-300)] font-semibold transition-colors duration-200"
+                  className="text-sm text-accent-400 hover:text-accent-300 font-semibold transition-colors duration-200"
                 >
                   Forgot password?
                 </Link>
@@ -144,7 +144,7 @@ export default function LogIn() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-[var(--accent-600)] hover:bg-[var(--accent-500)] text-white font-semibold py-3 rounded-[var(--radius-md)] shadow-lg shadow-[var(--accent-900)]/30 border border-[var(--accent-700)] transition-all duration-200 hover:shadow-xl hover:shadow-[var(--accent-900)]/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-accent-600 hover:bg-accent-500 text-white font-semibold py-3 rounded-md shadow-lg shadow-accent-900/30 border border-accent-700 transition-all duration-200 hover:shadow-xl hover:shadow-accent-900/40 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="lg"
               >
                 {isPending ? (
@@ -178,12 +178,12 @@ export default function LogIn() {
             </form>
 
             {/* Sign Up Link */}
-            <div className="mt-8 pt-6 border-t border-[var(--border-subtle)]">
-              <p className="text-center text-sm text-[var(--fg-muted)]">
+            <div className="mt-8 pt-6 border-t border-border-subtle">
+              <p className="text-center text-sm text-fg-muted">
                 Don't have an account?{' '}
                 <Link
                   href="/signup"
-                  className="text-[var(--accent-400)] hover:text-[var(--accent-300)] font-semibold transition-colors duration-200"
+                  className="text-accent-400 hover:text-accent-300 font-semibold transition-colors duration-200"
                 >
                   Create one now
                 </Link>
@@ -191,20 +191,20 @@ export default function LogIn() {
             </div>
 
             {/* Demo Credentials */}
-            <div className="mt-6 glass-subtle border border-[var(--accent-900)] rounded-[var(--radius-md)] p-4">
-              <p className="text-xs font-semibold text-[var(--accent-400)] mb-2 uppercase tracking-wide">
+            <div className="mt-6 glass-subtle border border-accent-900 rounded-md p-4">
+              <p className="text-xs font-semibold text-accent-400 mb-2 uppercase tracking-wide">
                 Demo Credentials
               </p>
               <div className="space-y-1">
-                <p className="text-xs text-[var(--fg-muted)]">
+                <p className="text-xs text-fg-muted">
                   Email:{' '}
-                  <span className="font-mono text-[var(--accent-300)] bg-[var(--glass-01)] px-2 py-0.5 rounded">
+                  <span className="font-mono text-accent-300 bg-glass-01 px-2 py-0.5 rounded">
                     demo@bluewaters.com
                   </span>
                 </p>
-                <p className="text-xs text-[var(--fg-muted)]">
+                <p className="text-xs text-fg-muted">
                   Password:{' '}
-                  <span className="font-mono text-[var(--accent-300)] bg-[var(--glass-01)] px-2 py-0.5 rounded">
+                  <span className="font-mono text-accent-300 bg-glass-01 px-2 py-0.5 rounded">
                     Demo@123456
                   </span>
                 </p>

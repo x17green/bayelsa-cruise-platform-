@@ -27,19 +27,19 @@ function UserDashboardHeader() {
   const isActive = (href: string) => pathname === href
 
   return (
-    <header className="sticky top-0 z-[var(--z-header)] glass backdrop-blur-[var(--blur-strong)] border-b border-[var(--border-subtle)]">
+    <header className="sticky top-0 z-[800] glass backdrop-blur-xl border-b border-border-subtle">
       <nav className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <div className="relative">
-            <Waves className="w-8 h-8 text-[var(--accent-400)] transition-transform duration-300 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-[var(--accent-500)] opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30" />
+            <Waves className="w-8 h-8 text-accent-400 transition-transform duration-300 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-accent-500 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-[var(--fg)] tracking-tight">
+            <h1 className="text-lg font-semibold text-fg tracking-tight">
               Blue Waters
             </h1>
-            <p className="text-xs text-[var(--fg-muted)] -mt-1">
+            <p className="text-xs text-fg-muted -mt-1">
               My Dashboard
             </p>
           </div>
@@ -56,8 +56,8 @@ function UserDashboardHeader() {
                 transition-all duration-250
                 ${
                   isActive(item.href)
-                    ? 'text-[var(--accent-300)]'
-                    : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
+                    ? 'text-accent-300'
+                    : 'text-fg-muted hover:text-fg'
                 }
               `}
             >
@@ -81,10 +81,10 @@ function UserDashboardHeader() {
         <div className="flex items-center gap-3">
           {/* User Info */}
           <div className="hidden sm:block text-right">
-            <p className="text-sm font-medium text-[var(--fg)]">
+            <p className="text-sm font-medium text-fg">
               {appUser?.fullName || 'Guest User'}
             </p>
-            <p className="text-xs text-[var(--fg-subtle)] capitalize">
+            <p className="text-xs text-fg-subtle capitalize">
               {appUser?.role || 'customer'}
             </p>
           </div>
@@ -120,18 +120,18 @@ function UserDashboardFooter() {
   ]
 
   return (
-    <footer className="glass border-t border-[var(--border-subtle)] mt-auto">
+    <footer className="glass border-t border-border-subtle mt-auto">
       <div className="container mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Waves className="w-6 h-6 text-[var(--accent-400)]" />
-              <span className="font-semibold text-[var(--fg)]">
+              <Waves className="w-6 h-6 text-accent-400" />
+              <span className="font-semibold text-fg">
                 Blue Waters
               </span>
             </div>
-            <p className="text-sm text-[var(--fg-muted)] max-w-xs">
+            <p className="text-sm text-fg-muted max-w-xs">
               Safe, reliable boat booking across Bayelsa waterways. 
               Your journey, our priority.
             </p>
@@ -139,7 +139,7 @@ function UserDashboardFooter() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-semibold text-[var(--fg)] mb-3">
+            <h3 className="text-sm font-semibold text-fg mb-3">
               Quick Links
             </h3>
             <ul className="space-y-2">
@@ -147,7 +147,7 @@ function UserDashboardFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--fg-muted)] hover:text-[var(--accent-400)] transition-colors duration-200"
+                    className="text-sm text-fg-muted hover:text-accent-400 transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -158,10 +158,10 @@ function UserDashboardFooter() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-sm font-semibold text-[var(--fg)] mb-3">
+            <h3 className="text-sm font-semibold text-fg mb-3">
               Support
             </h3>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <ul className="space-y-2 text-sm text-fg-muted">
               <li>Email: support@bluewaters.gov.ng</li>
               <li>Phone: +234 800 BLUE WATER</li>
               <li>Hours: 24/7 Customer Service</li>
@@ -170,7 +170,7 @@ function UserDashboardFooter() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-6 border-t border-[var(--border-subtle)] text-center text-sm text-[var(--fg-subtle)]">
+        <div className="mt-8 pt-6 border-t border-border-subtle text-center text-sm text-fg-subtle">
           <p>
             © {currentYear} Blue Waters - Ministry of Blue Waters, Bayelsa State. 
             All rights reserved.
@@ -193,7 +193,7 @@ function UserDashboardFooter() {
  */
 export default function UserDashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-950)]">
+    <div className="min-h-screen flex flex-col bg-bg-950">
       <UserDashboardHeader />
       
       <main className="flex-1 container mx-auto px-4 sm:px-6 py-8">

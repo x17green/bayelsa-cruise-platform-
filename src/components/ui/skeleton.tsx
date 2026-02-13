@@ -23,7 +23,6 @@ const skeletonVariants = cva(
         shimmer: [
           'bg-gradient-to-r',
           'from-bg-800/50 via-bg-700/50 to-bg-800/50',
-          'bg-[length:200%_100%]',
           'animate-shimmer',
         ],
       },
@@ -40,10 +39,14 @@ export interface SkeletonProps
   variant?: 'default' | 'glass' | 'shimmer'
 }
 
-function Skeleton({ className, variant = 'default', ...props }: SkeletonProps) {
+function Skeleton({ className, variant = 'default', style, ...props }: SkeletonProps) {
   return (
     <div
       className={cn(skeletonVariants({ variant }), className)}
+      style={{
+        ...(variant === 'shimmer' && { backgroundSize: '200% 100%' }),
+        ...style,
+      }}
       {...props}
     />
   )

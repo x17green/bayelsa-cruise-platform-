@@ -50,21 +50,21 @@ function PublicHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-[var(--z-header)] glass backdrop-blur-[var(--blur-strong)] border-b border-[var(--border-subtle)]">
+    <header className="sticky top-0 z-[var(--z-header)] glass backdrop-blur-[var(--blur-strong)] border-b border-border-subtle">
       <nav className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center ring-2 ring-[var(--accent-700)] ring-offset-2 ring-offset-[var(--bg-900)] transition-transform duration-300 group-hover:scale-105">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 flex items-center justify-center ring-2 ring-accent-700 ring-offset-2 ring-offset-bg-900 transition-transform duration-300 group-hover:scale-105">
               <Waves className="w-5 h-5 text-white" />
             </div>
-            <div className="absolute inset-0 bg-[var(--accent-500)] opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30" />
+            <div className="absolute inset-0 bg-accent-500 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30" />
           </div>
           <div>
-            <p className="font-bold text-xl text-[var(--fg)] tracking-tight">
+            <p className="font-bold text-xl text-fg tracking-tight">
               Blue Waters
             </p>
-            <p className="text-xs text-[var(--fg-muted)] -mt-0.5">
+            <p className="text-xs text-fg-muted -mt-0.5">
               Bayelsa Boat Booking
             </p>
           </div>
@@ -78,8 +78,8 @@ function PublicHeader() {
               href={link.href}
               className={`text-sm font-medium transition-colors duration-200 ${
                 isActive(link.href)
-                  ? 'text-[var(--accent-400)]'
-                  : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
+                  ? 'text-accent-400'
+                  : 'text-fg-muted hover:text-fg'
               }`}
             >
               {link.label}
@@ -92,7 +92,7 @@ function PublicHeader() {
           {user ? (
             <Button
               onClick={handleDashboardClick}
-              className="glass-strong border border-[var(--accent-700)] text-[var(--accent-300)] hover:text-[var(--accent-200)] hover:border-[var(--accent-600)] transition-all duration-200"
+              className="glass-strong border border-accent-700 text-accent-300 hover:text-accent-200 hover:border-accent-600 transition-all duration-200"
             >
               <Anchor className="w-4 h-4 mr-2" />
               {appUser?.role === 'operator' || appUser?.role === 'staff' || appUser?.role === 'admin' 
@@ -104,14 +104,14 @@ function PublicHeader() {
               <Link href="/login">
                 <Button 
                   variant="ghost"
-                  className="text-[var(--accent-400)] hover:text-[var(--accent-300)] hover:bg-[var(--glass-01)]"
+                  className="text-accent-400 hover:text-accent-300 hover:bg-glass-01"
                 >
                   <LogIn className="w-4 h-4 mr-2" />
                   Sign In
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button className="bg-[var(--accent-600)] text-white hover:bg-[var(--accent-500)] border border-[var(--accent-700)] shadow-lg shadow-[var(--accent-900)]/30 transition-all duration-200">
+                <Button className="bg-accent-600 text-white hover:bg-accent-500 border border-accent-700 shadow-lg shadow-accent-900/30 transition-all duration-200">
                   <UserPlus className="w-4 h-4 mr-2" />
                   Sign Up
                 </Button>
@@ -153,34 +153,34 @@ function PublicFooter() {
   }
 
   return (
-    <footer className="glass border-t border-[var(--border-subtle)] mt-20">
+    <footer className="glass border-t border-border-subtle mt-20">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Brand & Description */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 flex items-center justify-center">
                 <Waves className="w-5 h-5 text-white" />
               </div>
-              <p className="font-bold text-xl text-[var(--fg)]">Blue Waters</p>
+              <p className="font-bold text-xl text-fg">Blue Waters</p>
             </div>
-            <p className="text-sm text-[var(--fg-muted)] mb-4 leading-relaxed">
+            <p className="text-sm text-fg-muted mb-4 leading-relaxed">
               Safe, reliable, and affordable boat booking across Bayelsa waterways. 
               Experience the beauty of water travel.
             </p>
             
             {/* Contact Info */}
             <div className="space-y-2 text-sm">
-              <div className="flex items-start gap-2 text-[var(--fg-muted)]">
-                <MapPin className="w-4 h-4 mt-0.5 text-[var(--accent-500)]" />
+              <div className="flex items-start gap-2 text-fg-muted">
+                <MapPin className="w-4 h-4 mt-0.5 text-accent-500" />
                 <span>Ministry of Blue Waters<br />Yenagoa, Bayelsa State</span>
               </div>
-              <div className="flex items-center gap-2 text-[var(--fg-muted)]">
-                <Phone className="w-4 h-4 text-[var(--accent-500)]" />
+              <div className="flex items-center gap-2 text-fg-muted">
+                <Phone className="w-4 h-4 text-accent-500" />
                 <span>+234 800 BLUE WATERS</span>
               </div>
-              <div className="flex items-center gap-2 text-[var(--fg-muted)]">
-                <Mail className="w-4 h-4 text-[var(--accent-500)]" />
+              <div className="flex items-center gap-2 text-fg-muted">
+                <Mail className="w-4 h-4 text-accent-500" />
                 <span>support@bluewaters.gov.ng</span>
               </div>
             </div>
@@ -188,13 +188,13 @@ function PublicFooter() {
 
           {/* Company Links */}
           <div>
-            <h3 className="font-semibold text-[var(--fg)] mb-4">Company</h3>
+            <h3 className="font-semibold text-fg mb-4">Company</h3>
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--fg-muted)] hover:text-[var(--accent-400)] transition-colors duration-200"
+                    className="text-sm text-fg-muted hover:text-accent-400 transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -205,13 +205,13 @@ function PublicFooter() {
 
           {/* Support Links */}
           <div>
-            <h3 className="font-semibold text-[var(--fg)] mb-4">Support</h3>
+            <h3 className="font-semibold text-fg mb-4">Support</h3>
             <ul className="space-y-2">
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--fg-muted)] hover:text-[var(--accent-400)] transition-colors duration-200"
+                    className="text-sm text-fg-muted hover:text-accent-400 transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -222,13 +222,13 @@ function PublicFooter() {
 
           {/* Services Links */}
           <div>
-            <h3 className="font-semibold text-[var(--fg)] mb-4">Services</h3>
+            <h3 className="font-semibold text-fg mb-4">Services</h3>
             <ul className="space-y-2">
               {footerLinks.services.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--fg-muted)] hover:text-[var(--accent-400)] transition-colors duration-200"
+                    className="text-sm text-fg-muted hover:text-accent-400 transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -239,8 +239,8 @@ function PublicFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[var(--border-subtle)] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-[var(--fg-muted)]">
+        <div className="pt-8 border-t border-border-subtle flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-fg-muted">
             © {currentYear} Blue Waters. Ministry of Blue Waters, Bayelsa State. All rights reserved.
           </p>
 
@@ -252,7 +252,7 @@ function PublicFooter() {
               rel="noopener noreferrer"
               className="glass-subtle p-2 rounded-full hover:glass-strong transition-all duration-200 group"
             >
-              <Facebook className="w-5 h-5 text-[var(--fg-muted)] group-hover:text-[var(--accent-400)] transition-colors duration-200" />
+              <Facebook className="w-5 h-5 text-fg-muted group-hover:text-accent-400 transition-colors duration-200" />
             </Link>
             <Link
               href="https://twitter.com"
@@ -260,7 +260,7 @@ function PublicFooter() {
               rel="noopener noreferrer"
               className="glass-subtle p-2 rounded-full hover:glass-strong transition-all duration-200 group"
             >
-              <Twitter className="w-5 h-5 text-[var(--fg-muted)] group-hover:text-[var(--accent-400)] transition-colors duration-200" />
+              <Twitter className="w-5 h-5 text-fg-muted group-hover:text-accent-400 transition-colors duration-200" />
             </Link>
             <Link
               href="https://instagram.com"
@@ -268,7 +268,7 @@ function PublicFooter() {
               rel="noopener noreferrer"
               className="glass-subtle p-2 rounded-full hover:glass-strong transition-all duration-200 group"
             >
-              <Instagram className="w-5 h-5 text-[var(--fg-muted)] group-hover:text-[var(--accent-400)] transition-colors duration-200" />
+              <Instagram className="w-5 h-5 text-fg-muted group-hover:text-accent-400 transition-colors duration-200" />
             </Link>
           </div>
         </div>
@@ -289,7 +289,7 @@ function PublicFooter() {
  */
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[var(--bg-900)] to-[var(--bg-950)] text-[var(--fg)]">
+    <div className="min-h-screen bg-gradient-to-b from-bg-900 to-[var(--bg-950)] text-fg">
       <PublicHeader />
       <main>{children}</main>
       <PublicFooter />

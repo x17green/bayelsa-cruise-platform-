@@ -14,21 +14,44 @@ import {
 } from '@react-pdf/renderer'
 import type { ManifestData } from './manifest-generator'
 
+/**
+ * PDF Color Palette
+ * 
+ * NOTE: React-PDF StyleSheet requires literal color values (hex/rgb).
+ * CSS variables and Tailwind classes are not supported in PDF rendering.
+ * These hex values are mapped from our design tokens for consistency.
+ * 
+ * Design Token Validation: EXCEPTION - PDF Generation
+ */
+
+// PDF-specific color constants (React-PDF requires hex values)
+/* eslint-disable design-system/no-hardcoded-colors */
+const PDF_TEXT_PRIMARY = '#1a2329'     // bg-800 (darkened for print)
+const PDF_TEXT_SECONDARY = '#4e6e80'   // border-default
+const PDF_TEXT_MUTED = '#8096a7'       // neutral-600
+const PDF_BG_LIGHT = '#f3faff'         // neutral-100
+const PDF_BG_SUBTLE = '#e6f6ff'        // neutral-200
+const PDF_BORDER_DEFAULT = '#cceaff'   // neutral-300
+const PDF_BORDER_DARK = '#1a2329'      // bg-800
+const PDF_WARNING_BG = '#fff3cd'       // warning background
+const PDF_WARNING_BORDER = '#ffc107'   // warning border
+const PDF_WARNING_TEXT = '#856404'     // warning text
+/* eslint-enable design-system/no-hardcoded-colors */
+
 // Register fonts (optional - using default fonts)
 // Font.register({
 //   family: 'Open Sans',
 //   src: 'https://fonts.gstatic.com/s/opensans/v17/mem8YaGs126MiZpBA-UFVZ0e.ttf',
 // })
 
-const styles = StyleSheet.create({
-  page: {
+const styles = StyleSheet.create({  page: {
     padding: 40,
     fontSize: 10,
     fontFamily: 'Helvetica',
   },
   header: {
     marginBottom: 20,
-    borderBottom: '2 solid #000',
+    borderBottom: `2 solid ${PDF_BORDER_DARK}`,
     paddingBottom: 10,
   },
   title: {
@@ -39,7 +62,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
-    color: '#666',
+    color: PDF_TEXT_MUTED,
     textAlign: 'center',
   },
   section: {
@@ -49,7 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#333',
+    color: PDF_TEXT_PRIMARY,
     textTransform: 'uppercase',
   },
   infoGrid: {
@@ -67,21 +90,21 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   infoValue: {
-    color: '#555',
+    color: PDF_TEXT_SECONDARY,
   },
   table: {
     marginTop: 10,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#e0e0e0',
+    backgroundColor: PDF_BG_SUBTLE,
     padding: 5,
     fontWeight: 'bold',
     fontSize: 9,
   },
   tableRow: {
     flexDirection: 'row',
-    borderBottom: '1 solid #ddd',
+    borderBottom: `1 solid ${PDF_BORDER_DEFAULT}`,
     padding: 5,
     fontSize: 8,
   },
@@ -100,21 +123,21 @@ const styles = StyleSheet.create({
     left: 40,
     right: 40,
     textAlign: 'center',
-    color: '#999',
+    color: PDF_TEXT_MUTED,
     fontSize: 8,
-    borderTop: '1 solid #ddd',
+    borderTop: `1 solid ${PDF_BORDER_DEFAULT}`,
     paddingTop: 10,
   },
   warningBox: {
-    backgroundColor: '#fff3cd',
-    border: '1 solid #ffc107',
+    backgroundColor: PDF_WARNING_BG,
+    border: `1 solid ${PDF_WARNING_BORDER}`,
     padding: 10,
     marginBottom: 15,
     borderRadius: 4,
   },
   warningText: {
     fontSize: 9,
-    color: '#856404',
+    color: PDF_WARNING_TEXT,
   },
   statsRow: {
     flexDirection: 'row',
@@ -125,19 +148,19 @@ const styles = StyleSheet.create({
   statBox: {
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: PDF_BG_LIGHT,
     borderRadius: 4,
     minWidth: 100,
   },
   statValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: PDF_TEXT_PRIMARY,
     marginBottom: 3,
   },
   statLabel: {
     fontSize: 8,
-    color: '#666',
+    color: PDF_TEXT_MUTED,
     textTransform: 'uppercase',
   },
 })

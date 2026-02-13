@@ -247,16 +247,16 @@ export default function OperatorDashboard() {
               <CardBody className="p-6">
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={revenueData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="month" stroke="#666" />
-                    <YAxis stroke="#666" />
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="month" className="stroke-fg-muted" />
+                    <YAxis className="stroke-fg-muted" />
                     <Tooltip />
                     <Line
                       type="monotone"
                       dataKey="revenue"
-                      stroke="#0080d0"
+                      className="stroke-accent-500"
                       strokeWidth={2}
-                      dot={{ fill: '#ff6b35', r: 5 }}
+                      dot={{ className: 'fill-error-500', r: 5 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -277,11 +277,11 @@ export default function OperatorDashboard() {
               <CardBody className="p-6">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={bookingsData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="day" stroke="#666" />
-                    <YAxis stroke="#666" />
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="day" className="stroke-fg-muted" />
+                    <YAxis className="stroke-fg-muted" />
                     <Tooltip />
-                    <Bar dataKey="bookings" fill="#0080d0" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="bookings" className="fill-accent-500" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardBody>

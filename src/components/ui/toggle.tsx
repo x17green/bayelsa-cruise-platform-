@@ -74,7 +74,7 @@ const toggleVariants = cva(
           'data-[state=on]:bg-glass-03',
           'data-[state=on]:border-accent-400',
           'data-[state=on]:text-accent-300',
-          'data-[state=on]:shadow-[0_0_12px_rgba(109,167,200,0.2)]',
+          'data-[state=on]:shadow-md',
         ],
         outline: [
           'border border-border-default',
@@ -91,7 +91,7 @@ const toggleVariants = cva(
           'text-fg-DEFAULT',
           'hover:bg-accent-700',
           'data-[state=on]:bg-accent-600',
-          'data-[state=on]:shadow-[0_0_16px_rgba(109,167,200,0.3)]',
+          'data-[state=on]:shadow-lg',
         ],
       },
       size: {

@@ -35,7 +35,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-[var(--bg-900)] text-[var(--fg-inverse)]">
+    <footer className="bg-bg-900 text-fg">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Main Footer */}
         <div className="py-16 grid grid-cols-1 md:grid-cols-5 gap-8">
@@ -46,17 +46,17 @@ export default function Footer() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-500)] to-[var(--accent-400)] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-500 to-accent-400 flex items-center justify-center">
                 <span className="text-2xl">⛵</span>
               </div>
               <span className="text-2xl font-bold">Blue Waters</span>
             </div>
-            <p className="text-[var(--fg-inverse)]/70 mb-6">
+            <p className="text-fg-muted mb-6">
               Your trusted partner for safe, convenient, and affordable boat travel across Bayelsa waterways.
             </p>
 
             {/* Contact Info */}
-            <div className="space-y-3 text-[var(--fg-inverse)]/80 text-sm">
+            <div className="space-y-3 text-fg-muted text-sm">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 <a href="tel:+234800000000">+234 (0) 800-000-0000</a>
@@ -80,13 +80,13 @@ export default function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
             >
-              <h3 className="font-semibold text-lg mb-4 text-[var(--fg-inverse)]">{category}</h3>
+              <h3 className="font-semibold text-lg mb-4 text-fg">{category}</h3>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[var(--fg-inverse)]/70 hover:text-[var(--accent-400)] transition-colors duration-200"
+                      className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
@@ -102,36 +102,36 @@ export default function Footer() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="py-8 border-t border-[var(--fg-inverse)]/10 flex justify-center gap-6"
+          className="py-8 border-t border-border-subtle flex justify-center gap-6"
         >
           <a
             href="#"
-            className="text-[var(--fg-inverse)]/70 hover:text-[var(--accent-400)] transition-colors duration-200"
+            className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
           >
             <Facebook className="w-6 h-6" />
           </a>
           <a
             href="#"
-            className="text-[var(--fg-inverse)]/70 hover:text-[var(--accent-400)] transition-colors duration-200"
+            className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
           >
             <Twitter className="w-6 h-6" />
           </a>
           <a
             href="#"
-            className="text-[var(--fg-inverse)]/70 hover:text-[var(--accent-400)] transition-colors duration-200"
+            className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
           >
             <Instagram className="w-6 h-6" />
           </a>
           <a
             href="#"
-            className="text-[var(--fg-inverse)]/70 hover:text-[var(--accent-400)] transition-colors duration-200"
+            className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
           >
             <Linkedin className="w-6 h-6" />
           </a>
         </motion.div>
 
         {/* Copyright */}
-        <div className="py-6 border-t border-[var(--fg-inverse)]/10 text-center text-[var(--fg-inverse)]/60 text-sm">
+        <div className="py-6 border-t border-border-subtle text-center text-fg-subtle text-sm">
           <p>
             © {currentYear} Blue Waters. Ministry of Blue Waters. All rights reserved.
           </p>

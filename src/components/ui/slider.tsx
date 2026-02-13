@@ -130,23 +130,23 @@ const thumbVariants = cva(
       variant: {
         default: [
           'border-accent-400',
-          'shadow-[0_0_8px_rgba(109,167,200,0.3)]',
+          'shadow-md',
         ],
         primary: [
           'border-accent-300',
-          'shadow-[0_0_8px_rgba(82,184,224,0.4)]',
+          'shadow-md',
         ],
         success: [
           'border-success-500',
-          'shadow-[0_0_8px_rgba(34,179,92,0.3)]',
+          'shadow-md',
         ],
         warning: [
           'border-warning-500',
-          'shadow-[0_0_8px_rgba(242,131,20,0.3)]',
+          'shadow-md',
         ],
         error: [
           'border-error-500',
-          'shadow-[0_0_8px_rgba(217,41,41,0.3)]',
+          'shadow-md',
         ],
       },
     },

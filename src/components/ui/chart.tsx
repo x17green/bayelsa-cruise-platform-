@@ -124,7 +124,7 @@ const ChartContainer = React.forwardRef<
         data-chart={chartId}
         ref={ref}
         className={cn(
-          "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-fg-muted [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-glass-01 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-glass-01 [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-glass-01 [&_.recharts-radial-bar-background-sector]:fill-glass-01 [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-glass-01 [&_.recharts-reference-line_[stroke='#ccc']]:stroke-glass-01 [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
+          "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-fg-muted [&_.recharts-cartesian-grid_line]:stroke-border-subtle [&_.recharts-curve.recharts-tooltip-cursor]:stroke-glass-01 [&_.recharts-dot]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_line]:stroke-border-subtle [&_.recharts-radial-bar-background-sector]:fill-glass-01 [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-glass-01 [&_.recharts-reference-line_line]:stroke-border-subtle [&_.recharts-sector]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
           className,
         )}
         {...props}
@@ -280,19 +280,20 @@ const ChartTooltipContent = React.forwardRef<
                       !hideIndicator && (
                         <div
                           className={cn(
-                            'shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]',
+                            'shrink-0 rounded-sm',
                             {
                               'h-2.5 w-2.5': indicator === 'dot',
                               'w-1': indicator === 'line',
-                              'w-0 border-[1.5px] border-dashed bg-transparent':
+                              'w-0 border-dashed bg-transparent':
                                 indicator === 'dashed',
                               'my-0.5': nestLabel && indicator === 'dashed',
                             },
                           )}
                           style={
                             {
-                              '--color-bg': indicatorColor,
-                              '--color-border': indicatorColor,
+                              backgroundColor: indicatorColor,
+                              borderColor: indicatorColor,
+                              borderWidth: indicator === 'dashed' ? '1.5px' : undefined,
                             } as React.CSSProperties
                           }
                         />

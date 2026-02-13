@@ -45,21 +45,21 @@ function OperatorDashboardHeader() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <header className="sticky top-0 z-[var(--z-header)] glass backdrop-blur-[var(--blur-modal)] border-b border-[var(--accent-900)]">
+    <header className="sticky top-0 z-[800] glass backdrop-blur-2xl border-b border-accent-900">
       <nav className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo & Branding */}
         <Link href="/operator/dashboard" className="flex items-center gap-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-[var(--accent-500)] opacity-20 blur-xl rounded-full" />
+            <div className="absolute inset-0 bg-accent-500 opacity-20 blur-xl rounded-full" />
             <div className="relative glass-strong rounded-lg p-2">
-              <Ship className="w-5 h-5 text-[var(--accent-300)]" />
+              <Ship className="w-5 h-5 text-accent-300" />
             </div>
           </div>
           <div>
-            <h1 className="text-base font-bold text-[var(--fg)] tracking-tight">
+            <h1 className="text-base font-bold text-fg tracking-tight">
               Operator Portal
             </h1>
-            <p className="text-xs text-[var(--accent-400)] -mt-0.5">
+            <p className="text-xs text-accent-400 -mt-0.5">
               {appUser?.fullName || 'Operator Dashboard'}
             </p>
           </div>
@@ -76,8 +76,8 @@ function OperatorDashboardHeader() {
                 transition-all duration-250
                 ${
                   isActive(item.href)
-                    ? 'text-[var(--accent-300)]'
-                    : 'text-[var(--fg-muted)] hover:text-[var(--fg)]'
+                    ? 'text-accent-300'
+                    : 'text-fg-muted hover:text-fg'
                 }
               `}
             >
@@ -85,7 +85,7 @@ function OperatorDashboardHeader() {
               {isActive(item.href) && (
                 <motion.div
                   layoutId="operatorActiveTab"
-                  className="absolute inset-0 glass-strong rounded-lg border border-[var(--accent-900)]"
+                  className="absolute inset-0 glass-strong rounded-lg border border-accent-900"
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -100,8 +100,8 @@ function OperatorDashboardHeader() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           {/* Notifications */}
-          <button className="relative glass-hover rounded-lg p-2 hover:bg-[var(--glass-02)] transition-colors">
-            <Bell className="w-5 h-5 text-[var(--fg-muted)]" />
+          <button className="relative glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors">
+            <Bell className="w-5 h-5 text-fg-muted" />
             <Badge 
               variant="destructive" 
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
@@ -113,18 +113,18 @@ function OperatorDashboardHeader() {
           {/* Settings */}
           <Link 
             href="/operator/settings"
-            className="glass-hover rounded-lg p-2 hover:bg-[var(--glass-02)] transition-colors"
+            className="glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors"
           >
-            <Settings className="w-5 h-5 text-[var(--fg-muted)]" />
+            <Settings className="w-5 h-5 text-fg-muted" />
           </Link>
 
           {/* User Menu */}
-          <div className="hidden md:flex items-center gap-3 ml-2 pl-3 border-l border-[var(--border-subtle)]">
+          <div className="hidden md:flex items-center gap-3 ml-2 pl-3 border-l border-border-subtle">
             <div className="text-right">
-              <p className="text-sm font-semibold text-[var(--fg)]">
+              <p className="text-sm font-semibold text-fg">
                 {appUser?.fullName || 'Operator'}
               </p>
-              <p className="text-xs text-[var(--accent-400)] capitalize flex items-center justify-end gap-1">
+              <p className="text-xs text-accent-400 capitalize flex items-center justify-end gap-1">
                 <Users className="w-3 h-3" />
                 {appUser?.role || 'operator'}
               </p>
@@ -143,12 +143,12 @@ function OperatorDashboardHeader() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden glass-hover rounded-lg p-2 hover:bg-[var(--glass-02)] transition-colors"
+            className="lg:hidden glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors"
           >
             {mobileMenuOpen ? (
-              <X className="w-5 h-5 text-[var(--fg)]" />
+              <X className="w-5 h-5 text-fg" />
             ) : (
-              <Menu className="w-5 h-5 text-[var(--fg)]" />
+              <Menu className="w-5 h-5 text-fg" />
             )}
           </button>
         </div>
@@ -160,7 +160,7 @@ function OperatorDashboardHeader() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="lg:hidden border-t border-[var(--border-subtle)]"
+          className="lg:hidden border-t border-border-subtle"
         >
           <nav className="container mx-auto px-4 py-4 space-y-1">
             {navItems.map((item) => (
@@ -173,8 +173,8 @@ function OperatorDashboardHeader() {
                   transition-all duration-200
                   ${
                     isActive(item.href)
-                      ? 'glass-strong text-[var(--accent-300)] border border-[var(--accent-900)]'
-                      : 'text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--glass-01)]'
+                      ? 'glass-strong text-accent-300 border border-accent-900'
+                      : 'text-fg-muted hover:text-fg hover:bg-glass-01'
                   }
                 `}
               >
@@ -184,12 +184,12 @@ function OperatorDashboardHeader() {
             ))}
 
             {/* Mobile User Actions */}
-            <div className="pt-4 mt-4 border-t border-[var(--border-subtle)]">
+            <div className="pt-4 mt-4 border-t border-border-subtle">
               <div className="px-4 py-2 mb-2">
-                <p className="text-sm font-semibold text-[var(--fg)]">
+                <p className="text-sm font-semibold text-fg">
                   {appUser?.fullName || 'Operator'}
                 </p>
-                <p className="text-xs text-[var(--accent-400)] capitalize">
+                <p className="text-xs text-accent-400 capitalize">
                   {appUser?.role || 'operator'}
                 </p>
               </div>
@@ -217,37 +217,37 @@ function OperatorDashboardFooter() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="glass border-t border-[var(--border-subtle)] mt-auto">
+    <footer className="glass border-t border-border-subtle mt-auto">
       <div className="container mx-auto px-4 sm:px-6 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Brand & Copyright */}
           <div className="flex items-center gap-3">
             <div className="glass-subtle rounded-lg p-2">
-              <Waves className="w-5 h-5 text-[var(--accent-400)]" />
+              <Waves className="w-5 h-5 text-accent-400" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[var(--fg)]">
+              <p className="text-sm font-semibold text-fg">
                 Blue Waters Operator Portal
               </p>
-              <p className="text-xs text-[var(--fg-muted)]">
+              <p className="text-xs text-fg-muted">
                 © {currentYear} Ministry of Blue Waters
               </p>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="flex items-center gap-6 text-xs text-[var(--fg-muted)]">
-            <Link href="/operator/support" className="hover:text-[var(--accent-400)] transition-colors">
+          <div className="flex items-center gap-6 text-xs text-fg-muted">
+            <Link href="/operator/support" className="hover:text-accent-400 transition-colors">
               Support
             </Link>
-            <Link href="/operator/documentation" className="hover:text-[var(--accent-400)] transition-colors">
+            <Link href="/operator/documentation" className="hover:text-accent-400 transition-colors">
               Documentation
             </Link>
-            <Link href="/operator/terms" className="hover:text-[var(--accent-400)] transition-colors">
+            <Link href="/operator/terms" className="hover:text-accent-400 transition-colors">
               Terms
             </Link>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[var(--success-500)] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-success-500 animate-pulse" />
               <span>System Online</span>
             </div>
           </div>
@@ -271,7 +271,7 @@ function OperatorDashboardFooter() {
  */
 export default function OperatorDashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-950)]">
+    <div className="min-h-screen flex flex-col bg-bg-950">
       <OperatorDashboardHeader />
       
       <main className="flex-1 container mx-auto px-4 sm:px-6 py-6">

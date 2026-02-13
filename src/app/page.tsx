@@ -31,10 +31,10 @@ export default function Home() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-[var(--fg)] mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-fg mb-4">
             Featured Journeys
           </h2>
-          <p className="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-fg-muted max-w-2xl mx-auto leading-relaxed">
             Explore the most popular boat trips across the beautiful Bayelsa waterways
           </p>
         </motion.div>
@@ -61,17 +61,17 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-[var(--fg)] mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-fg mb-6">
               Ready to Start Your Journey?
             </h2>
-            <p className="text-xl text-[var(--fg-muted)] mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-fg-muted mb-10 max-w-2xl mx-auto leading-relaxed">
               Book your boat trip today and experience the beauty of Bayelsa waterways. 
               Safe, reliable, and affordable.
             </p>
             <Link href="/book">
               <Button 
                 size="lg"
-                className="glass-strong border-2 border-[var(--accent-500)] bg-[var(--accent-600)] hover:bg-[var(--accent-500)] text-white shadow-2xl shadow-[var(--accent-900)]/50 text-lg px-8 py-6 h-auto transition-all duration-300 hover:scale-105"
+                className="glass-strong border-2 border-accent-500 bg-accent-600 hover:bg-accent-500 text-white shadow-2xl shadow-accent-900/50 text-lg px-8 py-6 h-auto transition-all duration-300 hover:scale-105"
               >
                 Book Your Trip Now
                 <ArrowRight className="ml-2 w-5 h-5" />
