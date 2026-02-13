@@ -87,7 +87,7 @@ export default function FeaturedTrips() {
     >
       {trips.map((trip) => (
         <motion.div key={trip.id} variants={itemVariants}>
-          <div className="h-full bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-primary/10 flex flex-col">
+          <div className="h-full glass-subtle rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[var(--border)] flex flex-col">
             <div className="relative w-full h-48 overflow-hidden">
               <Image
                 src={trip.image}
@@ -99,12 +99,12 @@ export default function FeaturedTrips() {
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
                     trip.tag === 'Premium'
-                      ? 'bg-gradient-to-r from-primary to-accent'
+                      ? 'bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)]'
                       : trip.tag === 'Best Rated'
-                        ? 'bg-green-500'
+                        ? 'bg-[var(--success-500)]'
                         : trip.tag === 'Most Booked'
-                          ? 'bg-blue-500'
-                          : 'bg-accent'
+                          ? 'bg-[var(--info-500)]'
+                          : 'bg-[var(--accent-500)]'
                   }`}
                 >
                   {trip.tag}
@@ -113,21 +113,21 @@ export default function FeaturedTrips() {
             </div>
 
             <div className="px-4 py-4 flex-1 flex flex-col">
-              <h3 className="text-lg font-bold text-primary mb-2">{trip.name}</h3>
+              <h3 className="text-lg font-bold text-[var(--accent-500)] mb-2">{trip.name}</h3>
 
               <div className="space-y-3 mb-4 flex-1">
-                <div className="flex items-center gap-2 text-foreground/70">
-                  <MapPin className="w-4 h-4 text-accent" />
+                <div className="flex items-center gap-2 text-[var(--fg-muted)]">
+                  <MapPin className="w-4 h-4 text-[var(--accent-500)]" />
                   <span className="text-sm">{trip.route}</span>
                 </div>
 
-                <div className="flex gap-4 text-sm text-foreground/70">
+                <div className="flex gap-4 text-sm text-[var(--fg-muted)]">
                   <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4 text-primary" />
+                    <Clock className="w-4 h-4 text-[var(--accent-500)]" />
                     {trip.duration}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4 text-primary" />
+                    <Users className="w-4 h-4 text-[var(--accent-500)]" />
                     {trip.capacity} seats
                   </div>
                 </div>
@@ -139,33 +139,33 @@ export default function FeaturedTrips() {
                         key={i}
                         className={`w-4 h-4 ${
                           i < Math.floor(trip.rating)
-                            ? 'fill-accent text-accent'
-                            : 'text-gray-300'
+                            ? 'fill-[var(--accent-500)] text-[var(--accent-500)]'
+                            : 'text-[var(--fg-dim)]'
                         }`}
                       />
                     ))}
                   </div>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-sm font-semibold text-[var(--fg)]">
                     {trip.rating}
                   </span>
-                  <span className="text-xs text-foreground/60">
+                  <span className="text-xs text-[var(--fg-muted)]">
                     ({trip.reviews})
                   </span>
                 </div>
               </div>
 
-              <div className="border-t border-primary/10 pt-3 mb-4">
+              <div className="border-t border-[var(--border)] pt-3 mb-4">
                 <div>
-                  <span className="text-2xl font-bold text-primary">
+                  <span className="text-2xl font-bold text-[var(--accent-500)]">
                     ₦{trip.price.toLocaleString()}
                   </span>
-                  <span className="text-xs text-foreground/60 ml-1">/person</span>
+                  <span className="text-xs text-[var(--fg-muted)] ml-1">/person</span>
                 </div>
               </div>
 
               <Link
                 href={`/book/${trip.id}`}
-                className="w-full bg-gradient-to-r from-primary to-primary/80 text-white font-semibold py-2 px-4 rounded text-center hover:shadow-md transition-all"
+                className="w-full bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-500)] text-white font-semibold py-2 px-4 rounded text-center hover:shadow-md transition-all"
               >
                 Book Now
               </Link>

@@ -40,38 +40,38 @@ export default function ForgotPassword() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
               <span className="text-white font-bold">⛵</span>
             </div>
-            <p className="font-bold text-xl text-primary">Blue Waters</p>
+            <p className="font-bold text-xl text-[var(--accent-500)]">Blue Waters</p>
           </Link>
-          <h1 className="text-4xl font-bold text-primary mb-2">Reset Password</h1>
-          <p className="text-foreground/60">
+          <h1 className="text-4xl font-bold text-[var(--accent-500)] mb-2">Reset Password</h1>
+          <p className="text-[var(--fg-muted)]">
             Enter your email and we'll send you a reset link
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-lg border border-primary/10 shadow-xl p-8">
+        <div className="glass rounded-lg shadow-xl p-8">
           {success ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-[var(--success-100)] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mail className="w-8 h-8 text-[var(--success-600)]" />
               </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">Check Your Email</h2>
-              <p className="text-foreground/60 mb-6">
+              <h2 className="text-xl font-semibold text-[var(--fg)] mb-2">Check Your Email</h2>
+              <p className="text-[var(--fg-muted)] mb-6">
                 We've sent a password reset link to <strong>{email}</strong>
               </p>
-              <p className="text-sm text-foreground/50 mb-6">
+              <p className="text-sm text-[var(--fg-dim)] mb-6">
                 Didn't receive the email? Check your spam folder or try again.
               </p>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 text-primary hover:underline font-semibold"
+                className="inline-flex items-center gap-2 text-[var(--accent-500)] hover:underline font-semibold"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Login
@@ -83,7 +83,7 @@ export default function ForgotPassword() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+                  className="bg-[var(--error-50)] border border-[var(--error-200)] text-[var(--error-700)] px-4 py-3 rounded-lg text-sm"
                 >
                   {error}
                 </motion.div>
@@ -91,18 +91,18 @@ export default function ForgotPassword() {
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">
+                <label className="block text-sm font-semibold text-[var(--fg)] mb-2">
                   Email Address
                 </label>
-                <div className="flex items-center border border-primary/20 rounded-lg px-3 py-2 bg-white/50 focus-within:border-primary transition-colors">
-                  <Mail className="w-4 h-4 text-primary mr-2" />
+                <div className="flex items-center border border-[var(--border)] rounded-lg px-3 py-2 glass-subtle focus-within:border-[var(--accent-500)] transition-colors">
+                  <Mail className="w-4 h-4 text-[var(--accent-500)] mr-2" />
                   <input
                     name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-transparent outline-none text-foreground placeholder:text-foreground/40"
+                    className="w-full bg-transparent outline-none text-[var(--fg)] placeholder:text-[var(--fg-dim)]"
                     required
                   />
                 </div>
@@ -112,7 +112,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-gradient-to-r from-primary to-accent text-white font-semibold py-3 mt-6 rounded-lg hover:shadow-lg transition-all disabled:opacity-70"
+                className="w-full bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white font-semibold py-3 mt-6 rounded-lg hover:shadow-lg transition-all disabled:opacity-70"
               >
                 {isPending ? 'Sending...' : 'Send Reset Link'}
               </button>
@@ -121,7 +121,7 @@ export default function ForgotPassword() {
               <div className="text-center pt-4">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-2 text-sm text-[var(--fg-muted)] hover:text-[var(--accent-500)] transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back to Login

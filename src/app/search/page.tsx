@@ -100,14 +100,14 @@ export default function Search() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <Navbar className="bg-primary/10 backdrop-blur-lg border-b border-primary/20">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--bg)] to-[var(--bg-800)]">
+      <Navbar className="glass backdrop-blur-lg border-b border-[var(--border)]">
         <NavbarBrand>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
               <span className="text-white font-bold text-lg">⛵</span>
             </div>
-            <p className="font-bold text-xl text-primary">Blue Waters</p>
+            <p className="font-bold text-xl text-[var(--accent-500)]">Blue Waters</p>
           </Link>
         </NavbarBrand>
         <NavbarContent justify="end">
@@ -115,7 +115,7 @@ export default function Search() {
             <Button
               href="/login"
               variant="ghost"
-              className="text-primary"
+              className="text-[var(--accent-500)]"
             >
               Sign In
             </Button>
@@ -133,13 +133,13 @@ export default function Search() {
           <Button
             href="/"
             variant="ghost"
-            className="mb-4 text-primary flex items-center gap-2"
+            className="mb-4 text-[var(--accent-500)] flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Button>
-          <h1 className="text-4xl font-bold text-primary mb-2">Search Trips</h1>
-          <p className="text-lg text-foreground/60">
+          <h1 className="text-4xl font-bold text-[var(--accent-500)] mb-2">Search Trips</h1>
+          <p className="text-lg text-[var(--fg-muted)]">
             Find and book your perfect boat journey
           </p>
         </motion.div>
@@ -152,14 +152,14 @@ export default function Search() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-1"
           >
-            <Card className="bg-white border border-primary/10 sticky top-4">
+            <Card className="glass-subtle border border-[var(--border)] sticky top-4">
               <CardBody className="p-6 space-y-6">
                 <div>
-                  <h3 className="font-bold text-primary mb-4">Filters</h3>
+                  <h3 className="font-bold text-[var(--accent-500)] mb-4">Filters</h3>
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-foreground block mb-2">
+                  <label className="text-sm font-semibold text-[var(--fg)] block mb-2">
                     Departure
                   </label>
                   <Input
@@ -173,7 +173,7 @@ export default function Search() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-foreground block mb-2">
+                  <label className="text-sm font-semibold text-[var(--fg)] block mb-2">
                     Arrival
                   </label>
                   <Input
@@ -187,7 +187,7 @@ export default function Search() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-foreground block mb-2">
+                  <label className="text-sm font-semibold text-[var(--fg)] block mb-2">
                     Date
                   </label>
                   <Input
@@ -201,7 +201,7 @@ export default function Search() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-foreground block mb-4">
+                  <label className="text-sm font-semibold text-[var(--fg)] block mb-4">
                     Price Range
                   </label>
                   <Slider
@@ -219,14 +219,14 @@ export default function Search() {
                     }}
                     className="max-w-md"
                   />
-                  <p className="text-xs text-foreground/60 mt-2">
+                  <p className="text-xs text-[var(--fg-muted)] mt-2">
                     ₦{filters.minPrice.toLocaleString()} - ₦
                     {filters.maxPrice.toLocaleString()}
                   </p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-foreground block mb-2">
+                  <label className="text-sm font-semibold text-[var(--fg)] block mb-2">
                     Sort By
                   </label>
                   <Select
@@ -242,7 +242,7 @@ export default function Search() {
                   </Select>
                 </div>
 
-                <Button className="w-full bg-primary text-white mt-4">
+                <Button className="w-full bg-[var(--accent-500)] text-white mt-4">
                   Clear Filters
                 </Button>
               </CardBody>
@@ -259,7 +259,7 @@ export default function Search() {
             >
               {mockTrips.map((trip) => (
                 <motion.div key={trip.id} variants={itemVariants}>
-                  <Card className="hover:shadow-lg transition-shadow border border-primary/10">
+                  <Card className="hover:shadow-lg transition-shadow border border-[var(--border)]">
                     <CardBody>
                       <div className="flex flex-col md:flex-row gap-6 p-6">
                         {/* Image */}
@@ -274,21 +274,21 @@ export default function Search() {
 
                         {/* Content */}
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-primary mb-2">
+                          <h3 className="text-xl font-bold text-[var(--accent-500)] mb-2">
                             {trip.name}
                           </h3>
 
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                            <div className="flex items-center gap-2 text-sm text-foreground/70">
-                              <MapPin className="w-4 h-4 text-accent" />
+                            <div className="flex items-center gap-2 text-sm text-[var(--fg-muted)]">
+                              <MapPin className="w-4 h-4 text-[var(--accent-500)]" />
                               {trip.route}
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-foreground/70">
-                              <Clock className="w-4 h-4 text-primary" />
+                            <div className="flex items-center gap-2 text-sm text-[var(--fg-muted)]">
+                              <Clock className="w-4 h-4 text-[var(--accent-500)]" />
                               {trip.departure}
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-foreground/70">
-                              <Users className="w-4 h-4 text-primary" />
+                            <div className="flex items-center gap-2 text-sm text-[var(--fg-muted)]">
+                              <Users className="w-4 h-4 text-[var(--accent-500)]" />
                               {trip.available} available
                             </div>
                           </div>
@@ -300,22 +300,22 @@ export default function Search() {
                                   key={i}
                                   className={`w-4 h-4 ${
                                     i < Math.floor(trip.rating)
-                                      ? 'fill-accent text-accent'
-                                      : 'text-gray-300'
+                                      ? 'fill-[var(--accent-500)] text-[var(--accent-500)]'
+                                      : 'text-[var(--fg-dim)]'
                                   }`}
                                 />
                               ))}
-                              <span className="text-sm font-semibold text-foreground">
+                              <span className="text-sm font-semibold text-[var(--fg)]">
                                 {trip.rating}
                               </span>
-                              <span className="text-xs text-foreground/60">
+                              <span className="text-xs text-[var(--fg-muted)]">
                                 ({trip.reviews})
                               </span>
                             </div>
 
                             <Button
                               href={`/book/${trip.id}`}
-                              className="bg-gradient-to-r from-primary to-accent text-white font-semibold"
+                              className="bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white font-semibold"
                             >
                               ₦{trip.price.toLocaleString()} - Book
                             </Button>

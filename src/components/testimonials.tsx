@@ -73,10 +73,10 @@ export default function Testimonials() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--accent-500)] mb-4">
             What Our Travelers Say
           </h2>
-          <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
+          <p className="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
             Join thousands of satisfied customers who trust Blue Waters for their journeys
           </p>
         </motion.div>
@@ -90,7 +90,7 @@ export default function Testimonials() {
         >
           {testimonials.map((testimonial) => (
             <motion.div key={testimonial.id} variants={itemVariants}>
-              <div className="h-full bg-gradient-to-br from-white to-secondary/20 border border-primary/10 hover:shadow-xl transition-all duration-300 rounded-lg p-6 flex flex-col">
+              <div className="h-full glass-subtle border border-[var(--border)] hover:shadow-xl transition-all duration-300 rounded-lg p-6 flex flex-col">
                 {/* Rating */}
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -98,28 +98,28 @@ export default function Testimonials() {
                       key={i}
                       className={`w-5 h-5 ${
                         i < testimonial.rating
-                          ? 'fill-accent text-accent'
-                          : 'text-gray-300'
+                          ? 'fill-[var(--accent-500)] text-[var(--accent-500)]'
+                          : 'text-[var(--fg-dim)]'
                       }`}
                     />
                   ))}
                 </div>
 
                 {/* Content */}
-                <p className="text-foreground/80 mb-6 italic leading-relaxed flex-1">
+                <p className="text-[var(--fg-muted)] mb-6 italic leading-relaxed flex-1">
                   "{testimonial.content}"
                 </p>
 
                 {/* Author */}
-                <div className="flex items-center gap-3 pt-4 border-t border-primary/10">
+                <div className="flex items-center gap-3 pt-4 border-t border-[var(--border)]">
                   <img
                     src={testimonial.avatar}
                     alt={testimonial.name}
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
-                    <p className="font-semibold text-foreground">{testimonial.name}</p>
-                    <p className="text-sm text-foreground/60">{testimonial.role}</p>
+                    <p className="font-semibold text-[var(--fg)]">{testimonial.name}</p>
+                    <p className="text-sm text-[var(--fg-muted)]">{testimonial.role}</p>
                   </div>
                 </div>
               </div>

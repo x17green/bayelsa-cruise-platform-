@@ -92,14 +92,14 @@ function CheckoutContent() {
 
   if (bookingComplete) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-        <Navbar className="bg-primary/10 backdrop-blur-lg border-b border-primary/20">
+      <main className="min-h-screen bg-gradient-to-b from-[var(--bg)] to-[var(--bg-800)]">
+        <Navbar className="glass backdrop-blur-lg border-b border-[var(--border)]">
           <NavbarBrand>
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
                 <span className="text-white font-bold text-lg">⛵</span>
               </div>
-              <p className="font-bold text-xl text-primary">Blue Waters</p>
+              <p className="font-bold text-xl text-[var(--accent-500)]">Blue Waters</p>
             </Link>
           </NavbarBrand>
         </Navbar>
@@ -116,46 +116,46 @@ function CheckoutContent() {
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <CheckCircle className="w-24 h-24 text-green-500" />
+                <CheckCircle className="w-24 h-24 text-[var(--success-500)]" />
               </motion.div>
             </div>
 
-            <h1 className="text-4xl font-bold text-primary mb-4">Booking Confirmed!</h1>
-            <p className="text-lg text-foreground/70 mb-8">
+            <h1 className="text-4xl font-bold text-[var(--accent-500)] mb-4">Booking Confirmed!</h1>
+            <p className="text-lg text-[var(--fg-muted)] mb-8">
               Your trip is now booked. Get ready for an amazing journey!
             </p>
 
-            <Card className="bg-white border border-primary/10 mb-8">
+            <Card className="glass-subtle border border-[var(--border)] mb-8">
               <CardBody className="p-8">
                 <div className="space-y-6">
-                  <div className="bg-primary/10 rounded-lg p-4">
-                    <p className="text-sm text-foreground/70 mb-1">Booking Reference</p>
-                    <p className="text-3xl font-bold text-primary font-mono">{bookingRef}</p>
+                  <div className="bg-[var(--accent-500)]/10 rounded-lg p-4">
+                    <p className="text-sm text-[var(--fg-muted)] mb-1">Booking Reference</p>
+                    <p className="text-3xl font-bold text-[var(--accent-500)] font-mono">{bookingRef}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-foreground/70 mb-1">Trip</p>
-                      <p className="font-semibold text-foreground">{trip?.name}</p>
+                      <p className="text-sm text-[var(--fg-muted)] mb-1">Trip</p>
+                      <p className="font-semibold text-[var(--fg)]">{trip?.name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-foreground/70 mb-1">Passengers</p>
-                      <p className="font-semibold text-foreground">{passengersCount}</p>
+                      <p className="text-sm text-[var(--fg-muted)] mb-1">Passengers</p>
+                      <p className="font-semibold text-[var(--fg)]">{passengersCount}</p>
                     </div>
                   </div>
 
-                  <div className="border-t border-primary/10 pt-4">
+                  <div className="border-t border-[var(--border)] pt-4">
                     <div className="flex justify-between mb-2">
-                      <span className="text-foreground/70">Subtotal</span>
+                      <span className="text-[var(--fg-muted)]">Subtotal</span>
                       <span className="font-semibold">₦{subtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between mb-4">
-                      <span className="text-foreground/70">Service Fee</span>
+                      <span className="text-[var(--fg-muted)]">Service Fee</span>
                       <span className="font-semibold">₦{serviceFee.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between border-t border-primary/10 pt-4">
-                      <span className="font-bold text-primary">Total Paid</span>
-                      <span className="font-bold text-primary text-2xl">
+                    <div className="flex justify-between border-t border-[var(--border)] pt-4">
+                      <span className="font-bold text-[var(--accent-500)]">Total Paid</span>
+                      <span className="font-bold text-[var(--accent-500)] text-2xl">
                         ₦{total.toLocaleString()}
                       </span>
                     </div>
@@ -165,12 +165,12 @@ function CheckoutContent() {
             </Card>
 
             <div className="space-y-3 mb-8">
-              <p className="text-foreground/70 mb-6">
+              <p className="text-[var(--fg-muted)] mb-6">
                 A confirmation email has been sent to your registered email address.
               </p>
               <Button
                 href="/dashboard"
-                className="w-full bg-gradient-to-r from-primary to-accent text-white font-bold text-lg py-3"
+                className="w-full bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white font-bold text-lg py-3"
                 size="lg"
               >
                 View My Bookings
@@ -178,7 +178,7 @@ function CheckoutContent() {
               <Button
                 href="/"
                 variant="outline"
-                className="w-full border-primary text-primary font-bold text-lg py-3"
+                className="w-full border-[var(--border)] text-[var(--accent-500)] font-bold text-lg py-3"
                 size="lg"
               >
                 Back to Home
@@ -191,14 +191,14 @@ function CheckoutContent() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <Navbar className="bg-primary/10 backdrop-blur-lg border-b border-primary/20">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--bg)] to-[var(--bg-800)]">
+      <Navbar className="glass backdrop-blur-lg border-b border-[var(--border)]">
         <NavbarBrand>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
               <span className="text-white font-bold text-lg">⛵</span>
             </div>
-            <p className="font-bold text-xl text-primary">Blue Waters</p>
+            <p className="font-bold text-xl text-[var(--accent-500)]">Blue Waters</p>
           </Link>
         </NavbarBrand>
       </Navbar>
@@ -215,12 +215,12 @@ function CheckoutContent() {
             href="/book"
             variant="ghost"
             startIcon={<ArrowLeft className="w-4 h-4" />}
-            className="mb-4 text-primary"
+            className="mb-4 text-[var(--accent-500)]"
           >
             Back to Booking
           </Button>
-          <h1 className="text-4xl font-bold text-primary mb-2">Secure Checkout</h1>
-          <p className="text-lg text-foreground/60">
+          <h1 className="text-4xl font-bold text-[var(--accent-500)] mb-2">Secure Checkout</h1>
+          <p className="text-lg text-[var(--fg-muted)]">
             Complete your booking with a secure payment
           </p>
         </motion.div>
@@ -236,9 +236,9 @@ function CheckoutContent() {
               className="space-y-6"
             >
               {/* Contact Information */}
-              <Card className="border border-primary/10">
-                <CardHeader className="border-b border-primary/10">
-                  <h2 className="text-xl font-bold text-primary">Contact Information</h2>
+              <Card className="border border-[var(--border)]">
+                <CardHeader className="border-b border-[var(--border)]">
+                  <h2 className="text-xl font-bold text-[var(--accent-500)]">Contact Information</h2>
                 </CardHeader>
                 <CardBody className="space-y-4 p-6">
                   <Input
@@ -270,9 +270,9 @@ function CheckoutContent() {
               </Card>
 
               {/* Payment Method */}
-              <Card className="border border-primary/10">
-                <CardHeader className="border-b border-primary/10">
-                  <h2 className="text-xl font-bold text-primary">Payment Method</h2>
+              <Card className="border border-[var(--border)]">
+                <CardHeader className="border-b border-[var(--border)]">
+                  <h2 className="text-xl font-bold text-[var(--accent-500)]">Payment Method</h2>
                 </CardHeader>
                 <CardBody className="p-6">
                   <Tabs
@@ -334,8 +334,8 @@ function CheckoutContent() {
 
                     {/* Mobile Money */}
                     <TabsContent value="mobile" className="space-y-4">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-sm text-blue-700">
+                      <div className="bg-[var(--info-50)] border border-[var(--info-200)] rounded-lg p-4">
+                        <p className="text-sm text-[var(--info-700)]">
                           You will be redirected to your mobile money provider to complete the payment.
                         </p>
                       </div>
@@ -358,8 +358,8 @@ function CheckoutContent() {
 
                     {/* Bank Transfer */}
                     <TabsContent value="bank" className="space-y-4">
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                        <p className="text-sm text-amber-700">
+                      <div className="bg-[var(--warning-50)] border border-[var(--warning-200)] rounded-lg p-4">
+                        <p className="text-sm text-[var(--warning-700)]">
                           Transfer funds to our account and your booking will be confirmed upon payment verification.
                         </p>
                       </div>
@@ -382,8 +382,8 @@ function CheckoutContent() {
               </Card>
 
               {/* Terms & Conditions */}
-              <Checkbox className="text-primary">
-                <span className="text-sm text-foreground/70">
+              <Checkbox className="text-[var(--accent-500)]">
+                <span className="text-sm text-[var(--fg-muted)]">
                   I agree to the booking terms and payment policy
                 </span>
               </Checkbox>
@@ -392,7 +392,7 @@ function CheckoutContent() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-primary to-accent text-white font-bold text-lg py-3"
+                className="w-full bg-gradient-to-r from-[var(--accent-600)] to-[var(--accent-400)] text-white font-bold text-lg py-3"
                 size="lg"
               >
                 {loading ? 'Processing Payment...' : 'Complete Booking'}
@@ -407,30 +407,30 @@ function CheckoutContent() {
             transition={{ duration: 0.6 }}
             className="sticky top-8 h-fit"
           >
-            <Card className="bg-gradient-to-b from-primary/10 to-primary/5 border-2 border-primary">
-              <CardHeader className="border-b border-primary/20">
-                <h3 className="text-xl font-bold text-primary">Order Summary</h3>
+            <Card className="bg-gradient-to-b from-[var(--accent-500)]/10 to-[var(--accent-500)]/5 border-2 border-[var(--accent-500)]">
+              <CardHeader className="border-b border-[var(--border)]">
+                <h3 className="text-xl font-bold text-[var(--accent-500)]">Order Summary</h3>
               </CardHeader>
               <CardBody className="space-y-4 p-6">
                 <div>
-                  <p className="text-sm text-foreground/70 mb-1">Trip</p>
-                  <p className="font-bold text-foreground">{trip?.name}</p>
+                  <p className="text-sm text-[var(--fg-muted)] mb-1">Trip</p>
+                  <p className="font-bold text-[var(--fg)]">{trip?.name}</p>
                 </div>
-                <div className="border-t border-primary/20 pt-4 space-y-2">
+                <div className="border-t border-[var(--border)] pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground/70">Price × {passengersCount}</span>
+                    <span className="text-[var(--fg-muted)]">Price × {passengersCount}</span>
                     <span className="font-semibold">
                       ₦{subtotal.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground/70">Service Fee (5%)</span>
+                    <span className="text-[var(--fg-muted)]">Service Fee (5%)</span>
                     <span className="font-semibold">₦{serviceFee.toLocaleString()}</span>
                   </div>
                 </div>
-                <div className="border-t border-primary/20 pt-4 flex justify-between">
-                  <span className="font-bold text-primary">Total Amount</span>
-                  <span className="font-bold text-2xl text-primary">
+                <div className="border-t border-[var(--border)] pt-4 flex justify-between">
+                  <span className="font-bold text-[var(--accent-500)]">Total Amount</span>
+                  <span className="font-bold text-2xl text-[var(--accent-500)]">
                     ₦{total.toLocaleString()}
                   </span>
                 </div>
@@ -445,21 +445,21 @@ function CheckoutContent() {
 
 function CheckoutLoadingFallback() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <Navbar className="bg-primary/10 backdrop-blur-lg border-b border-primary/20">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--bg)] to-[var(--bg-800)]">
+      <Navbar className="glass backdrop-blur-lg border-b border-[var(--border)]">
         <NavbarBrand>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-600)] to-[var(--accent-400)] flex items-center justify-center">
               <span className="text-white font-bold text-lg">⛵</span>
             </div>
-            <p className="font-bold text-xl text-primary">Blue Waters</p>
+            <p className="font-bold text-xl text-[var(--accent-500)]">Blue Waters</p>
           </Link>
         </NavbarBrand>
       </Navbar>
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-primary/20 rounded w-1/3"></div>
-          <div className="h-64 bg-primary/10 rounded"></div>
+          <div className="h-8 bg-[var(--accent-500)]/20 rounded w-1/3"></div>
+          <div className="h-64 bg-[var(--accent-500)]/10 rounded"></div>
         </div>
       </div>
     </main>

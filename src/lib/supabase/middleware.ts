@@ -33,8 +33,20 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Fetch user role if authenticated
+  let userRole: string | null = null
+  if (user) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
+    
+    userRole = userData?.role || 'customer'
+  }
+
   // Protected routes that require authentication
-  const protectedPaths = ['/dashboard', '/checkout', '/book', '/operator']
+  const protectedPaths = ['/dashboard', '/checkout', '/book', '/operator', '/profile']
   const isProtectedRoute = protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path))
 
   // Redirect to login if accessing protected route without auth
@@ -45,13 +57,36 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect to dashboard if accessing auth pages while logged in
+  // Role-based route protection
+  if (user && userRole) {
+    const isOperatorRoute = request.nextUrl.pathname.startsWith('/operator')
+    const isCustomerDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+    const isOperatorRole = ['operator', 'staff', 'admin'].includes(userRole)
+
+    // Redirect customers trying to access operator routes
+    if (isOperatorRoute && !isOperatorRole) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
+
+    // Redirect operators trying to access customer dashboard
+    if (isCustomerDashboard && isOperatorRole) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/operator/dashboard'
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // Redirect to appropriate dashboard if accessing auth pages while logged in
   const authPaths = ['/login', '/signup']
   const isAuthRoute = authPaths.some((path) => request.nextUrl.pathname.startsWith(path))
 
-  if (isAuthRoute && user) {
+  if (isAuthRoute && user && userRole) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    // Role-based redirect for authenticated users
+    const isOperatorRole = ['operator', 'staff', 'admin'].includes(userRole)
+    url.pathname = isOperatorRole ? '/operator/dashboard' : '/dashboard'
     return NextResponse.redirect(url)
   }
 

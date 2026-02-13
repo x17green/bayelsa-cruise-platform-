@@ -13,14 +13,33 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { error, data: authData } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
     return { error: error.message }
   }
 
+  if (!authData.user) {
+    return { error: 'Authentication failed' }
+  }
+
+  // Fetch user role from database
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', authData.user.id)
+    .maybeSingle()
+
+  const userRole = userData?.role || 'customer'
+
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  
+  // Redirect based on role
+  if (userRole === 'operator' || userRole === 'staff' || userRole === 'admin') {
+    redirect('/operator/dashboard')
+  } else {
+    redirect('/dashboard')
+  }
 }
 
 export async function signup(formData: FormData) {
@@ -68,8 +87,27 @@ export async function signup(formData: FormData) {
     }
   }
 
+  if (!authData.user) {
+    return { error: 'Signup failed' }
+  }
+
+  // Fetch user role from database  
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', authData.user.id)
+    .maybeSingle()
+
+  const userRole = userData?.role || data.userType || 'customer'
+
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  
+  // Redirect based on role
+  if (userRole === 'operator' || userRole === 'staff' || userRole === 'admin') {
+    redirect('/operator/dashboard')
+  } else {
+    redirect('/dashboard')
+  }
 }
 
 export async function signOut() {

@@ -1,61 +1,43 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 import FeaturedTrips from '@/src/components/featured-trips'
-import Footer from '@/src/components/footer'
 import Hero from '@/src/components/hero'
 import HowItWorks from '@/src/components/how-it-works'
+import PublicLayout from '@/src/components/layouts/public-layout'
 import Testimonials from '@/src/components/testimonials'
+import { Button } from '@/src/components/ui/button'
 
+/**
+ * Home Page
+ * Public-facing landing page with hero, featured trips, and CTAs
+ * Uses PublicLayout for consistent navigation and footer
+ */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20" suppressHydrationWarning>
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-primary/10 backdrop-blur-lg border-b border-primary/20">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-white font-bold text-lg">⛵</span>
-            </div>
-            <p className="font-bold text-xl text-primary">Blue Waters</p>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="#trips" className="text-foreground/70 hover:text-primary transition-colors">
-              Book Now
-            </Link>
-            <Link href="#how" className="text-foreground/70 hover:text-primary transition-colors">
-              How It Works
-            </Link>
-            <Link href="#testimonials" className="text-foreground/70 hover:text-primary transition-colors">
-              Reviews
-            </Link>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-primary hover:text-primary/80 transition-colors font-medium">
-              Sign In
-            </Link>
-            <Link href="/signup" className="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors font-medium">
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </nav>
-
+    <PublicLayout>
       {/* Hero Section */}
       <Hero />
 
       {/* Featured Trips */}
-      <section id="trips" className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">Featured Journeys</h2>
-          <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
+      <section id="trips" className="py-20 px-4 md:px-8 max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--fg)] mb-4">
+            Featured Journeys
+          </h2>
+          <p className="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto leading-relaxed">
             Explore the most popular boat trips across the beautiful Bayelsa waterways
           </p>
-        </div>
+        </motion.div>
         <FeaturedTrips />
       </section>
 
@@ -66,30 +48,38 @@ export default function Home() {
       <Testimonials />
 
       {/* CTA Section */}
-      <section className="py-20 px-4 md:px-8 bg-gradient-to-r from-primary to-primary/80 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+      <section className="py-24 px-4 md:px-8 relative overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-900)] via-[var(--accent-800)] to-[var(--accent-900)] opacity-50" />
+        <div className="absolute inset-0 glass-modal" />
+        
+        {/* Content */}
+        <div className="relative max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-4xl font-bold mb-6"
           >
-            Ready to Start Your Journey?
-          </motion.h2>
-          <p className="text-xl mb-8 text-white/90">
-            Book your boat trip today and experience the beauty of Bayelsa waterways
-          </p>
-          <Link
-            href="/book"
-            className="inline-block bg-accent text-white px-8 py-3 text-lg font-semibold hover:bg-accent/90 transition-colors rounded-lg"
-          >
-            Book Now →
-          </Link>
+            <h2 className="text-4xl md:text-5xl font-bold text-[var(--fg)] mb-6">
+              Ready to Start Your Journey?
+            </h2>
+            <p className="text-xl text-[var(--fg-muted)] mb-10 max-w-2xl mx-auto leading-relaxed">
+              Book your boat trip today and experience the beauty of Bayelsa waterways. 
+              Safe, reliable, and affordable.
+            </p>
+            <Link href="/book">
+              <Button 
+                size="lg"
+                className="glass-strong border-2 border-[var(--accent-500)] bg-[var(--accent-600)] hover:bg-[var(--accent-500)] text-white shadow-2xl shadow-[var(--accent-900)]/50 text-lg px-8 py-6 h-auto transition-all duration-300 hover:scale-105"
+              >
+                Book Your Trip Now
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <Footer />
-    </main>
+    </PublicLayout>
   )
 }
