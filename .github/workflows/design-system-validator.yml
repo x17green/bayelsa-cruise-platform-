@@ -1,0 +1,167 @@
+name: Design System Compliance Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+      - '.github/instructions/design-system/**'
+
+jobs:
+  validate-design-system:
+    name: Validate Design System Compliance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: 🎨 Check for hardcoded colors
+        id: check-tokens
+        run: |
+          echo "::group::Design Token Validation"
+          node scripts/design-system/validate-tokens.js
+          echo "::endgroup::"
+        continue-on-error: false
+      
+      - name: 🔍 Validate changed components
+        id: check-components
+        run: |
+          echo "::group::Component Validation"
+          
+          # Get list of changed component files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep 'src/components/ui/.*\.tsx' || true)
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No component files changed"
+            exit 0
+          fi
+          
+          echo "Changed components:"
+          echo "$CHANGED_FILES"
+          
+          # Validate each changed component
+          EXIT_CODE=0
+          for file in $CHANGED_FILES; do
+            component=$(basename "$file" .tsx)
+            echo "Validating $component..."
+            node scripts/design-system/validate-component.js "$component" || EXIT_CODE=1
+          done
+          
+          exit $EXIT_CODE
+          echo "::endgroup::"
+        continue-on-error: false
+      
+      - name: 📊 Update migration tracker
+        if: success()
+        run: |
+          echo "::group::Update Tracker"
+          node scripts/design-system/update-tracker.js
+          echo "::endgroup::"
+      
+      - name: 📝 Comment on PR with migration status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read tracker file
+            const trackerPath = path.join(process.cwd(), '.github/instructions/design-system/00-MASTER-TRACKER.instructions.md');
+            let trackerContent = '';
+            
+            try {
+              trackerContent = fs.readFileSync(trackerPath, 'utf-8');
+            } catch (error) {
+              console.log('Could not read tracker file');
+              return;
+            }
+            
+            // Extract progress table
+            const progressMatch = trackerContent.match(/## 📊 Overall Progress([\s\S]*?)##/);
+            const progressTable = progressMatch ? progressMatch[1].trim() : 'Progress data not available';
+            
+            // Extract overall percentage
+            const overallMatch = trackerContent.match(/\*\*Overall: (\d+)% Complete\*\*/);
+            const overallPercent = overallMatch ? overallMatch[1] : '0';
+            
+            // Check if checks passed
+            const tokensPassed = '${{steps.check-tokens.outcome}}' === 'success';
+            const componentsPassed = '${{steps.check-components.outcome}}' === 'success';
+            const allPassed = tokensPassed && componentsPassed;
+            
+            // Build comment
+            const comment = `
+            ## 🎨 Design System Compliance Report
+            
+            **Overall Migration Progress:** ${overallPercent}%
+            
+            ### Validation Results
+            
+            | Check | Status |
+            |-------|--------|
+            | Design Tokens | ${tokensPassed ? '✅ Passed' : '❌ Failed'} |
+            | Components | ${componentsPassed ? '✅ Passed' : '❌ Failed'} |
+            
+            ${allPassed ? 
+              '✅ **All design system checks passed!** This PR is compliant with the design system requirements.' : 
+              '❌ **Design system violations found.** Please fix the issues listed in the workflow logs before merging.'
+            }
+            
+            ### Current Progress
+            
+            ${progressTable}
+            
+            <details>
+            <summary>View detailed tracker</summary>
+            
+            See full migration tracker: [00-MASTER-TRACKER.instructions.md](.github/instructions/design-system/00-MASTER-TRACKER.instructions.md)
+            
+            </details>
+            
+            ---
+            
+            💡 **Need help?** Check the [migration instructions](.github/instructions/design-system/) or use the [component migration prompt](.github/instructions/prompts/migrate-component.prompt.md).
+            `;
+            
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      
+      - name: ❌ Fail if violations found
+        if: failure()
+        run: |
+          echo "::error::Design system compliance checks failed. Review the logs above for details."
+          echo ""
+          echo "Common fixes:"
+          echo "1. Run: npm run design-system:check-tokens"
+          echo "2. Replace hardcoded colors with design tokens"
+          echo "3. Run: npm run design-system:validate-component <name>"
+          echo "4. Fix accessibility issues"
+          echo "5. Re-push changes"
+          echo ""
+          exit 1
+      
+      - name: ✅ Success
+        if: success()
+        run: |
+          echo "::notice::All design system compliance checks passed!"
+          echo "This PR follows the design system guidelines and is ready for review."

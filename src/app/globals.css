@@ -1,0 +1,290 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/**
+ * Blue Waters Design System - Global Styles
+ * 
+ * Source: src/design-system/tokens.ts
+ * Philosophy: Dark-first glassmorphism with conservative government aesthetic
+ */
+
+:root {
+  /* ========================================================================
+     BACKGROUND LAYERS (Dark-first)
+     ======================================================================== */
+  --bg-950: 207 40% 8%;    /* Deepest */
+  --bg-900: 207 40% 12%;   /* App background (dark mode default) */
+  --bg-800: 207 40% 16%;   /* Elevated panels */
+  --bg-700: 207 40% 24%;   /* Hover states */
+  --bg-600: 207 40% 32%;   /* Active states */
+
+  /* ========================================================================
+     FOREGROUND / TEXT COLORS
+     ======================================================================== */
+  --fg: 205 100% 97%;      /* Primary text (dark mode) */
+  --fg-muted: 205 50% 70%; /* Secondary text */
+  --fg-subtle: 205 30% 50%; /* Tertiary text */
+
+  /* ========================================================================
+     ACCENT COLORS (Muted Nautical Blue)
+     ======================================================================== */
+  --accent-900: 207 70% 20%;
+  --accent-800: 207 70% 28%;
+  --accent-700: 207 70% 36%;
+  --accent-600: 207 80% 44%;
+  --accent-500: 207 80% 50%;  /* Primary accent */
+  --accent-400: 207 80% 60%;  /* Hover */
+  --accent-300: 207 80% 70%;  /* Active */
+  --accent-200: 207 80% 80%;
+  --accent-100: 207 80% 90%;
+
+  /* ========================================================================
+     SEMANTIC COLORS
+     ======================================================================== */
+  --success-900: 142 70% 20%;
+  --success-800: 142 70% 28%;
+  --success-700: 142 70% 35%;
+  --success-600: 142 70% 42%;
+  --success-500: 142 70% 45%;
+  --success-300: 142 70% 70%;
+
+  --warning-900: 38 90% 25%;
+  --warning-800: 38 90% 32%;
+  --warning-700: 38 90% 40%;
+  --warning-600: 38 90% 46%;
+  --warning-500: 38 90% 50%;
+  --warning-300: 38 90% 70%;
+
+  --error-900: 0 70% 25%;
+  --error-800: 0 70% 32%;
+  --error-700: 0 70% 40%;
+  --error-600: 0 70% 46%;
+  --error-500: 0 70% 50%;
+  --error-300: 0 70% 70%;
+
+  --info-900: 200 80% 25%;
+  --info-700: 200 80% 40%;
+  --info-500: 200 80% 50%;
+  --info-300: 200 80% 70%;
+
+  /* ========================================================================
+     BORDER COLORS
+     ======================================================================== */
+  --border-subtle: 207 30% 25%;
+  --border-default: 207 30% 35%;
+  --border-emphasis: 207 30% 45%;
+
+  /* ========================================================================
+     NEUTRAL COLORS
+     ======================================================================== */
+  --neutral-900: 207 20% 20%;
+  --neutral-800: 207 20% 30%;
+  --neutral-700: 207 20% 40%;
+  --neutral-600: 207 20% 50%;
+  --neutral-500: 207 20% 60%;
+  --neutral-400: 207 20% 70%;
+  --neutral-300: 207 20% 80%;
+  --neutral-200: 207 20% 90%;
+  --neutral-100: 207 20% 95%;
+
+  /* ========================================================================
+     GLASSMORPHISM TOKENS
+     ======================================================================== */
+  --glass-01: rgba(255, 255, 255, 0.03);
+  --glass-02: rgba(255, 255, 255, 0.05);
+  --glass-03: rgba(255, 255, 255, 0.08);
+  --glass-04: rgba(255, 255, 255, 0.12);
+
+  --blur-subtle: 4px;
+  --blur-base: 8px;
+  --blur-strong: 12px;
+  --blur-modal: 16px;
+
+  /* ========================================================================
+     SHADOWS
+     ======================================================================== */
+  --shadow-soft: 0 6px 20px rgba(4, 8, 16, 0.6);
+  --shadow-medium: 0 10px 40px rgba(4, 8, 16, 0.7);
+  --shadow-strong: 0 20px 60px rgba(4, 8, 16, 0.8);
+
+  /* ========================================================================
+     BORDER RADIUS
+     ======================================================================== */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-md: 0.75rem;    /* 12px */
+  --radius-lg: 1.25rem;    /* 20px */
+  --radius-xl: 1.5rem;     /* 24px */
+  --radius-2xl: 2rem;      /* 32px */
+  --radius-full: 9999px;
+
+  /* ========================================================================
+     Z-INDEX LAYERING
+     ======================================================================== */
+  --z-base: 0;
+  --z-default: 1;
+  --z-elevated: 200;
+  --z-overlay: 400;
+  --z-sticky: 600;
+  --z-header: 800;
+  --z-dropdown: 1000;
+  --z-popover: 1200;
+  --z-modal: 1400;
+  --z-tooltip: 1600;
+
+  /* ========================================================================
+     TRANSITIONS
+     ======================================================================== */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+
+  /* ========================================================================
+     LEGACY COMPATIBILITY (for existing components)
+     These map old tokens to new design system tokens
+     TODO: Remove after migration complete
+     ======================================================================== */
+  --background: var(--bg-900);
+  --foreground: var(--fg);
+  --card: var(--bg-800);
+  --card-foreground: var(--fg);
+  --popover: var(--bg-800);
+  --popover-foreground: var(--fg);
+  --primary: var(--accent-500);
+  --primary-foreground: var(--fg);
+  --secondary: var(--accent-300);
+  --secondary-foreground: var(--bg-900);
+  --muted: var(--neutral-700);
+  --muted-foreground: var(--fg-muted);
+  --accent: var(--accent-500);
+  --accent-foreground: var(--fg);
+  --destructive: var(--error-500);
+  --destructive-foreground: var(--fg);
+  --border: var(--border-default);
+  --input: var(--bg-700);
+  --ring: var(--accent-500);
+  --radius: var(--radius-md);
+  
+  /* Sidebar compatibility */
+  --sidebar-background: var(--bg-900);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--accent-500);
+  --sidebar-primary-foreground: var(--fg);
+  --sidebar-accent: var(--accent-400);
+  --sidebar-accent-foreground: var(--fg);
+  --sidebar-border: var(--border-default);
+  --sidebar-ring: var(--accent-500);
+  
+  /* Chart compatibility */
+  --chart-1: var(--accent-500);
+  --chart-2: var(--info-500);
+  --chart-3: var(--success-500);
+  --chart-4: var(--accent-300);
+  --chart-5: var(--info-300);
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  font-family: Arial, Helvetica, sans-serif;
+  color: hsl(var(--foreground));
+}
+
+/* ============================================================================
+   GLASSMORPHISM UTILITY CLASSES
+   ============================================================================ */
+
+/**
+ * Base glass effect
+ * Standard glassmorphism for cards and panels
+ */
+.glass {
+  background: linear-gradient(
+    180deg,
+    var(--glass-03) 0%,
+    var(--glass-02) 100%
+  );
+  backdrop-filter: blur(var(--blur-base)) saturate(100%);
+  -webkit-backdrop-filter: blur(var(--blur-base)) saturate(100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-soft);
+}
+
+/**
+ * Subtle glass variant
+ * For primary surfaces that need minimal glass effect
+ */
+.glass-subtle {
+  background: var(--glass-01);
+  backdrop-filter: blur(var(--blur-subtle)) saturate(100%);
+  -webkit-backdrop-filter: blur(var(--blur-subtle)) saturate(100%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 2px 8px rgba(4, 8, 16, 0.4);
+}
+
+/**
+ * Strong glass variant
+ * For secondary cards and emphasized elements
+ */
+.glass-strong {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    var(--glass-03) 100%
+  );
+  backdrop-filter: blur(var(--blur-strong)) saturate(110%);
+  -webkit-backdrop-filter: blur(var(--blur-strong)) saturate(110%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-medium);
+}
+
+/**
+ * Modal glass variant
+ * For modals and overlays with strongest blur
+ */
+.glass-modal {
+  background: rgba(15, 23, 27, 0.85);
+  backdrop-filter: blur(var(--blur-modal)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-modal)) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-strong);
+}
+
+/**
+ * Glass hover state
+ * Enhances glass effect on hover
+ */
+.glass-hover {
+  transition: all var(--transition-normal) ease;
+}
+
+.glass-hover:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    var(--glass-03) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-medium);
+}
+
+/**
+ * Reduced motion fallback
+ * Removes blur effects for users who prefer reduced motion
+ */
+@media (prefers-reduced-motion: reduce) {
+  .glass,
+  .glass-subtle,
+  .glass-strong,
+  .glass-modal {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .glass-hover {
+    transition: none;
+  }
+}

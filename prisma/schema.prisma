@@ -1,0 +1,443 @@
+// prisma/schema.prisma
+// Bayelsa Boat Cruise Booking System - Advanced Seat Management
+// Integrated with Supabase Authentication
+// Run: npx prisma migrate dev --name init
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/lib/prisma.generated"
+}
+
+enum TripScheduleStatus {
+  scheduled
+  in_progress
+  completed
+  cancelled
+}
+
+enum BookingStatus {
+  pending
+  held
+  paid
+  confirmed
+  cancelled
+  refunded
+  expired
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  refunded
+  refund_pending
+}
+
+enum CheckinStatus {
+  not_checked_in
+  checked_in
+  no_show
+}
+
+enum UserRole {
+  customer
+  operator
+  staff
+  admin
+}
+
+enum EmailType {
+  booking_confirmation
+  payment_receipt
+  booking_reminder
+  cancellation_notice
+  password_reset
+  welcome
+}
+
+enum NotificationChannel {
+  email
+  sms
+  push
+}
+
+// User table - Synced with Supabase auth.users
+// ID must match auth.users(id) from Supabase
+model User {
+  id                String    @id @db.Uuid
+  email             String?   @unique
+  phone             String?
+  fullName          String?
+  role              UserRole  @default(customer)
+  profilePictureUrl String?
+  isActive          Boolean   @default(true)
+  metadata          Json?     @default("{}")
+  bookings          Booking[]
+  operators         Operator[]
+  manifests         Manifest[]
+  checkins          Checkin[]
+  seatLocks         SeatLock[]
+  reviews           Review[]
+  emailLogs         EmailLog[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime? // Soft delete
+
+  @@map("users")
+}
+
+model Operator {
+  id                String   @id @default(uuid())
+  user              User?    @relation(fields: [userId], references: [id])
+  userId            String?  @db.Uuid
+  organizationName  String?
+  companyName       String?  // Business/trading name
+  contactEmail      String?
+  contactPhone      String?
+  verified          Boolean  @default(false)
+  rating            Decimal? @db.Decimal(3,2) // Average rating (0.00-5.00)
+  metadata          Json?    @default("{}")
+  vessels           Vessel[]
+  trips             Trip[]
+  bookings          Booking[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deletedAt         DateTime? // Soft delete
+}
+
+model Vessel {
+  id              String   @id @default(uuid())
+  operator        Operator @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  operatorId      String
+  name            String
+  registrationNo  String?
+  capacity        Int
+  description     String?
+  vesselMetadata  Json?    @default("{}")
+  trips           Trip[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime? // Soft delete
+}
+
+model Trip {
+  id                 String          @id @default(uuid())
+  vessel             Vessel          @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  vesselId           String
+  operator           Operator?       @relation(fields: [operatorId], references: [id])
+  operatorId         String?
+  title              String
+  description        String?
+  category           String?         // e.g., "river-cruise", "sunset-tour", "private-charter"
+  externalReference  String?
+  durationMinutes    Int?
+  isRecurring        Boolean         @default(false)
+  amenities          Json?           @default("[]") // ["wifi", "drinks", "meals"]
+  highlights         Json?           @default("[]") // ["Scenic views", "Dinner included"]
+  isActive           Boolean         @default(true)
+  schedules          TripSchedule[]
+  reviews            Review[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  deletedAt          DateTime?       // Soft delete
+  
+  @@index([category])
+  @@index([isActive])
+}
+
+model TripSchedule {
+  id             String              @id @default(uuid())
+  trip           Trip                @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId         String
+  startTime      DateTime
+  endTime        DateTime
+  capacity       Int
+  bookedSeats    Int                 @default(0)
+  status         TripScheduleStatus  @default(scheduled)
+  departurePort  String?
+  arrivalPort    String?
+  baseCurrency   String              @default("NGN")
+  priceTiers     PriceTier[]
+  tripSeats      TripSeat[]
+  bookings       Booking[]
+  manifests      Manifest[]
+  seatLocks      SeatLock[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([tripId, startTime])
+  @@index([startTime])
+  @@index([status])
+}
+
+model PriceTier {
+  id               String      @id @default(uuid())
+  tripSchedule     TripSchedule @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
+  tripScheduleId   String
+  name             String
+  description      String?
+  amountKobo       BigInt
+  priceKobo        Int?        // Convenience field for API (derived from amountKobo)
+  capacity         Int?
+  position         Int       @default(0)
+  bookingItems     BookingItem[]
+  bookings         Booking[]   // Direct relation for simplified API
+  passengers       Passenger[] // Direct relation for simplified API
+  promoCodes       PromoCode[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tripSeats TripSeat[]
+}
+
+model TripSeat {
+  id              String      @id @default(uuid())
+  tripSchedule    TripSchedule @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
+  tripScheduleId  String
+  seatLabel       String
+  tier            PriceTier?  @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  tierId          String?
+  isActive        Boolean     @default(true)
+  bookingItem     BookingItem?
+  seatLocks       SeatLock[]
+  createdAt       DateTime    @default(now())
+
+  @@unique([tripScheduleId, seatLabel])
+}
+
+model Booking {
+  id               String        @id @default(uuid())
+  user             User?         @relation(fields: [userId], references: [id])
+  userId           String?       @db.Uuid
+  tripSchedule     TripSchedule  @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
+  tripScheduleId   String
+  operator         Operator?     @relation(fields: [operatorId], references: [id])
+  operatorId       String?
+  priceTier        PriceTier?    @relation(fields: [priceTierId], references: [id])
+  priceTierId      String?
+  status           BookingStatus @default(pending)
+  paymentStatus    PaymentStatus @default(pending)
+  bookingReference String?       @unique // Generated by app, optional for existing records
+  numberOfPassengers Int?        // Total passengers in booking
+  totalAmountKobo  BigInt
+  currency         String        @default("NGN")
+  holdExpiresAt    DateTime?
+  promoCode        String?       // Applied promo code
+  discountKobo     BigInt?       // Discount amount
+  qrCode           String?       // QR code for check-in
+  confirmedAt      DateTime?     // When payment was confirmed
+  failureReason    String?       // Reason for payment failure
+  metadata         Json?         @default("{}")
+  items            BookingItem[]
+  payments         Payment[]
+  seatLocks        SeatLock[]
+  passengers       Passenger[]
+  checkinRecords   Checkin[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  cancelledAt      DateTime?     // Soft delete for bookings
+
+  @@index([userId, status])
+  @@index([bookingReference])
+  @@index([paymentStatus])
+}
+
+model BookingItem {
+  id             String        @id @default(uuid())
+  booking        Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId      String
+  priceTier      PriceTier?    @relation(fields: [priceTierId], references: [id], onDelete: SetNull)
+  priceTierId    String?
+  tripSeat       TripSeat?     @relation(fields: [tripSeatId], references: [id], onDelete: SetNull)
+  tripSeatId     String?    @unique
+  passengerName  String?
+  passengerPhone String?
+  ticketReference String?
+  status         CheckinStatus @default(not_checked_in)
+  checkin        Checkin?
+  createdAt      DateTime      @default(now())
+
+  @@index([bookingId])
+}
+
+model Payment {
+  id                 String        @id @default(uuid())
+  booking            Booking?      @relation(fields: [bookingId], references: [id])
+  bookingId          String?
+  provider           String
+  providerPaymentId  String?
+  status             PaymentStatus @default(pending)
+  amountKobo         BigInt
+  currency           String        @default("NGN")
+  rawResponse        Json?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([bookingId])
+}
+
+model WebhookEvent {
+  id                String   @id @default(uuid())
+  provider          String
+  eventType         String
+  providerEventId   String   @unique
+  payload           Json
+  signature         String?
+  receivedAt        DateTime @default(now())
+  processed         Boolean  @default(false)
+  processedAt       DateTime?
+  processingError   String?
+}
+
+model Manifest {
+  id              String      @id @default(uuid())
+  tripSchedule    TripSchedule @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
+  tripScheduleId  String
+  generatedBy     User?       @relation(fields: [generatedById], references: [id])
+  generatedById   String?     @db.Uuid
+  generatedAt     DateTime    @default(now())
+  payload         Json
+}
+
+// Passenger manifests for bookings
+model Passenger {
+  id               String      @id @default(uuid())
+  booking          Booking     @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId        String
+  priceTier        PriceTier?  @relation(fields: [priceTierId], references: [id])
+  priceTierId      String?
+  fullName         String
+  phone            String?
+  email            String?
+  emergencyContact String?
+  specialNeeds     String?
+  metadata         Json?       @default("{}")
+  checkin          Checkin?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  
+  @@index([bookingId])
+}
+
+model Checkin {
+  id             String       @id @default(uuid())
+  bookingItem    BookingItem? @relation(fields: [bookingItemId], references: [id], onDelete: Cascade)
+  bookingItemId  String?      @unique
+  booking        Booking?     @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId      String?
+  passenger      Passenger?   @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  passengerId    String?      @unique
+  checkedInBy    User?        @relation(fields: [checkedInById], references: [id])
+  checkedInById  String?      @db.Uuid
+  checkedInAt    DateTime     @default(now())
+  method         String       @default("qr")
+}
+
+model SeatLock {
+  id             String      @id @default(uuid())
+  tripSchedule   TripSchedule @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
+  tripScheduleId String
+  tripSeat       TripSeat?    @relation(fields: [tripSeatId], references: [id], onDelete: SetNull)
+  tripSeatId     String?
+  booking        Booking?     @relation(fields: [bookingId], references: [id])
+  bookingId      String?
+  lockedBy       User?        @relation(fields: [lockedById], references: [id])
+  lockedById     String?      @db.Uuid
+  lockedAt       DateTime     @default(now())
+  expiresAt      DateTime
+  
+  @@unique([tripScheduleId, tripSeatId])
+  @@index([tripScheduleId])
+}
+
+// ============================================
+// ENHANCEMENT TABLES
+// ============================================
+
+// Audit Log for tracking entity changes
+model AuditLog {
+  id          String   @id @default(uuid())
+  entityType  String   // "Trip", "Booking", "Vessel", etc.
+  entityId    String   // UUID of the entity
+  action      String   // "created", "updated", "deleted", "archived"
+  userId      String?  @db.Uuid // Who made the change
+  changes     Json?    // JSON diff of what changed
+  metadata    Json?    @default("{}")
+  createdAt   DateTime @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Email & SMS Notification Tracking
+model EmailLog {
+  id              String              @id @default(uuid())
+  user            User?               @relation(fields: [userId], references: [id])
+  userId          String?             @db.Uuid
+  recipient       String              // Email or phone number
+  channel         NotificationChannel
+  type            EmailType
+  subject         String?
+  body            String?             @db.Text
+  metadata        Json?               @default("{}")
+  provider        String?             // SendGrid, Resend, Twilio, etc
+  providerMsgId   String?
+  status          String              @default("pending") // pending, sent, failed, bounced
+  errorMessage    String?
+  sentAt          DateTime?
+  createdAt       DateTime            @default(now())
+
+  @@index([userId, type])
+  @@index([status, createdAt])
+}
+
+// Trip Reviews & Ratings
+model Review {
+  id              String      @id @default(uuid())
+  trip            Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId          String
+  user            User        @relation(fields: [userId], references: [id])
+  userId          String      @db.Uuid
+  rating          Int         // 1-5 stars
+  title           String?
+  comment         String?     @db.Text
+  isVerified      Boolean     @default(false) // Only verified bookings can review
+  isPublic        Boolean     @default(true)
+  adminResponse   String?     @db.Text
+  respondedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([tripId, userId]) // One review per user per trip
+  @@index([tripId, rating])
+  @@index([isPublic, isVerified])
+}
+
+// Promotional Codes & Discounts
+model PromoCode {
+  id              String      @id @default(uuid())
+  code            String      @unique
+  description     String?
+  discountType    String      // percentage, fixed_amount
+  discountValue   Int         // percentage (0-100) or amount in kobo
+  priceTier       PriceTier?  @relation(fields: [priceTierId], references: [id])
+  priceTierId     String?     // Optional: limit to specific tier
+  minPurchase     BigInt?     // Minimum purchase amount in kobo
+  maxDiscount     BigInt?     // Maximum discount cap in kobo
+  usageLimit      Int?        // Total usage limit
+  usageCount      Int         @default(0)
+  perUserLimit    Int?        // Limit per user
+  validFrom       DateTime
+  validUntil      DateTime
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([code, isActive])
+  @@index([validFrom, validUntil])
+}
