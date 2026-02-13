@@ -1,5 +1,6 @@
 // prisma/schema.prisma
-// Generated for Bayelsa Boat Cruise Booking System
+// Bayelsa Boat Cruise Booking System - Advanced Seat Management
+// Integrated with Supabase Authentication
 // Run: npx prisma migrate dev --name init
 
 datasource db {
@@ -34,26 +35,39 @@ enum CheckinStatus {
   no_show
 }
 
+enum UserRole {
+  customer
+  operator
+  staff
+  admin
+}
+
+// User table - Synced with Supabase auth.users
+// ID must match auth.users(id) from Supabase
 model User {
-  id            String    @id @default(uuid())
-  email         String?   @unique
-  phone         String?
-  fullName      String?
-  passwordHash  String?
-  metadata      Json?     @default("{}")
-  bookings      Booking[]
-  operators     Operator[]
-  manifests     Manifest[]
-  checkins      Checkin[]
-  seatLocks     SeatLock[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String    @id @db.Uuid
+  email             String?   @unique
+  phone             String?
+  fullName          String?
+  role              UserRole  @default(customer)
+  profilePictureUrl String?
+  isActive          Boolean   @default(true)
+  metadata          Json?     @default("{}")
+  bookings          Booking[]
+  operators         Operator[]
+  manifests         Manifest[]
+  checkins          Checkin[]
+  seatLocks         SeatLock[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("users")
 }
 
 model Operator {
   id                String   @id @default(uuid())
   user              User?    @relation(fields: [userId], references: [id])
-  userId            String?
+  userId            String?  @db.Uuid
   organizationName  String?
   contactEmail      String?
   contactPhone      String?
@@ -147,7 +161,7 @@ model TripSeat {
 model Booking {
   id               String        @id @default(uuid())
   user             User?         @relation(fields: [userId], references: [id])
-  userId           String?
+  userId           String?       @db.Uuid
   tripSchedule     TripSchedule  @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
   tripScheduleId   String
   operator         Operator?     @relation(fields: [operatorId], references: [id])
@@ -218,7 +232,7 @@ model Manifest {
   tripSchedule    TripSchedule @relation(fields: [tripScheduleId], references: [id], onDelete: Cascade)
   tripScheduleId  String
   generatedBy     User?       @relation(fields: [generatedById], references: [id])
-  generatedById   String?
+  generatedById   String?     @db.Uuid
   generatedAt     DateTime    @default(now())
   payload         Json
 }
@@ -228,7 +242,7 @@ model Checkin {
   bookingItem    BookingItem  @relation(fields: [bookingItemId], references: [id], onDelete: Cascade)
   bookingItemId  String       @unique
   checkedInBy    User?        @relation(fields: [checkedInById], references: [id])
-  checkedInById  String?
+  checkedInById  String?      @db.Uuid
   checkedInAt    DateTime     @default(now())
   method         String       @default("qr")
 }
@@ -242,7 +256,7 @@ model SeatLock {
   booking        Booking?     @relation(fields: [bookingId], references: [id])
   bookingId      String?
   lockedBy       User?        @relation(fields: [lockedById], references: [id])
-  lockedById     String?
+  lockedById     String?      @db.Uuid
   lockedAt       DateTime     @default(now())
   expiresAt      DateTime
   
