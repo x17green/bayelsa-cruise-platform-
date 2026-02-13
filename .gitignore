@@ -37,6 +37,8 @@ next-env.d.ts
 # ==================================
 # Keep schema, exclude generated client (regenerate after clone)
 # node_modules/@prisma/ already covered by node_modules/
+prisma/generated/
+src/lib/prisma.generated/  # Custom output location
 
 # ==================================
 # SUPABASE

@@ -9,7 +9,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client"
-  output = "./generated/prisma"
+  output   = "../src/lib/prisma.generated"
 }
 
 enum BookingStatus {
@@ -42,6 +42,21 @@ enum UserRole {
   admin
 }
 
+enum EmailType {
+  booking_confirmation
+  payment_receipt
+  booking_reminder
+  cancellation_notice
+  password_reset
+  welcome
+}
+
+enum NotificationChannel {
+  email
+  sms
+  push
+}
+
 // User table - Synced with Supabase auth.users
 // ID must match auth.users(id) from Supabase
 model User {
@@ -58,8 +73,11 @@ model User {
   manifests         Manifest[]
   checkins          Checkin[]
   seatLocks         SeatLock[]
+  reviews           Review[]
+  emailLogs         EmailLog[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime? // Soft delete
 
   @@map("users")
 }
@@ -77,6 +95,7 @@ model Operator {
   bookings          Booking[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  deletedAt         DateTime? // Soft delete
 }
 
 model Vessel {
@@ -91,6 +110,7 @@ model Vessel {
   trips           Trip[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  deletedAt       DateTime? // Soft delete
 }
 
 model Trip {
@@ -103,8 +123,10 @@ model Trip {
   durationMinutes    Int?
   isRecurring        Boolean         @default(false)
   schedules          TripSchedule[]
+  reviews            Review[]
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
+  deletedAt          DateTime?       // Soft delete
 }
 
 model TripSchedule {
@@ -137,6 +159,7 @@ model PriceTier {
   capacity         Int?
   position         Int       @default(0)
   bookingItems     BookingItem[]
+  promoCodes       PromoCode[]
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -170,12 +193,15 @@ model Booking {
   totalAmountKobo  BigInt
   currency         String        @default("NGN")
   holdExpiresAt    DateTime?
+  promoCode        String?       // Applied promo code
+  discountKobo     BigInt?       // Discount amount
   metadata         Json?         @default("{}")
   items            BookingItem[]
   payments         Payment[]
   seatLocks        SeatLock[]
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  cancelledAt      DateTime?     // Soft delete for bookings
 
   @@index([userId, status])
 }
@@ -262,4 +288,76 @@ model SeatLock {
   
   @@unique([tripScheduleId, tripSeatId])
   @@index([tripScheduleId])
+}
+
+// ============================================
+// ENHANCEMENT TABLES
+// ============================================
+
+// Email & SMS Notification Tracking
+model EmailLog {
+  id              String              @id @default(uuid())
+  user            User?               @relation(fields: [userId], references: [id])
+  userId          String?             @db.Uuid
+  recipient       String              // Email or phone number
+  channel         NotificationChannel
+  type            EmailType
+  subject         String?
+  body            String?             @db.Text
+  metadata        Json?               @default("{}")
+  provider        String?             // SendGrid, Resend, Twilio, etc
+  providerMsgId   String?
+  status          String              @default("pending") // pending, sent, failed, bounced
+  errorMessage    String?
+  sentAt          DateTime?
+  createdAt       DateTime            @default(now())
+
+  @@index([userId, type])
+  @@index([status, createdAt])
+}
+
+// Trip Reviews & Ratings
+model Review {
+  id              String      @id @default(uuid())
+  trip            Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId          String
+  user            User        @relation(fields: [userId], references: [id])
+  userId          String      @db.Uuid
+  rating          Int         // 1-5 stars
+  title           String?
+  comment         String?     @db.Text
+  isVerified      Boolean     @default(false) // Only verified bookings can review
+  isPublic        Boolean     @default(true)
+  adminResponse   String?     @db.Text
+  respondedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([tripId, userId]) // One review per user per trip
+  @@index([tripId, rating])
+  @@index([isPublic, isVerified])
+}
+
+// Promotional Codes & Discounts
+model PromoCode {
+  id              String      @id @default(uuid())
+  code            String      @unique
+  description     String?
+  discountType    String      // percentage, fixed_amount
+  discountValue   Int         // percentage (0-100) or amount in kobo
+  priceTier       PriceTier?  @relation(fields: [priceTierId], references: [id])
+  priceTierId     String?     // Optional: limit to specific tier
+  minPurchase     BigInt?     // Minimum purchase amount in kobo
+  maxDiscount     BigInt?     // Maximum discount cap in kobo
+  usageLimit      Int?        // Total usage limit
+  usageCount      Int         @default(0)
+  perUserLimit    Int?        // Limit per user
+  validFrom       DateTime
+  validUntil      DateTime
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([code, isActive])
+  @@index([validFrom, validUntil])
 }
