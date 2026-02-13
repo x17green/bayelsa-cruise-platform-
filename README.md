@@ -356,7 +356,7 @@ For issues or questions:
 
 ## License
 
-This project is built for the Ministry of Blue Waters in Bayelsa, Nigeria.
+This project is built for the Ministry of Maritime and Blue Economy in Bayelsa, Nigeria.
 
 MIT License © 2026 Bayelsa Cruise Systems.
 
