@@ -195,7 +195,7 @@ const SheetTitle = React.forwardRef<
     className={cn(
       'text-lg font-semibold',
       'text-fg-DEFAULT',
-      className
+      className,
     )}
     {...props}
   />
@@ -211,7 +211,7 @@ const SheetDescription = React.forwardRef<
     className={cn(
       'text-sm',
       'text-fg-muted',
-      className
+      className,
     )}
     {...props}
   />

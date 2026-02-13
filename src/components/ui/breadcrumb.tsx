@@ -136,7 +136,7 @@ const BreadcrumbSeparator = ({
     className={cn(
       'text-fg-subtle',
       '[&>svg]:w-3.5 [&>svg]:h-3.5',
-      className
+      className,
     )}
     {...props}
   >
@@ -155,7 +155,7 @@ const BreadcrumbEllipsis = ({
     className={cn(
       'flex h-9 w-9 items-center justify-center',
       'text-fg-subtle',
-      className
+      className,
     )}
     {...props}
   >

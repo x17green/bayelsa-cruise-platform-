@@ -94,7 +94,7 @@ const TableHeader = React.forwardRef<
     className={cn(
       'border-b border-border-default',
       '[&_tr]:border-b',
-      className
+      className,
     )} 
     {...props} 
   />
@@ -111,7 +111,7 @@ const TableBody = React.forwardRef<
       '[&_tr:last-child]:border-0',
       // Zebra striping for better readability
       '[&_tr:nth-child(even)]:bg-glass-01',
-      className
+      className,
     )}
     {...props}
   />
@@ -217,7 +217,7 @@ const TableCell = React.forwardRef<
       'p-4 align-middle',
       'text-fg-DEFAULT',
       '[&:has([role=checkbox])]:pr-0',
-      className
+      className,
     )}
     {...props}
   />
@@ -234,7 +234,7 @@ const TableCaption = React.forwardRef<
       'mt-4',
       'text-sm',
       'text-fg-muted',
-      className
+      className,
     )}
     {...props}
   />

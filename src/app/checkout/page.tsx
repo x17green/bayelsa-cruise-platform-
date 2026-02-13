@@ -1,11 +1,11 @@
 'use client'
 
-import { Card, CardBody, CardHeader, Checkbox, Input, Navbar, NavbarBrand, NavbarContent, NavbarItem, Button as NextUIButton, Tabs as NextUITabs, Select, SelectItem, Tab } from '@nextui-org/react'
+import { Card, CardBody, CardHeader, Checkbox, Input, Navbar, NavbarBrand, Select, SelectItem } from '@nextui-org/react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Building2, CheckCircle, CreditCard, Smartphone } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
 
 import { Button } from '@/src/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
@@ -18,7 +18,7 @@ const mockTrips: any = {
   '4': { name: 'Evening Cruise', price: 12000 },
 }
 
-export default function Checkout() {
+function CheckoutContent() {
   const searchParams = useSearchParams()
   const tripId = searchParams.get('trip')
   const passengersCount = Number(searchParams.get('passengers')) || 1
@@ -68,7 +68,8 @@ export default function Checkout() {
       const { data: { user } } = await supabase.auth.getUser()
 
       const bookingRef = generateBookingReference()
-      const bookingData = {
+      // TODO: Insert booking into database when backend is ready
+      const _bookingData = {
         user_id: user?.id,
         trip_id: tripId,
         number_of_passengers: passengersCount,
@@ -440,5 +441,36 @@ export default function Checkout() {
         </div>
       </div>
     </main>
+  )
+}
+
+function CheckoutLoadingFallback() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+      <Navbar className="bg-primary/10 backdrop-blur-lg border-b border-primary/20">
+        <NavbarBrand>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <span className="text-white font-bold text-lg">⛵</span>
+            </div>
+            <p className="font-bold text-xl text-primary">Blue Waters</p>
+          </Link>
+        </NavbarBrand>
+      </Navbar>
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-primary/20 rounded w-1/3"></div>
+          <div className="h-64 bg-primary/10 rounded"></div>
+        </div>
+      </div>
+    </main>
+  )
+}
+
+export default function Checkout() {
+  return (
+    <Suspense fallback={<CheckoutLoadingFallback />}>
+      <CheckoutContent />
+    </Suspense>
   )
 }

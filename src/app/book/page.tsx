@@ -49,7 +49,7 @@ const mockTrips = [
     capacity: 60,
     duration: '4 hours',
     amenities: ['Lunch', 'Photo Tour', 'WiFi', 'AC'],
-    image: 'https://images.unsplash.com/photo-1552053831-71594a27c62d?w=500&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1745412219587-d9c91c383e14?w=500&h=300&fit=crop',
   },
   {
     id: 4,
@@ -63,7 +63,7 @@ const mockTrips = [
     capacity: 30,
     duration: '5 hours',
     amenities: ['Dinner', 'Entertainment', 'WiFi', 'Bar Service'],
-    image: 'https://images.unsplash.com/photo-1578962996442-48f60103fc96?w=500&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1766939367026-5ddcdf16f362?w=500&h=300&fit=crop',
   },
 ]
 

@@ -27,7 +27,7 @@ const trips = [
     reviews: 521,
     duration: '4 hours',
     capacity: 60,
-    image: 'https://images.unsplash.com/photo-1552053831-71594a27c62d?w=500&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1745412219587-d9c91c383e14?w=500&h=300&fit=crop',
     tag: 'Best Rated',
   },
   {
@@ -51,7 +51,7 @@ const trips = [
     reviews: 156,
     duration: '5 hours',
     capacity: 30,
-    image: 'https://images.unsplash.com/photo-1578962996442-48f60103fc96?w=500&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1766939367026-5ddcdf16f362?w=500&h=300&fit=crop',
     tag: 'Premium',
   },
 ]
