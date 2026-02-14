@@ -15,7 +15,9 @@
     "design-system:check-tokens": "node scripts/design-system/validate-tokens.js",
     "design-system:check-tokens:filter": "node scripts/design-system/validate-tokens.js --filter",
     "design-system:validate-component": "node scripts/design-system/validate-components.js",
-    "design-system:validate-all": "npm run design-system:check-tokens && echo '✅ All design system validations passed'"
+    "design-system:validate-all": "npm run design-system:check-tokens && echo '✅ All design system validations passed'",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -84,6 +86,14 @@
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^20.4.1",
+    "@storybook/addon-a11y": "^8.6.15",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/addon-links": "^8.6.15",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/nextjs": "^8.6.15",
+    "@storybook/react": "^8.6.15",
+    "@storybook/test": "^8.6.15",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^22",
     "@types/papaparse": "^5.5.2",
@@ -100,6 +110,7 @@
     "pg": "^8.18.0",
     "postcss": "^8.5",
     "prisma": "^7.4.0",
+    "storybook": "^8.6.15",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.21.0",
     "typescript": "5.7.3"

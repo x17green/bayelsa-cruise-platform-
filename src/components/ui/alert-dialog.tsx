@@ -127,7 +127,7 @@ const AlertDialogContent = React.forwardRef<
         // Glassmorphism
         'bg-glass-03 backdrop-blur-base',
         'border border-glass',
-        'shadow-[0_8px_32px_rgba(0,0,0,0.3)]',
+        'shadow-large',
         // Animation duration
         'duration-200',
         // Animations - entry
