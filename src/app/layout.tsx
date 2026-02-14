@@ -1,0 +1,42 @@
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+
+import './globals.css'
+import { Providers } from '@/src/components/providers'
+
+const geistSans = Geist({ 
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
+})
+
+const geistMono = Geist_Mono({ 
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+})
+
+export const metadata: Metadata = {
+  title: 'Blue Waters - Boat Booking Platform | Ministry of Blue Waters',
+  description: 'Book safe, reliable, and affordable boat trips across Bayelsa waterways. Experience the beauty of water travel with Blue Waters.',
+  keywords: 'boat booking, bayelsa, water transport, cruise, boat rental',
+  openGraph: {
+    title: 'Blue Waters - Boat Booking Platform',
+    description: 'Book safe, reliable, and affordable boat trips across Bayelsa waterways',
+    type: 'website',
+  },
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  )
+}
