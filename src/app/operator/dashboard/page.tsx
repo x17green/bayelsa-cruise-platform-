@@ -105,47 +105,6 @@ export default function OperatorDashboard() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      {/* Navigation */}
-      <Navbar className="bg-primary/10 backdrop-blur-lg border-b border-primary/20">
-        <NavbarBrand>
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-white font-bold text-lg">⛵</span>
-            </div>
-            <p className="font-bold text-xl text-primary">Blue Waters</p>
-          </Link>
-        </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          <NavbarItem>
-            <Link href="#" className="text-foreground/70 hover:text-primary transition-colors">
-              My Boats
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link href="#" className="text-foreground/70 hover:text-primary transition-colors">
-              Bookings
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link href="#" className="text-foreground/70 hover:text-primary transition-colors">
-              Earnings
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-        <NavbarContent justify="end">
-          <NavbarItem>
-            <Button
-              variant="ghost"
-              onClick={handleLogout}
-              className="text-primary"
-              startIcon={<Icon path={mdiLogout} size={0.6} aria-hidden={true} />}
-            >
-              Logout
-            </Button>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
-
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         {/* Header */}
         <motion.div

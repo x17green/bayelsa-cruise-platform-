@@ -100,29 +100,6 @@ export default function Book() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-bg-100 to-bg-900">
-      {/* Navigation */}
-      <Navbar className="glass-subtle border-b border-border">
-        <NavbarBrand>
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">⛵</span>
-            </div>
-            <p className="font-bold text-xl text-accent-500">Blue Waters</p>
-          </Link>
-        </NavbarBrand>
-        <NavbarContent justify="end">
-          <NavbarItem>
-            <Button
-              href="/login"
-              variant="ghost"
-              className="text-accent-500"
-            >
-              Sign In
-            </Button>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
-
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
         {/* Header */}
         <motion.div

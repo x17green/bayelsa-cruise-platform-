@@ -6,8 +6,7 @@ import {
   mdiCalendar,
   mdiLogout,
   mdiMapMarker,
-  mdiAccount,
-  mdiWaves
+  mdiAccount
 } from '@mdi/js'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

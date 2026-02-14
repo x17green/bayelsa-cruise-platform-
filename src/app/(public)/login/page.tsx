@@ -2,12 +2,13 @@
 
 import { motion } from 'framer-motion'
 import Icon from '@mdi/react'
-import { mdiAlertCircle, mdiLock, mdiEmail, mdiWaves } from '@mdi/js'
+import { mdiAlertCircle, mdiLock, mdiEmail } from '@mdi/js'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 
 import { login } from '@/src/app/auth/actions'
 import { Button } from '@/src/components/ui/button'
+import { BlueWatersWordmark } from '@/src/components/brand'
 
 /**
  * Login Page
@@ -45,8 +46,8 @@ export default function LogIn() {
         >
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 mb-6 ring-4 ring-accent-900 ring-offset-4 ring-offset-bg-900">
-              <Icon path={mdiWaves} size={1.33} className="text-white" aria-hidden={true} />
+            <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
+              <BlueWatersWordmark size="lg" showText={false} priority />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-fg mb-3">
               Welcome Back

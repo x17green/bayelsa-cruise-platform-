@@ -13,7 +13,6 @@ import {
   mdiCog,
   mdiFerry,
   mdiAccountGroup,
-  mdiWaves,
   mdiClose
 } from '@mdi/js'
 import Link from 'next/link'
