@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Icon from '@mdi/react'
 import { mdiArrowLeft, mdiClock, mdiGasStation, mdiMapMarker, mdiStar, mdiAccountGroup, mdiCheckCircle } from '@mdi/js'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { mockTrips, getTripById, type MockTrip, type MockSchedule } from '@/src/lib/mock-data'
 import { Button } from '@/src/components/ui/button'
@@ -13,8 +13,7 @@ import { Card, CardContent, CardHeader } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
 import { Badge } from '@/src/components/ui/badge'
 
-
-export default function Book() {
+function BookContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -477,5 +476,13 @@ export default function Book() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function Book() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BookContent />
+    </Suspense>
   )
 }

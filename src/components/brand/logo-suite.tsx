@@ -185,7 +185,7 @@ export function BlueWatersWordmark({
           </span>
           <span className={cn(
             "text-fg-muted font-marketing tracking-wide",
-            size === 'xs' && "text-[10px]",
+            size === 'xs' && "text-xs",
             size === 'sm' && "text-xs",
             (size === 'md' || size === 'lg' || size === 'xl') && "text-sm"
           )}>

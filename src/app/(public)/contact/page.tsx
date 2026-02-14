@@ -95,10 +95,10 @@ export default function ContactPage() {
   ]
 
   const socialLinks = [
-    { icon: mdiFacebook, label: 'Facebook', url: '#', color: 'text-[#1877F2]' },
-    { icon: mdiTwitter, label: 'Twitter', url: '#', color: 'text-[#1DA1F2]' },
-    { icon: mdiInstagram, label: 'Instagram', url: '#', color: 'text-[#E4405F]' },
-    { icon: mdiWhatsapp, label: 'WhatsApp', url: 'https://wa.me/2348031234567', color: 'text-[#25D366]' },
+    { icon: mdiFacebook, label: 'Facebook', url: '#', color: 'text-accent-500' },
+    { icon: mdiTwitter, label: 'Twitter', url: '#', color: 'text-accent-500' },
+    { icon: mdiInstagram, label: 'Instagram', url: '#', color: 'text-accent-500' },
+    { icon: mdiWhatsapp, label: 'WhatsApp', url: 'https://wa.me/2348031234567', color: 'text-accent-500' },
   ]
 
   return (

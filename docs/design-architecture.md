@@ -1,6 +1,6 @@
 # Yenagoa Boat Club — Product Design Documentation
 
-**Dark-first · Glassmorphism · HeroUI · Pictogrammers (Material Icons) · Full ARIA compliance**
+**Dark-first · Glassmorphism · shadcn/ui · Pictogrammers (Material Icons) · Full ARIA compliance**
 
 > Purpose: A concise, professional product-design spec for _Yenagoa Boat Club_ — the Bayelsa Boat Cruise booking app.  
 > Audience: product designers, frontend engineers, accessibility specialists, and stakeholders.
@@ -23,7 +23,7 @@
     
 7. Iconography (Pictogrammers — Material Design Icons)
     
-8. Component System — HeroUI + Implementations
+8. Component System — shadcn/ui + Implementations
     
     - Buttons
         
@@ -247,9 +247,9 @@ Glass design principles for _Yenagoa Boat Club_:
 
 ---
 
-# 8. Component System — HeroUI + Implementations
+# 8. Component System — shadcn/ui + Implementations
 
-We rely on HeroUI as a design-component library; all components must be wrapped with ARIA semantics and augmented where HeroUI lacks accessibility defaults.
+We rely on shadcn/ui as a design-component library; all components must be wrapped with ARIA semantics and augmented where shadcn/ui lacks accessibility defaults.
 
 ### Buttons
 
@@ -557,7 +557,7 @@ Usability tests:
 
 # Final notes & next steps
 
-1. **Design system repo:** Extract tokens, components, and examples into a shared `design-system` package (Tailwind + HeroUI wrappers).
+1. **Design system repo:** Extract tokens, components, and examples into a shared `design-system` package (Tailwind + shadcn/ui wrappers).
     
 2. **Component documentation:** For each UI component, create a Storybook story that includes accessibility knobs (aria props, keyboard simulations).
     
