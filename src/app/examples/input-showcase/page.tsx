@@ -1,6 +1,7 @@
 'use client'
 
-import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock, Mail, Search, User } from 'lucide-react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiAlertCircle, mdiCheckCircle, mdiEye, mdiEyeOff, mdiLock, mdiEmail, mdiMagnify, mdiAccount } from '@mdi/js'
 import * as React from 'react'
 
 
@@ -37,7 +38,7 @@ export default function InputShowcase() {
               <Input
                 variant="primary"
                 placeholder="Enter your email..."
-                startIcon={<Mail className="size-4" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
               />
             </div>
 
@@ -46,7 +47,7 @@ export default function InputShowcase() {
               <Input
                 variant="glass"
                 placeholder="Search trips..."
-                startIcon={<Search className="size-4" />}
+                startIcon={<Icon path={mdiMagnify} size={0.6} aria-hidden={true} />}
               />
             </div>
 
@@ -55,7 +56,7 @@ export default function InputShowcase() {
               <Input
                 variant="bordered"
                 placeholder="Username"
-                startIcon={<User className="size-4" />}
+                startIcon={<Icon path={mdiAccount} size={0.6} aria-hidden={true} />}
               />
             </div>
 
@@ -79,7 +80,7 @@ export default function InputShowcase() {
               <Input
                 size="sm"
                 placeholder="Small input"
-                startIcon={<Search className="size-3.5" />}
+                startIcon={<Icon path={mdiMagnify} size={0.5} aria-hidden={true} />}
               />
             </div>
 
@@ -88,7 +89,7 @@ export default function InputShowcase() {
               <Input
                 size="md"
                 placeholder="Medium input"
-                startIcon={<Mail className="size-4" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
               />
             </div>
 
@@ -97,7 +98,7 @@ export default function InputShowcase() {
               <Input
                 size="lg"
                 placeholder="Large input"
-                startIcon={<User className="size-5" />}
+                startIcon={<Icon path={mdiAccount} size={0.8} aria-hidden={true} />}
               />
             </div>
           </div>
@@ -122,8 +123,8 @@ export default function InputShowcase() {
                 validation="success"
                 placeholder="Valid email"
                 defaultValue="user@example.com"
-                startIcon={<Mail className="size-4" />}
-                endIcon={<CheckCircle2 className="size-4 text-success-500" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
+                endIcon={<Icon path={mdiCheckCircle} size={0.6} className="text-success-500" aria-hidden={true} />}
                 successMessage="Email is valid"
               />
             </div>
@@ -134,8 +135,8 @@ export default function InputShowcase() {
                 validation="error"
                 placeholder="Enter email"
                 defaultValue="invalid-email"
-                startIcon={<Mail className="size-4" />}
-                endIcon={<AlertCircle className="size-4 text-error-500" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
+                endIcon={<Icon path={mdiAlertCircle} size={0.6} className="text-error-500" aria-hidden={true} />}
                 errorMessage="Please enter a valid email address"
               />
             </div>
@@ -146,7 +147,7 @@ export default function InputShowcase() {
                 validation="warning"
                 placeholder="Enter password"
                 type="password"
-                startIcon={<Lock className="size-4" />}
+                startIcon={<Icon path={mdiLock} size={0.6} aria-hidden={true} />}
                 helperText="Password should be at least 8 characters"
               />
             </div>
@@ -162,7 +163,7 @@ export default function InputShowcase() {
               label="Email Address"
               placeholder="Enter your email"
               type="email"
-              startIcon={<Mail className="size-4" />}
+              startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
               helperText="We'll never share your email with anyone"
             />
 
@@ -171,14 +172,14 @@ export default function InputShowcase() {
               placeholder="Enter your password"
               type="password"
               required
-              startIcon={<Lock className="size-4" />}
+              startIcon={<Icon path={mdiLock} size={0.6} aria-hidden={true} />}
               helperText="Must be at least 8 characters"
             />
 
             <Input
               label="Full Name"
               placeholder="John Doe"
-              startIcon={<User className="size-4" />}
+              startIcon={<Icon path={mdiAccount} size={0.6} aria-hidden={true} />}
               successMessage="Name looks good!"
             />
 
@@ -201,7 +202,7 @@ export default function InputShowcase() {
                 disabled
                 placeholder="Disabled input"
                 defaultValue="Cannot edit this"
-                startIcon={<Lock className="size-4" />}
+                startIcon={<Icon path={mdiLock} size={0.6} aria-hidden={true} />}
               />
             </div>
 
@@ -243,7 +244,7 @@ export default function InputShowcase() {
               <h3 className="text-sm font-medium text-fg-muted">Start Icon Only</h3>
               <Input
                 placeholder="Search anything..."
-                startIcon={<Search className="size-4" />}
+                startIcon={<Icon path={mdiMagnify} size={0.6} aria-hidden={true} />}
               />
             </div>
 
@@ -261,8 +262,8 @@ export default function InputShowcase() {
               <Input
                 placeholder="user@example.com"
                 type="email"
-                startIcon={<Mail className="size-4" />}
-                endIcon={<CheckCircle2 className="size-4 text-success-500" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
+                endIcon={<Icon path={mdiCheckCircle} size={0.6} className="text-success-500" aria-hidden={true} />}
               />
             </div>
 
@@ -287,7 +288,7 @@ export default function InputShowcase() {
                 variant="glass"
                 size="lg"
                 placeholder="Search for boat trips, destinations..."
-                startIcon={<Search className="size-5" />}
+                startIcon={<Icon path={mdiMagnify} size={0.8} aria-hidden={true} />}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 endIcon={
@@ -312,7 +313,7 @@ export default function InputShowcase() {
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
-                startIcon={<Lock className="size-4" />}
+                startIcon={<Icon path={mdiLock} size={0.6} aria-hidden={true} />}
                 endIcon={
                   <button
                     type="button"
@@ -321,9 +322,9 @@ export default function InputShowcase() {
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? (
-                      <EyeOff className="size-4" />
+                      <Icon path={mdiEyeOff} size={0.6} aria-hidden={true} />
                     ) : (
-                      <Eye className="size-4" />
+                      <Icon path={mdiEye} size={0.6} aria-hidden={true} />
                     )}
                   </button>
                 }
@@ -339,7 +340,7 @@ export default function InputShowcase() {
                 type="email"
                 placeholder="you@example.com"
                 required
-                startIcon={<Mail className="size-4" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
                 successMessage="This email is available"
               />
             </div>
@@ -370,7 +371,7 @@ export default function InputShowcase() {
                 label="Full Name"
                 placeholder="John Doe"
                 required
-                startIcon={<User className="size-4" />}
+                startIcon={<Icon path={mdiAccount} size={0.6} aria-hidden={true} />}
               />
 
               <Input
@@ -378,7 +379,7 @@ export default function InputShowcase() {
                 type="email"
                 placeholder="john@example.com"
                 required
-                startIcon={<Mail className="size-4" />}
+                startIcon={<Icon path={mdiEmail} size={0.6} aria-hidden={true} />}
               />
 
               <Input
@@ -421,39 +422,39 @@ export default function InputShowcase() {
           <div className="rounded-lg bg-bg-800/50 p-6 space-y-4 border border-border-subtle">
             <ul className="space-y-2 text-sm text-fg-muted">
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>Proper label association with htmlFor and id attributes</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>aria-invalid for error states</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>aria-describedby linking to helper text and error messages</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>aria-label for required fields</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>role="alert" for error messages</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>Keyboard navigation support</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>Focus indicators with proper contrast (WCAG 2.4.7)</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>Respects prefers-reduced-motion for animations</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-success-500 mt-0.5 shrink-0" />
+                <Icon path={mdiCheckCircle} size={0.6} className="text-success-500 mt-0.5 shrink-0" aria-hidden={true} />
                 <span>Icons marked as aria-hidden to prevent duplication</span>
               </li>
             </ul>

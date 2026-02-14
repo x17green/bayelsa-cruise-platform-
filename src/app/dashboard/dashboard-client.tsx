@@ -2,8 +2,9 @@
 
 import { type User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
-import { Bookmark, Calendar, LogOut, MapPin, Ship, User as UserIcon } from 'lucide-react'
 import Link from 'next/link'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiBookmark, mdiCalendar, mdiLogout, mdiMapMarker, mdiFerry, mdiAccount } from '@mdi/js'
 
 import { signOut } from '@/src/app/auth/actions'
 import { Button } from '@/src/components/ui/button'
@@ -60,7 +61,7 @@ export default function DashboardClient({ user, bookings }: DashboardClientProps
                 <p className="text-xs text-foreground/60">{user.email}</p>
               </div>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="w-4 h-4 mr-2" />
+                <Icon path={mdiLogout} size={0.6} className="mr-2" aria-hidden="true" />
                 Sign Out
               </Button>
             </div>
@@ -88,7 +89,7 @@ export default function DashboardClient({ user, bookings }: DashboardClientProps
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-                <Bookmark className="w-4 h-4 text-primary" />
+                <Icon path={mdiBookmark} size={0.6} className="text-primary" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{bookings.length}</div>
@@ -99,7 +100,7 @@ export default function DashboardClient({ user, bookings }: DashboardClientProps
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Active Trips</CardTitle>
-                <Ship className="w-4 h-4 text-primary" />
+                <Icon path={mdiFerry} size={0.6} className="text-primary" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -112,7 +113,7 @@ export default function DashboardClient({ user, bookings }: DashboardClientProps
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Account Status</CardTitle>
-                <UserIcon className="w-4 h-4 text-primary" />
+                <Icon path={mdiAccount} size={0.6} className="text-primary" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">Active</div>
@@ -130,7 +131,7 @@ export default function DashboardClient({ user, bookings }: DashboardClientProps
             <CardContent>
               {bookings.length === 0 ? (
                 <div className="text-center py-12">
-                  <Ship className="w-12 h-12 text-primary/20 mx-auto mb-4" />
+                  <Icon path={mdiFerry} size={2} className="text-primary/20 mx-auto mb-4" aria-hidden="true" />
                   <p className="text-foreground/60 mb-4">No bookings yet</p>
                   <Link href="/search">
                     <Button>Browse Available Trips</Button>
@@ -149,11 +150,11 @@ export default function DashboardClient({ user, bookings }: DashboardClientProps
                         </h3>
                         <div className="flex items-center gap-4 text-sm text-foreground/60">
                           <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
+                            <Icon path={mdiCalendar} size={0.5} aria-hidden="true" />
                             {new Date(booking.createdAt).toLocaleDateString()}
                           </span>
                           <span className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
+                            <Icon path={mdiMapMarker} size={0.5} aria-hidden="true" />
                             {booking.trip?.vessel?.name || 'Vessel'}
                           </span>
                           <span>{booking.numberOfPassengers} passengers</span>

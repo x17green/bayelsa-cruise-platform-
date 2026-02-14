@@ -2,7 +2,8 @@
 // filepath: l:\home\projects\blue-waters\src\app\examples\page.tsx
 'use client'
 
-import { ArrowRight } from 'lucide-react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronRight } from '@mdi/js'
 import Link from 'next/link'
 import * as React from 'react'
 import {
@@ -88,7 +89,7 @@ export default function ExamplesPage() {
 
                                     <div className="flex items-center gap-2 text-accent-400 font-medium text-sm pt-2">
                                         View Examples
-                                        <ArrowRight className="size-4" />
+                                        <Icon path={mdiChevronRight} size={0.6} aria-hidden={true} />
                                     </div>
                                 </CardContent>
                             </Card>

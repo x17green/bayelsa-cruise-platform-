@@ -2,10 +2,11 @@
 
 import { Card, CardBody, CardHeader, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Navbar, NavbarBrand, NavbarContent, NavbarItem, Button as NextUIButton, Tabs as NextUITabs, Tab, useDisclosure } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { DollarSign, LogOut, MapPin, Ship, TrendingUp, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCurrencyUsd, mdiLogout, mdiMapMarker, mdiFerry, mdiTrendingUp, mdiAccountGroup } from '@mdi/js'
 
 import { Button } from '@/src/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
@@ -137,7 +138,7 @@ export default function OperatorDashboard() {
               variant="ghost"
               onClick={handleLogout}
               className="text-primary"
-              startIcon={<LogOut className="w-4 h-4" />}
+              startIcon={<Icon path={mdiLogout} size={0.6} aria-hidden="true" />}
             >
               Logout
             </Button>
@@ -178,7 +179,7 @@ export default function OperatorDashboard() {
                       {operatorData.totalTrips}
                     </p>
                   </div>
-                  <Ship className="w-10 h-10 text-primary/30" />
+                  <Icon path={mdiFerry} size={1.66} className="text-primary/30" aria-hidden="true" />
                 </div>
               </CardBody>
             </Card>
@@ -194,7 +195,7 @@ export default function OperatorDashboard() {
                       ₦{(operatorData.totalRevenue / 1000000).toFixed(1)}M
                     </p>
                   </div>
-                  <DollarSign className="w-10 h-10 text-accent/30" />
+                  <Icon path={mdiCurrencyUsd} size={1.66} className="text-accent/30" aria-hidden="true" />
                 </div>
               </CardBody>
             </Card>
@@ -210,7 +211,7 @@ export default function OperatorDashboard() {
                       {operatorData.rating}
                     </p>
                   </div>
-                  <TrendingUp className="w-10 h-10 text-blue-600/30" />
+                  <Icon path={mdiTrendingUp} size={1.66} className="text-blue-600/30" aria-hidden="true" />
                 </div>
               </CardBody>
             </Card>
@@ -224,7 +225,7 @@ export default function OperatorDashboard() {
                     <p className="text-foreground/60 text-sm mb-2">Active Boats</p>
                     <p className="text-4xl font-bold text-green-600">4</p>
                   </div>
-                  <Users className="w-10 h-10 text-green-600/30" />
+                  <Icon path={mdiAccountGroup} size={1.66} className="text-green-600/30" aria-hidden="true" />
                 </div>
               </CardBody>
             </Card>
@@ -322,7 +323,7 @@ export default function OperatorDashboard() {
                         </h3>
                         <div className="flex flex-wrap gap-4 text-sm text-foreground/70">
                           <span className="flex items-center gap-1">
-                            <MapPin className="w-4 h-4" />
+                            <Icon path={mdiMapMarker} size={0.6} aria-hidden="true" />
                             {trip.route}
                           </span>
                           <span>{trip.departure}</span>

@@ -2,10 +2,11 @@
 
 import * as ToastPrimitives from '@radix-ui/react-toast'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { X } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiClose } from '@mdi/js'
 
 const ToastProvider = ToastPrimitives.Provider
 
@@ -178,9 +179,10 @@ const ToastClose = React.forwardRef<
       className,
     )}
     toast-close=""
+    aria-label="Close"
     {...props}
   >
-    <X className="size-4" />
+    <Icon path={mdiClose} size={0.6} aria-hidden="true" />
   </ToastPrimitives.Close>
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName

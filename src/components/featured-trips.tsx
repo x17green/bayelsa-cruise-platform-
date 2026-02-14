@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Clock, MapPin, Star, Users } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiClock, mdiMapMarker, mdiStar, mdiAccountGroup } from '@mdi/js'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -117,17 +118,17 @@ export default function FeaturedTrips() {
 
               <div className="space-y-3 mb-4 flex-1">
                 <div className="flex items-center gap-2 text-fg-muted">
-                  <MapPin className="w-4 h-4 text-accent-500" />
+                  <Icon path={mdiMapMarker} size={0.6} className="text-accent-500" aria-hidden={true} />
                   <span className="text-sm">{trip.route}</span>
                 </div>
 
                 <div className="flex gap-4 text-sm text-fg-muted">
                   <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4 text-accent-500" />
+                    <Icon path={mdiClock} size={0.6} className="text-accent-500" aria-hidden={true} />
                     {trip.duration}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4 text-accent-500" />
+                    <Icon path={mdiAccountGroup} size={0.6} className="text-accent-500" aria-hidden={true} />
                     {trip.capacity} seats
                   </div>
                 </div>
@@ -135,13 +136,16 @@ export default function FeaturedTrips() {
                 <div className="flex items-center gap-1">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star
+                      <Icon
                         key={i}
-                        className={`w-4 h-4 ${
+                        path={mdiStar}
+                        size={0.6}
+                        className={`${
                           i < Math.floor(trip.rating)
                             ? 'fill-accent-500 text-accent-500'
                             : 'text-fg-dim'
                         }`}
+                        aria-hidden={true}
                       />
                     ))}
                   </div>

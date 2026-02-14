@@ -92,11 +92,12 @@
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
 import * as React from 'react'
 
 import { Button } from '@/src/components/ui/button'
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronLeft, mdiChevronRight } from '@mdi/js'
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -303,9 +304,10 @@ const CarouselPrevious = React.forwardRef<
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
+      aria-label="Previous slide"
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
+      <Icon path={mdiChevronLeft} size={0.6} aria-hidden="true" />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -332,9 +334,10 @@ const CarouselNext = React.forwardRef<
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
+      aria-label="Next slide"
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
+      <Icon path={mdiChevronRight} size={0.6} aria-hidden="true" />
       <span className="sr-only">Next slide</span>
     </Button>
   )

@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiFacebook, mdiInstagram, mdiLinkedin, mdiEmail, mdiMapMarker, mdiPhone, mdiTwitter } from '@mdi/js'
 import Link from 'next/link'
 
 export default function Footer() {
@@ -58,15 +59,15 @@ export default function Footer() {
             {/* Contact Info */}
             <div className="space-y-3 text-fg-muted text-sm">
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
+                <Icon path={mdiPhone} size={0.6} aria-hidden={true} />
                 <a href="tel:+234800000000">+234 (0) 800-000-0000</a>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
+                <Icon path={mdiEmail} size={0.6} aria-hidden={true} />
                 <a href="mailto:info@bluewaters.com">info@bluewaters.com</a>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
+                <Icon path={mdiMapMarker} size={0.6} aria-hidden={true} />
                 <span>Yenagoa, Bayelsa State, Nigeria</span>
               </div>
             </div>
@@ -107,26 +108,30 @@ export default function Footer() {
           <a
             href="#"
             className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
+            aria-label="Facebook"
           >
-            <Facebook className="w-6 h-6" />
+            <Icon path={mdiFacebook} size={1} aria-hidden={true} />
           </a>
           <a
             href="#"
             className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
+            aria-label="Twitter"
           >
-            <Twitter className="w-6 h-6" />
+            <Icon path={mdiTwitter} size={1} aria-hidden={true} />
           </a>
           <a
             href="#"
             className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
+            aria-label="Instagram"
           >
-            <Instagram className="w-6 h-6" />
+            <Icon path={mdiInstagram} size={1} aria-hidden={true} />
           </a>
           <a
             href="#"
             className="text-fg-muted hover:text-accent-400 transition-colors duration-200"
+            aria-label="LinkedIn"
           >
-            <Linkedin className="w-6 h-6" />
+            <Icon path={mdiLinkedin} size={1} aria-hidden={true} />
           </a>
         </motion.div>
 

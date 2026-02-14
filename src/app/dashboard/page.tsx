@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bookmark, Calendar, MapPin, Users } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiBookmark, mdiCalendar, mdiMapMarker, mdiAccountGroup } from '@mdi/js'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -85,7 +86,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full glass-strong animate-pulse mx-auto mb-4 flex items-center justify-center">
-            <Users className="w-8 h-8 text-accent-400" />
+            <Icon path={mdiAccountGroup} size={1.33} className="text-accent-400" aria-hidden="true" />
           </div>
           <p className="text-fg-muted text-lg">Loading dashboard...</p>
         </div>
@@ -131,7 +132,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="glass-subtle rounded-lg p-3">
-                  <Bookmark className="w-7 h-7 text-accent-500" />
+                  <Icon path={mdiBookmark} size={1.17} className="text-accent-500" aria-hidden="true" />
                 </div>
               </div>
             </CardContent>
@@ -152,7 +153,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="glass-subtle rounded-lg p-3">
-                  <MapPin className="w-7 h-7 text-success-600" />
+                  <Icon path={mdiMapMarker} size={1.17} className="text-success-600" aria-hidden="true" />
                 </div>
               </div>
             </CardContent>
@@ -173,7 +174,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="glass-subtle rounded-lg p-3">
-                  <Users className="w-7 h-7 text-info-500" />
+                  <Icon path={mdiAccountGroup} size={1.17} className="text-info-500" aria-hidden="true" />
                 </div>
               </div>
             </CardContent>
@@ -190,7 +191,7 @@ export default function Dashboard() {
         <Card className="glass border border-border-default">
           <CardHeader className="border-b border-border-subtle">
             <CardTitle className="flex items-center gap-3 text-2xl">
-              <Calendar className="w-6 h-6 text-accent-400" />
+              <Icon path={mdiCalendar} size={1} className="text-accent-400" aria-hidden="true" />
               <span className="text-fg">Your Bookings</span>
             </CardTitle>
           </CardHeader>
@@ -198,7 +199,7 @@ export default function Dashboard() {
             {bookings.length === 0 ? (
               <div className="text-center py-16">
                 <div className="glass-subtle rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
-                  <MapPin className="w-10 h-10 text-accent-500" />
+                  <Icon path={mdiMapMarker} size={1.67} className="text-accent-500" aria-hidden="true" />
                 </div>
                 <h3 className="text-xl font-semibold text-fg mb-3">
                   No bookings yet
@@ -212,7 +213,7 @@ export default function Dashboard() {
                   className="glass-strong hover:glass-modal border border-accent-700 text-accent-300 hover:text-accent-200"
                   onClick={() => window.location.href = '/book'}
                 >
-                  <Calendar className="w-5 h-5 mr-2" />
+                  <Icon path={mdiCalendar} size={0.8} className="mr-2" aria-hidden="true" />
                   Book Your First Trip
                 </Button>
               </div>
@@ -234,11 +235,11 @@ export default function Dashboard() {
                         </p>
                         <div className="flex flex-wrap gap-5 text-sm text-fg-muted">
                           <span className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-accent-500" />
+                            <Icon path={mdiAccountGroup} size={0.6} className="text-accent-500" aria-hidden="true" />
                             {booking.number_of_passengers} {booking.number_of_passengers === 1 ? 'passenger' : 'passengers'}
                           </span>
                           <span className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-accent-500" />
+                            <Icon path={mdiCalendar} size={0.6} className="text-accent-500" aria-hidden="true" />
                             {new Date(booking.created_at).toLocaleDateString('en-NG', {
                               year: 'numeric',
                               month: 'short',

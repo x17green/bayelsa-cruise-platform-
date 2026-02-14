@@ -2,7 +2,8 @@
 
 import { Button, Card, CardBody, CardHeader, Chip, Input, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Clock, Fuel, MapPin, Star, Users } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiArrowLeft, mdiClock, mdiGasStation, mdiMapMarker, mdiStar, mdiAccountGroup } from '@mdi/js'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -135,7 +136,7 @@ export default function Book() {
             variant="ghost"
             className="mb-4 text-accent-500 flex items-center gap-2"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <Icon path={mdiArrowLeft} size={0.6} aria-hidden="true" />
             Back to Home
           </Button>
           <h1 className="text-4xl font-bold text-accent-500 mb-2">Book Your Journey</h1>
@@ -222,16 +223,16 @@ export default function Book() {
                             </h3>
                             <div className="space-y-3 mb-4">
                               <div className="flex items-center gap-2 text-fg-muted">
-                                <MapPin className="w-4 h-4 text-accent-500" />
+                                <Icon path={mdiMapMarker} size={0.6} className="text-accent-500" aria-hidden="true" />
                                 <span className="font-semibold">{trip.route}</span>
                               </div>
                               <div className="flex gap-6 text-sm text-fg-muted">
                                 <div className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4 text-accent-500" />
+                                  <Icon path={mdiClock} size={0.6} className="text-accent-500" aria-hidden="true" />
                                   {trip.departure} - {trip.arrival}
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <Users className="w-4 h-4 text-accent-500" />
+                                  <Icon path={mdiAccountGroup} size={0.6} className="text-accent-500" aria-hidden="true" />
                                   {trip.capacity} seats
                                 </div>
                               </div>
@@ -249,13 +250,16 @@ export default function Book() {
                             <div className="flex items-center gap-2">
                               <div className="flex">
                                 {[...Array(5)].map((_, i) => (
-                                  <Star
+                                  <Icon
                                     key={i}
-                                    className={`w-4 h-4 ${
+                                    path={mdiStar}
+                                    size={0.6}
+                                    className={
                                       i < Math.floor(trip.rating)
                                         ? 'fill-accent-500 text-accent-500'
                                         : 'text-fg-dim'
-                                    }`}
+                                    }
+                                    aria-hidden="true"
                                   />
                                 ))}
                               </div>
@@ -383,7 +387,7 @@ export default function Book() {
               ) : (
                 <Card className="glass-subtle border border-border">
                   <CardBody className="p-6 text-center">
-                    <Fuel className="w-16 h-16 text-accent-500/20 mx-auto mb-4" />
+                    <Icon path={mdiGasStation} size={2.67} className="text-accent-500/20 mx-auto mb-4" aria-hidden="true" />
                     <p className="text-fg-muted text-lg">
                       Select a trip to see booking details
                     </p>

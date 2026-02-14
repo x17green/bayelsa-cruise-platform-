@@ -2,10 +2,11 @@
 
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Circle } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCircle } from '@mdi/js'
 
 /**
  * RadioGroup Component - Blue Waters Design System
@@ -167,7 +168,9 @@ const RadioGroupItem = React.forwardRef<
       {...props}
     >
       <RadioGroupPrimitive.Indicator className={cn(indicatorVariants({ variant, size }))}>
-        <Circle 
+        <Icon 
+          path={mdiCircle}
+          size={0.4}
           className="fill-current" 
           aria-hidden="true"
         />

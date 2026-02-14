@@ -1,10 +1,11 @@
 'use client'
 
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
-import { Check, ChevronRight, Circle } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCheck, mdiChevronRight, mdiCircleSmall } from '@mdi/js'
 
 /**
  * ContextMenu - Right-click context menu component.
@@ -95,7 +96,7 @@ const ContextMenuSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto h-4 w-4 text-fg-muted" />
+    <Icon path={mdiChevronRight} size={0.6} className="ml-auto text-fg-muted" aria-hidden="true" />
   </ContextMenuPrimitive.SubTrigger>
 ))
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName
@@ -241,7 +242,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <ContextMenuPrimitive.ItemIndicator>
-        <Check className="h-4 w-4 text-fg-DEFAULT" />
+        <Icon path={mdiCheck} size={0.6} className="text-fg-DEFAULT" aria-hidden="true" />
       </ContextMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -279,7 +280,7 @@ const ContextMenuRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <ContextMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current text-fg-DEFAULT" />
+        <Icon path={mdiCircleSmall} size={0.3} className="fill-current text-fg-DEFAULT" aria-hidden="true" />
       </ContextMenuPrimitive.ItemIndicator>
     </span>
     {children}

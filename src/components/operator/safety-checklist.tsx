@@ -20,12 +20,13 @@ import { Label } from '@/src/components/ui/label'
 import { Textarea } from '@/src/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import { Badge } from '@/src/components/ui/badge'
+import { Icon } from '@/src/components/ui/icon'
 import {
-  AlertTriangle,
-  CheckCircle2,
-  ClipboardCheck,
-  Shield,
-} from 'lucide-react'
+  mdiAlert,
+  mdiCheckCircle,
+  mdiClipboardCheck,
+  mdiShieldCheck,
+} from '@mdi/js'
 
 interface SafetyChecklistItem {
   id: string
@@ -211,10 +212,10 @@ export function SafetyChecklist({
   }
 
   const categoryIcons = {
-    vessel: Shield,
-    safety: AlertTriangle,
-    passenger: ClipboardCheck,
-    crew: CheckCircle2,
+    vessel: mdiShieldCheck,
+    safety: mdiAlert,
+    passenger: mdiClipboardCheck,
+    crew: mdiCheckCircle,
   }
 
   // Handle submission
@@ -235,7 +236,7 @@ export function SafetyChecklist({
     return (
       <Card className="w-full">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <CheckCircle2 className="h-16 w-16 text-green-600 mb-4" />
+          <Icon path={mdiCheckCircle} size={2.66} className="text-green-600 mb-4" aria-hidden={true} />
           <h3 className="text-2xl font-bold text-green-800 mb-2">
             Safety Checklist Complete
           </h3>
@@ -260,7 +261,7 @@ export function SafetyChecklist({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5" />
+              <Icon path={mdiClipboardCheck} size={0.8} aria-hidden={true} />
               Pre-Departure Safety Checklist
             </CardTitle>
             <CardDescription>
@@ -277,7 +278,7 @@ export function SafetyChecklist({
         {/* Progress Alert */}
         {!allRequiredChecked && (
           <Alert>
-            <AlertTriangle className="h-4 w-4" />
+            <Icon path={mdiAlert} size={0.6} aria-hidden={true} />
             <AlertTitle>Required Items Remaining</AlertTitle>
             <AlertDescription>
               {requiredChecked} of {requiredItems.length} required safety checks
@@ -288,11 +289,11 @@ export function SafetyChecklist({
 
         {/* Checklist Items by Category */}
         {Object.entries(groupedItems).map(([category, items]) => {
-          const Icon = categoryIcons[category as keyof typeof categoryIcons]
+          const iconPath = categoryIcons[category as keyof typeof categoryIcons]
           return (
             <div key={category} className="space-y-3">
               <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Icon className="h-5 w-5" />
+                <Icon path={iconPath} size={0.8} aria-hidden={true} />
                 {categoryLabels[category as keyof typeof categoryLabels]}
               </h3>
               <div className="space-y-3 pl-7">
@@ -353,12 +354,12 @@ export function SafetyChecklist({
         <div className="text-sm text-muted-foreground">
           {allRequiredChecked ? (
             <span className="text-green-600 font-medium flex items-center gap-1">
-              <CheckCircle2 className="h-4 w-4" />
+              <Icon path={mdiCheckCircle} size={0.6} aria-hidden={true} />
               All required checks complete
             </span>
           ) : (
             <span className="text-orange-600 font-medium flex items-center gap-1">
-              <AlertTriangle className="h-4 w-4" />
+              <Icon path={mdiAlert} size={0.6} aria-hidden={true} />
               {requiredItems.length - requiredChecked} required items remaining
             </span>
           )}
@@ -369,7 +370,7 @@ export function SafetyChecklist({
           size="lg"
           className="gap-2"
         >
-          <CheckCircle2 className="h-5 w-5" />
+          <Icon path={mdiCheckCircle} size={0.8} aria-hidden={true} />
           Complete Checklist & Clear for Departure
         </Button>
       </CardFooter>

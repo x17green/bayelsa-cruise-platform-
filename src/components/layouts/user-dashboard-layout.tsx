@@ -1,12 +1,20 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Anchor, Calendar, LogOut, MapPin, User, Waves } from 'lucide-react'
+import { 
+  mdiAnchor,
+  mdiCalendar,
+  mdiLogout,
+  mdiMapMarker,
+  mdiAccount,
+  mdiWaves
+} from '@mdi/js'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode } from 'react'
 
 import { Button } from '@/src/components/ui/button'
+import { Icon } from '@/src/components/ui/icon'
 import { useAuth } from '@/src/contexts/auth-context'
 
 /**
@@ -18,10 +26,10 @@ function UserDashboardHeader() {
   const pathname = usePathname()
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: Anchor },
-    { href: '/book', label: 'Book Trip', icon: Calendar },
-    { href: '/search', label: 'Search', icon: MapPin },
-    { href: '/profile', label: 'Profile', icon: User },
+    { href: '/dashboard', label: 'Dashboard', icon: mdiAnchor },
+    { href: '/book', label: 'Book Trip', icon: mdiCalendar },
+    { href: '/search', label: 'Search', icon: mdiMapMarker },
+    { href: '/profile', label: 'Profile', icon: mdiAccount },
   ]
 
   const isActive = (href: string) => pathname === href
@@ -32,7 +40,7 @@ function UserDashboardHeader() {
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <div className="relative">
-            <Waves className="w-8 h-8 text-accent-400 transition-transform duration-300 group-hover:scale-110" />
+            <Icon path={mdiWaves} size={1} className="text-accent-400 transition-transform duration-300 group-hover:scale-110" aria-hidden={true} />
             <div className="absolute inset-0 bg-accent-500 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30" />
           </div>
           <div>
@@ -70,7 +78,7 @@ function UserDashboardHeader() {
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <item.icon className="w-4 h-4" />
+                <Icon path={item.icon} size={0.6} aria-hidden={true} />
                 {item.label}
               </span>
             </Link>
@@ -95,8 +103,9 @@ function UserDashboardHeader() {
             variant="ghost"
             size="sm"
             className="glass-hover"
+            aria-label="Logout"
           >
-            <LogOut className="w-4 h-4 mr-2" />
+            <Icon path={mdiLogout} size={0.6} className="mr-2" aria-hidden={true} />
             <span className="hidden sm:inline">Logout</span>
           </Button>
         </div>
@@ -126,7 +135,7 @@ function UserDashboardFooter() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Waves className="w-6 h-6 text-accent-400" />
+              <Icon path={mdiWaves} size={0.9} className="text-accent-400" aria-hidden={true} />
               <span className="font-semibold text-fg">
                 Blue Waters
               </span>

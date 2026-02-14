@@ -1,6 +1,7 @@
 'use client'
 
-import { ArrowRight, Calendar, MapPin, Ship, Users } from 'lucide-react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronRight, mdiCalendar, mdiMapMarker, mdiFerry, mdiAccountGroup } from '@mdi/js'
 import * as React from 'react'
 
 
@@ -195,20 +196,20 @@ export default function CardShowcase() {
                       <CardTitle className="text-xl">Lagos to Port Harcourt</CardTitle>
                       <CardDescription>Express Ferry Service</CardDescription>
                     </div>
-                    <Ship className="size-5 text-accent-400" />
+                    <Icon path={mdiFerry} size={0.8} className="text-accent-400" aria-hidden={true} />
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2 text-sm text-fg-muted">
-                    <Calendar className="size-4" />
+                    <Icon path={mdiCalendar} size={0.6} aria-hidden={true} />
                     <span>Feb 15, 2026 • 08:00 AM</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-fg-muted">
-                    <MapPin className="size-4" />
+                    <Icon path={mdiMapMarker} size={0.6} aria-hidden={true} />
                     <span>Tin Can Island - Rivers Terminal</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-fg-muted">
-                    <Users className="size-4" />
+                    <Icon path={mdiAccountGroup} size={0.6} aria-hidden={true} />
                     <span>12 seats available</span>
                   </div>
                   <div className="pt-2 border-t border-border-subtle">
@@ -225,7 +226,7 @@ export default function CardShowcase() {
                   <Button variant="primary" size="sm" className="flex-1">
                     <Button.Label>Book Now</Button.Label>
                     <Button.Icon>
-                      <ArrowRight className="size-4" />
+                      <Icon path={mdiChevronRight} size={0.6} aria-hidden={true} />
                     </Button.Icon>
                   </Button>
                 </CardFooter>
@@ -238,20 +239,20 @@ export default function CardShowcase() {
                       <CardTitle className="text-xl">Warri to Brass Island</CardTitle>
                       <CardDescription>Standard Ferry</CardDescription>
                     </div>
-                    <Ship className="size-5 text-accent-400" />
+                    <Icon path={mdiFerry} size={0.8} className="text-accent-400" aria-hidden={true} />
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2 text-sm text-fg-muted">
-                    <Calendar className="size-4" />
+                    <Icon path={mdiCalendar} size={0.6} aria-hidden={true} />
                     <span>Feb 16, 2026 • 10:00 AM</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-fg-muted">
-                    <MapPin className="size-4" />
+                    <Icon path={mdiMapMarker} size={0.6} aria-hidden={true} />
                     <span>Warri Port - Brass Terminal</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-fg-muted">
-                    <Users className="size-4" />
+                    <Icon path={mdiAccountGroup} size={0.6} aria-hidden={true} />
                     <span>8 seats available</span>
                   </div>
                   <div className="pt-2 border-t border-border-subtle">
@@ -268,7 +269,7 @@ export default function CardShowcase() {
                   <Button variant="primary" size="sm" className="flex-1">
                     <Button.Label>Book Now</Button.Label>
                     <Button.Icon>
-                      <ArrowRight className="size-4" />
+                      <Icon path={mdiChevronRight} size={0.6} aria-hidden={true} />
                     </Button.Icon>
                   </Button>
                 </CardFooter>
@@ -371,7 +372,7 @@ export default function CardShowcase() {
                 <Button variant="primary" className="w-full">
                   <Button.Label>Get Started</Button.Label>
                   <Button.Icon>
-                    <ArrowRight className="size-4" />
+                    <Icon path={mdiChevronRight} size={0.6} aria-hidden={true} />
                   </Button.Icon>
                 </Button>
               </CardFooter>

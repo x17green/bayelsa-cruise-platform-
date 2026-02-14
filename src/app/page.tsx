@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiArrowRight } from '@mdi/js'
 import Link from 'next/link'
 
 import FeaturedTrips from '@/src/components/featured-trips'
@@ -74,7 +75,7 @@ export default function Home() {
                 className="glass-strong border-2 border-accent-500 bg-accent-600 hover:bg-accent-500 text-white shadow-2xl shadow-accent-900/50 text-lg px-8 py-6 h-auto transition-all duration-300 hover:scale-105"
               >
                 Book Your Trip Now
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Icon path={mdiArrowRight} size={0.8} className="ml-2" aria-hidden="true" />
               </Button>
             </Link>
           </motion.div>

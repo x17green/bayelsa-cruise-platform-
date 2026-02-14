@@ -2,8 +2,9 @@
 
 import { type User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
-import { Mail, Phone, Save, User as UserIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiEmail, mdiPhone, mdiContentSave, mdiAccount } from '@mdi/js'
 
 import { updateProfile } from '@/src/app/auth/actions'
 import { Button } from '@/src/components/ui/button'
@@ -74,7 +75,7 @@ export default function ProfileForm({ user, userData }: ProfileFormProps) {
               Email Address
             </label>
             <div className="flex items-center border border-primary/20 rounded-lg px-3 py-2 bg-gray-50">
-              <Mail className="w-4 h-4 text-primary mr-2" />
+              <Icon path={mdiEmail} size={0.6} className="text-primary mr-2" aria-hidden="true" />
               <input
                 type="email"
                 value={user.email}
@@ -89,7 +90,7 @@ export default function ProfileForm({ user, userData }: ProfileFormProps) {
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">Full Name</label>
             <div className="flex items-center border border-primary/20 rounded-lg px-3 py-2 bg-white focus-within:border-primary transition-colors">
-              <UserIcon className="w-4 h-4 text-primary mr-2" />
+              <Icon path={mdiAccount} size={0.6} className="text-primary mr-2" aria-hidden="true" />
               <input
                 name="fullName"
                 type="text"
@@ -106,7 +107,7 @@ export default function ProfileForm({ user, userData }: ProfileFormProps) {
               Phone Number
             </label>
             <div className="flex items-center border border-primary/20 rounded-lg px-3 py-2 bg-white focus-within:border-primary transition-colors">
-              <Phone className="w-4 h-4 text-primary mr-2" />
+              <Icon path={mdiPhone} size={0.6} className="text-primary mr-2" aria-hidden="true" />
               <input
                 name="phone"
                 type="tel"
@@ -119,7 +120,7 @@ export default function ProfileForm({ user, userData }: ProfileFormProps) {
 
           {/* Save Button */}
           <Button type="submit" disabled={isPending} className="w-full">
-            <Save className="w-4 h-4 mr-2" />
+            <Icon path={mdiContentSave} size={0.6} className="mr-2" aria-hidden="true" />
             {isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </form>

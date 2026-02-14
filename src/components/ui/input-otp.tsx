@@ -1,10 +1,11 @@
 'use client'
 
 import { OTPInput, OTPInputContext } from 'input-otp'
-import { Dot } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCircleSmall } from '@mdi/js'
 
 /**
  * InputOTP - One-Time Password input field component.
@@ -137,7 +138,7 @@ const InputOTPSeparator = React.forwardRef<
   React.ComponentPropsWithoutRef<'div'>
 >(({ ...props }, ref) => (
   <div ref={ref} role="separator" {...props}>
-    <Dot className="text-fg-muted" />
+    <Icon path={mdiCircleSmall} size={0.6} className="text-fg-muted" aria-hidden="true" />
   </div>
 ))
 InputOTPSeparator.displayName = 'InputOTPSeparator'

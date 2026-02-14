@@ -9,7 +9,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, Calendar, Edit, Archive, BarChart3, MapPin } from 'lucide-react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiPlus, mdiCalendar, mdiPencil, mdiArchive, mdiChartBar, mdiMapMarker } from '@mdi/js'
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Badge } from '@/src/components/ui/badge'
@@ -137,7 +138,7 @@ export default function OperatorTripsPage() {
         </div>
         <Link href="/operator/trips/new">
           <Button size="lg" className="gap-2">
-            <Plus className="h-5 w-5" />
+            <Icon path={mdiPlus} size={0.8} aria-hidden={true} />
             Create New Trip
           </Button>
         </Link>
@@ -148,7 +149,7 @@ export default function OperatorTripsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Trips</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <Icon path={mdiMapMarker} size={0.6} className="text-muted-foreground" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{trips.length}</div>
@@ -161,7 +162,7 @@ export default function OperatorTripsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <Icon path={mdiChartBar} size={0.6} className="text-muted-foreground" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -176,7 +177,7 @@ export default function OperatorTripsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming Schedules</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Icon path={mdiCalendar} size={0.6} className="text-muted-foreground" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -191,7 +192,7 @@ export default function OperatorTripsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg. Rating</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <Icon path={mdiChartBar} size={0.6} className="text-muted-foreground" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -217,7 +218,7 @@ export default function OperatorTripsPage() {
           {filteredTrips.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16">
-                <MapPin className="h-16 w-16 text-muted-foreground mb-4" />
+                <Icon path={mdiMapMarker} size={2.66} className="text-muted-foreground mb-4" aria-hidden={true} />
                 <h3 className="text-lg font-semibold mb-2">No trips found</h3>
                 <p className="text-muted-foreground mb-6 text-center max-w-sm">
                   {activeTab === 'all' 
@@ -290,13 +291,13 @@ export default function OperatorTripsPage() {
                     <div className="flex gap-2 mt-6">
                       <Link href={`/operator/trips/${trip.id}/edit`} className="flex-1">
                         <Button variant="outline" className="w-full gap-2">
-                          <Edit className="h-4 w-4" />
+                          <Icon path={mdiPencil} size={0.6} aria-hidden={true} />
                           Edit
                         </Button>
                       </Link>
                       <Link href={`/operator/trips/${trip.id}/schedules`} className="flex-1">
                         <Button className="w-full gap-2">
-                          <Calendar className="h-4 w-4" />
+                          <Icon path={mdiCalendar} size={0.6} aria-hidden={true} />
                           Schedules
                         </Button>
                       </Link>

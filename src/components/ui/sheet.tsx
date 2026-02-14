@@ -2,10 +2,11 @@
 
 import * as SheetPrimitive from '@radix-ui/react-dialog'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { X } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiClose } from '@mdi/js'
 
 /**
  * Sheet Component - Blue Waters Design System
@@ -70,7 +71,7 @@ const sheetVariants = cva(
     'backdrop-blur-base',
     'bg-glass-03',
     'border border-border-default',
-    'shadow-[0_8px_32px_rgba(0,0,0,0.4)]',
+    'shadow-xl',
     'transition-transform ease-in-out',
     'data-[state=closed]:duration-300',
     'data-[state=open]:duration-500',
@@ -147,8 +148,9 @@ const SheetContent = React.forwardRef<
           'disabled:pointer-events-none',
           'data-[state=open]:bg-glass-02',
         )}
+        aria-label="Close"
       >
-        <X className="h-4 w-4" />
+        <Icon path={mdiClose} size={0.6} aria-hidden="true" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>

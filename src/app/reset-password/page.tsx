@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Lock } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiLock } from '@mdi/js'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState, useTransition } from 'react'
@@ -66,7 +67,7 @@ function ResetPasswordForm() {
               className="text-center"
             >
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-8 h-8 text-green-600" />
+                <Icon path={mdiLock} size={1.33} className="text-green-600" aria-hidden="true" />
               </div>
               <h2 className="text-xl font-semibold text-foreground mb-2">
                 Password Reset Successful

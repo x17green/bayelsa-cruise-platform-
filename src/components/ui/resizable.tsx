@@ -1,9 +1,10 @@
 'use client'
 
-import { GripVertical } from 'lucide-react'
 import * as ResizablePrimitive from 'react-resizable-panels'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiDragVertical } from '@mdi/js'
 
 /**
  * ResizablePanelGroup - Container for resizable panels.
@@ -114,7 +115,7 @@ const ResizableHandle = ({
   >
     {withHandle && (
       <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border border-glass bg-glass-01">
-        <GripVertical className="h-2.5 w-2.5 text-fg-muted" />
+        <Icon path={mdiDragVertical} size={0.4} className="text-fg-muted" aria-hidden="true" />
       </div>
     )}
   </ResizablePrimitive.PanelResizeHandle>

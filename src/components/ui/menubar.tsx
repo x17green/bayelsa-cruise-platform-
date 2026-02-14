@@ -1,10 +1,11 @@
 'use client'
 
 import * as MenubarPrimitive from '@radix-ui/react-menubar'
-import { Check, ChevronRight, Circle } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCheck, mdiChevronRight, mdiCircleSmall } from '@mdi/js'
 
 /**
  * Menubar - Desktop application-style menu bar component.
@@ -142,7 +143,7 @@ const MenubarSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto h-4 w-4 text-fg-muted" />
+    <Icon path={mdiChevronRight} size={0.6} className="ml-auto text-fg-muted" aria-hidden="true" />
   </MenubarPrimitive.SubTrigger>
 ))
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
@@ -292,7 +293,7 @@ const MenubarCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <Check className="h-4 w-4 text-fg-DEFAULT" />
+        <Icon path={mdiCheck} size={0.6} className="text-fg-DEFAULT" aria-hidden="true" />
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}
@@ -329,7 +330,7 @@ const MenubarRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current text-fg-DEFAULT" />
+        <Icon path={mdiCircleSmall} size={0.3} className="fill-current text-fg-DEFAULT" aria-hidden="true" />
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}

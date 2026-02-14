@@ -18,7 +18,8 @@ import {
 } from '@/src/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import { Badge } from '@/src/components/ui/badge'
-import { CheckCircle2, XCircle, Camera, CameraOff } from 'lucide-react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCheckCircle, mdiCloseCircle, mdiCamera, mdiCameraOff } from '@mdi/js'
 
 interface BoardingPass {
   passenger: {
@@ -163,7 +164,7 @@ export function QRScanner({
               size="lg"
               className="gap-2"
             >
-              <Camera className="h-5 w-5" />
+              <Icon path={mdiCamera} size={0.8} aria-hidden={true} />
               Start Scanning
             </Button>
           ) : (
@@ -173,7 +174,7 @@ export function QRScanner({
               size="lg"
               className="gap-2"
             >
-              <CameraOff className="h-5 w-5" />
+              <Icon path={mdiCameraOff} size={0.8} aria-hidden={true} />
               Stop Scanning
             </Button>
           )}
@@ -202,7 +203,7 @@ export function QRScanner({
         {/* Success Message */}
         {success && (
           <Alert className="border-green-500 bg-green-50">
-            <CheckCircle2 className="h-5 w-5 text-green-600" />
+            <Icon path={mdiCheckCircle} size={0.8} className="text-green-600" aria-hidden={true} />
             <AlertTitle className="text-green-800">
               Check-in Successful!
             </AlertTitle>
@@ -233,7 +234,7 @@ export function QRScanner({
         {/* Error Message */}
         {error && (
           <Alert variant="error">
-            <XCircle className="h-5 w-5" />
+            <Icon path={mdiCloseCircle} size={0.8} aria-hidden={true} />
             <AlertTitle>Check-in Failed</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>

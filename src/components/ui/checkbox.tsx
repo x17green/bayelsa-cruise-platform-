@@ -3,10 +3,11 @@
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 // eslint-disable-next-line import/named
 import { cva, VariantProps } from 'class-variance-authority'
-import { Check, Minus } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCheck, mdiMinus } from '@mdi/js'
 
 /**
  * Checkbox Variants using CVA
@@ -130,6 +131,7 @@ const Checkbox = React.forwardRef<
   const checkboxId = id || (label ? `checkbox-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
   
   const iconSize = size === 'sm' ? 'size-3' : size === 'lg' ? 'size-5' : 'size-4'
+  const iconSizeNum = size === 'sm' ? 0.5 : size === 'lg' ? 0.8 : 0.6
   
   if (label || description) {
     return (
@@ -142,9 +144,9 @@ const Checkbox = React.forwardRef<
         >
           <CheckboxPrimitive.Indicator className="flex items-center justify-center text-fg">
             {props.checked === 'indeterminate' ? (
-              <Minus className={iconSize} />
+              <Icon path={mdiMinus} size={iconSizeNum} aria-hidden="true" />
             ) : (
-              <Check className={iconSize} />
+              <Icon path={mdiCheck} size={iconSizeNum} aria-hidden="true" />
             )}
           </CheckboxPrimitive.Indicator>
         </CheckboxPrimitive.Root>
@@ -173,9 +175,9 @@ const Checkbox = React.forwardRef<
     >
       <CheckboxPrimitive.Indicator className="flex items-center justify-center text-fg">
         {props.checked === 'indeterminate' ? (
-          <Minus className={iconSize} />
+          <Icon path={mdiMinus} size={iconSizeNum} aria-hidden="true" />
         ) : (
-          <Check className={iconSize} />
+          <Icon path={mdiCheck} size={iconSizeNum} aria-hidden="true" />
         )}
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>

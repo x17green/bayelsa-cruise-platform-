@@ -6,7 +6,8 @@
 import { BoardingDashboard } from '@/src/components/operator/boarding-dashboard'
 import { SafetyChecklist } from '@/src/components/operator/safety-checklist'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { Ship, ClipboardCheck } from 'lucide-react'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiFerry, mdiClipboardCheck } from '@mdi/js'
 
 interface OperatorDashboardPageProps {
   params: Promise<{ scheduleId: string }>
@@ -40,7 +41,7 @@ export default async function OperatorDashboardPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Ship className="h-8 w-8" />
+            <Icon path={mdiFerry} size={1.33} ariaHidden=" true" />
             Operator Dashboard
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -52,11 +53,11 @@ export default async function OperatorDashboardPage({
       <Tabs defaultValue="boarding" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="boarding" className="gap-2">
-            <Ship className="h-4 w-4" />
+            <Icon path={mdiFerry} size={0.6} aria-hidden="true" />
             Boarding Management
           </TabsTrigger>
           <TabsTrigger value="safety" className="gap-2">
-            <ClipboardCheck className="h-4 w-4" />
+            <Icon path={mdiClipboardCheck} size={0.6} aria-hidden="true" />
             Safety Checklist
           </TabsTrigger>
         </TabsList>

@@ -1,8 +1,9 @@
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
 
 import { ButtonProps, buttonVariants } from '@/src/components/ui/button'
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronLeft, mdiChevronRight, mdiDotsHorizontal } from '@mdi/js'
 
 /**
  * Pagination Component - Blue Waters Design System
@@ -109,9 +110,10 @@ const PaginationPrevious = ({
     size="default"
     variant="glass"
     className={cn('gap-1 pl-2.5', className)}
+    aria-label="Go to previous page"
     {...props}
   >
-    <ChevronLeft className="h-4 w-4" />
+    <Icon path={mdiChevronLeft} size={0.6} aria-hidden="true" />
     <span>Previous</span>
   </PaginationLink>
 )
@@ -126,10 +128,11 @@ const PaginationNext = ({
     size="default"
     variant="glass"
     className={cn('gap-1 pr-2.5', className)}
+    aria-label="Go to next page"
     {...props}
   >
     <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
+    <Icon path={mdiChevronRight} size={0.6} aria-hidden="true" />
   </PaginationLink>
 )
 PaginationNext.displayName = 'PaginationNext'
@@ -147,7 +150,7 @@ const PaginationEllipsis = ({
     )}
     {...props}
   >
-    <MoreHorizontal className="h-4 w-4" />
+    <Icon path={mdiDotsHorizontal} size={0.6} aria-hidden="true" />
     <span className="sr-only">More pages</span>
   </span>
 )

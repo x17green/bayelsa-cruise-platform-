@@ -1,10 +1,11 @@
 'use client'
 
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ChevronDown } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronDown } from '@mdi/js'
 
 const Accordion = AccordionPrimitive.Root
 
@@ -54,12 +55,15 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <ChevronDown
+      <Icon
+        path={mdiChevronDown}
+        size={0.6}
         className={cn(
-          'size-4 shrink-0',
+          'shrink-0',
           'transition-transform duration-normal',
           'text-accent-400',
         )}
+        aria-hidden="true"
       />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>

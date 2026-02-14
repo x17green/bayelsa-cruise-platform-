@@ -90,7 +90,6 @@
 import { Slot } from '@radix-ui/react-slot'
 // eslint-disable-next-line import/named
 import { cva, VariantProps } from 'class-variance-authority'
-import { PanelLeft } from 'lucide-react'
 import * as React from 'react'
 
 import { Button } from '@/src/components/ui/button'
@@ -106,6 +105,8 @@ import {
 } from '@/src/components/ui/tooltip'
 import { useIsMobile } from '@/src/hooks/use-mobile'
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiMenu } from '@mdi/js'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -375,7 +376,7 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      <Icon path={mdiMenu} size={0.8} aria-hidden={true} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

@@ -2,7 +2,8 @@
 
 import { Card, CardBody, CardHeader, Checkbox, Input, Navbar, NavbarBrand, Select, SelectItem } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Building2, CheckCircle, CreditCard, Smartphone } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiArrowLeft, mdiOfficeBuilding, mdiCheckCircle, mdiCreditCard, mdiCellphone } from '@mdi/js'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
@@ -116,7 +117,7 @@ function CheckoutContent() {
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <CheckCircle className="w-24 h-24 text-success-500" />
+                <Icon path={mdiCheckCircle} size={4} className="text-success-500" aria-hidden="true" />
               </motion.div>
             </div>
 
@@ -214,7 +215,7 @@ function CheckoutContent() {
           <Button
             href="/book"
             variant="ghost"
-            startIcon={<ArrowLeft className="w-4 h-4" />}
+            startIcon={<Icon path={mdiArrowLeft} size={0.6} aria-hidden="true" />}
             className="mb-4 text-accent-500"
           >
             Back to Booking
@@ -282,15 +283,15 @@ function CheckoutContent() {
                   >
                     <TabsList className="grid w-full grid-cols-3 mb-6">
                       <TabsTrigger value="card" className="flex gap-2">
-                        <CreditCard className="w-4 h-4" />
+                        <Icon path={mdiCreditCard} size={0.6} aria-hidden="true" />
                         Card
                       </TabsTrigger>
                       <TabsTrigger value="mobile" className="flex gap-2">
-                        <Smartphone className="w-4 h-4" />
+                        <Icon path={mdiCellphone} size={0.6} aria-hidden="true" />
                         Mobile Money
                       </TabsTrigger>
                       <TabsTrigger value="bank" className="flex gap-2">
-                        <Building2 className="w-4 h-4" />
+                        <Icon path={mdiOfficeBuilding} size={0.6} aria-hidden="true" />
                         Bank
                       </TabsTrigger>
                     </TabsList>

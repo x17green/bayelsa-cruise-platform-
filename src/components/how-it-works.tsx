@@ -1,29 +1,30 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckCircle, CreditCard, Search, Ship } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiCheckCircle, mdiCreditCard, mdiMagnify, mdiFerry } from '@mdi/js'
 
 const steps = [
   {
-    icon: Search,
+    icon: mdiMagnify,
     title: 'Search Trips',
     description: 'Browse available boat trips based on your route, date, and preferences',
     color: 'from-accent-600 to-accent-500',
   },
   {
-    icon: CheckCircle,
+    icon: mdiCheckCircle,
     title: 'Select & Book',
     description: 'Choose your preferred trip and secure your seats with just a few clicks',
     color: 'from-info-500 to-info-400',
   },
   {
-    icon: CreditCard,
+    icon: mdiCreditCard,
     title: 'Make Payment',
     description: 'Pay securely using various payment methods including cards and mobile money',
     color: 'from-success-500 to-success-400',
   },
   {
-    icon: Ship,
+    icon: mdiFerry,
     title: 'Set Sail',
     description: 'Check in at your designated time and enjoy your journey across the waters',
     color: 'from-accent-500 to-accent-400',

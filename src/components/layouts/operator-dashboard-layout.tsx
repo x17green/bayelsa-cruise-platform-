@@ -2,25 +2,26 @@
 
 import { motion } from 'framer-motion'
 import { 
-  BarChart3, 
-  Bell, 
-  Calendar, 
-  ClipboardCheck, 
-  DollarSign, 
-  Home, 
-  LogOut, 
-  Menu, 
-  Settings, 
-  Ship, 
-  Users, 
-  Waves,
-  X 
-} from 'lucide-react'
+  mdiChartBar,
+  mdiBell,
+  mdiCalendar,
+  mdiClipboardCheck,
+  mdiCurrencyUsd,
+  mdiHome,
+  mdiLogout,
+  mdiMenu,
+  mdiCog,
+  mdiFerry,
+  mdiAccountGroup,
+  mdiWaves,
+  mdiClose
+} from '@mdi/js'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode, useState } from 'react'
 
 import { Button } from '@/src/components/ui/button'
+import { Icon } from '@/src/components/ui/icon'
 import { useAuth } from '@/src/contexts/auth-context'
 import { Badge } from '@/src/components/ui/badge'
 
@@ -34,12 +35,12 @@ function OperatorDashboardHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navItems = [
-    { href: '/operator/dashboard', label: 'Overview', icon: Home },
-    { href: '/operator/trips', label: 'Trips', icon: Ship },
-    { href: '/operator/bookings', label: 'Bookings', icon: Calendar },
-    { href: '/operator/manifests', label: 'Manifests', icon: ClipboardCheck },
-    { href: '/operator/analytics', label: 'Analytics', icon: BarChart3 },
-    { href: '/operator/revenue', label: 'Revenue', icon: DollarSign },
+    { href: '/operator/dashboard', label: 'Overview', icon: mdiHome },
+    { href: '/operator/trips', label: 'Trips', icon: mdiFerry },
+    { href: '/operator/bookings', label: 'Bookings', icon: mdiCalendar },
+    { href: '/operator/manifests', label: 'Manifests', icon: mdiClipboardCheck },
+    { href: '/operator/analytics', label: 'Analytics', icon: mdiChartBar },
+    { href: '/operator/revenue', label: 'Revenue', icon: mdiCurrencyUsd },
   ]
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
@@ -52,7 +53,7 @@ function OperatorDashboardHeader() {
           <div className="relative">
             <div className="absolute inset-0 bg-accent-500 opacity-20 blur-xl rounded-full" />
             <div className="relative glass-strong rounded-lg p-2">
-              <Ship className="w-5 h-5 text-accent-300" />
+              <Icon path={mdiFerry} size={0.8} className="text-accent-300" aria-hidden={true} />
             </div>
           </div>
           <div>
@@ -90,7 +91,7 @@ function OperatorDashboardHeader() {
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <item.icon className="w-4 h-4" />
+                <Icon path={item.icon} size={0.6} aria-hidden={true} />
                 {item.label}
               </span>
             </Link>
@@ -100,8 +101,8 @@ function OperatorDashboardHeader() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           {/* Notifications */}
-          <button className="relative glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors">
-            <Bell className="w-5 h-5 text-fg-muted" />
+          <button className="relative glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors" aria-label="Notifications">
+            <Icon path={mdiBell} size={0.8} className="text-fg-muted" aria-hidden={true} />
             <Badge 
               variant="destructive" 
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
@@ -114,8 +115,9 @@ function OperatorDashboardHeader() {
           <Link 
             href="/operator/settings"
             className="glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors"
+            aria-label="Settings"
           >
-            <Settings className="w-5 h-5 text-fg-muted" />
+            <Icon path={mdiCog} size={0.8} className="text-fg-muted" aria-hidden={true} />
           </Link>
 
           {/* User Menu */}
@@ -125,7 +127,7 @@ function OperatorDashboardHeader() {
                 {appUser?.fullName || 'Operator'}
               </p>
               <p className="text-xs text-accent-400 capitalize flex items-center justify-end gap-1">
-                <Users className="w-3 h-3" />
+                <Icon path={mdiAccountGroup} size={0.5} aria-hidden={true} />
                 {appUser?.role || 'operator'}
               </p>
             </div>
@@ -135,8 +137,9 @@ function OperatorDashboardHeader() {
               variant="ghost"
               size="sm"
               className="glass-hover"
+              aria-label="Logout"
             >
-              <LogOut className="w-4 h-4" />
+              <Icon path={mdiLogout} size={0.6} aria-hidden={true} />
             </Button>
           </div>
 
@@ -144,11 +147,12 @@ function OperatorDashboardHeader() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden glass-hover rounded-lg p-2 hover:bg-glass-02 transition-colors"
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <X className="w-5 h-5 text-fg" />
+              <Icon path={mdiClose} size={0.8} className="text-fg" aria-hidden={true} />
             ) : (
-              <Menu className="w-5 h-5 text-fg" />
+              <Icon path={mdiMenu} size={0.8} className="text-fg" aria-hidden={true} />
             )}
           </button>
         </div>
@@ -178,7 +182,7 @@ function OperatorDashboardHeader() {
                   }
                 `}
               >
-                <item.icon className="w-5 h-5" />
+                <Icon path={item.icon} size={0.8} aria-hidden={true} />
                 {item.label}
               </Link>
             ))}
@@ -198,7 +202,7 @@ function OperatorDashboardHeader() {
                 variant="ghost"
                 className="w-full justify-start glass-hover"
               >
-                <LogOut className="w-5 h-5 mr-3" />
+                <Icon path={mdiLogout} size={0.8} className="mr-3" aria-hidden={true} />
                 Logout
               </Button>
             </div>
@@ -223,7 +227,7 @@ function OperatorDashboardFooter() {
           {/* Brand & Copyright */}
           <div className="flex items-center gap-3">
             <div className="glass-subtle rounded-lg p-2">
-              <Waves className="w-5 h-5 text-accent-400" />
+              <Icon path={mdiWaves} size={0.8} className="text-accent-400" aria-hidden={true} />
             </div>
             <div>
               <p className="text-sm font-semibold text-fg">

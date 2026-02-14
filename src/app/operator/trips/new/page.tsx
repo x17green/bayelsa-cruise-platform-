@@ -11,8 +11,9 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { ArrowLeft, Plus, X, Save, Ship, MapPin, Clock, DollarSign } from 'lucide-react'
 import Link from 'next/link'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronLeft, mdiPlus, mdiClose, mdiContentSave, mdiFerry, mdiMapMarker, mdiClock, mdiCurrencyUsd } from '@mdi/js'
 
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
@@ -179,7 +180,7 @@ export default function CreateTripPage() {
       <div className="mb-8">
         <Link href="/operator/trips">
           <Button variant="ghost" className="gap-2 mb-4">
-            <ArrowLeft className="h-4 w-4" />
+            <Icon path={mdiChevronLeft} size={0.6} aria-hidden={true} />
             Back to Trips
           </Button>
         </Link>
@@ -266,7 +267,7 @@ export default function CreateTripPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Ship className="h-5 w-5" />
+              <Icon path={mdiFerry} size={0.8} aria-hidden={true} />
               Vessel & Route
             </CardTitle>
             <CardDescription>
@@ -328,7 +329,7 @@ export default function CreateTripPage() {
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddAmenity())}
               />
               <Button type="button" onClick={handleAddAmenity} variant="outline">
-                <Plus className="h-4 w-4" />
+                <Icon path={mdiPlus} size={0.6} aria-hidden={true} />
               </Button>
             </div>
             {amenities.length > 0 && (
@@ -341,7 +342,7 @@ export default function CreateTripPage() {
                       onClick={() => handleRemoveAmenity(index)}
                       className="hover:text-destructive"
                     >
-                      <X className="h-3 w-3" />
+                      <Icon path={mdiClose} size={0.5} aria-hidden={true} />
                     </button>
                   </Badge>
                 ))}
@@ -367,7 +368,7 @@ export default function CreateTripPage() {
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddHighlight())}
               />
               <Button type="button" onClick={handleAddHighlight} variant="outline">
-                <Plus className="h-4 w-4" />
+                <Icon path={mdiPlus} size={0.6} aria-hidden={true} />
               </Button>
             </div>
             {highlights.length > 0 && (
@@ -380,7 +381,7 @@ export default function CreateTripPage() {
                       onClick={() => handleRemoveHighlight(index)}
                       className="hover:text-destructive"
                     >
-                      <X className="h-3 w-3" />
+                      <Icon path={mdiClose} size={0.5} aria-hidden={true} />
                     </button>
                   </Badge>
                 ))}
@@ -397,7 +398,7 @@ export default function CreateTripPage() {
             </Button>
           </Link>
           <Button type="submit" disabled={isSubmitting} className="gap-2">
-            <Save className="h-4 w-4" />
+            <Icon path={mdiContentSave} size={0.6} aria-hidden={true} />
             {isSubmitting ? 'Creating...' : 'Create Trip'}
           </Button>
         </div>

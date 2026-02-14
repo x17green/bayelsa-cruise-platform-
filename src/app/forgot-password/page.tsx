@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft, Mail } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiArrowLeft, mdiEmail } from '@mdi/js'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 
@@ -60,7 +61,7 @@ export default function ForgotPassword() {
               className="text-center"
             >
               <div className="w-16 h-16 bg-success-300/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-8 h-8 text-success-600" />
+                <Icon path={mdiEmail} size={1.33} className="text-success-600" aria-hidden="true" />
               </div>
               <h2 className="text-xl font-semibold text-fg mb-2">Check Your Email</h2>
               <p className="text-fg-muted mb-6">
@@ -73,7 +74,7 @@ export default function ForgotPassword() {
                 href="/login"
                 className="inline-flex items-center gap-2 text-accent-500 hover:underline font-semibold"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <Icon path={mdiArrowLeft} size={0.6} aria-hidden="true" />
                 Back to Login
               </Link>
             </motion.div>
@@ -95,7 +96,7 @@ export default function ForgotPassword() {
                   Email Address
                 </label>
                 <div className="flex items-center border border-border rounded-lg px-3 py-2 glass-subtle focus-within:border-accent-500 transition-colors">
-                  <Mail className="w-4 h-4 text-accent-500 mr-2" />
+                  <Icon path={mdiEmail} size={0.6} className="text-accent-500 mr-2" aria-hidden="true" />
                   <input
                     name="email"
                     type="email"
@@ -123,7 +124,7 @@ export default function ForgotPassword() {
                   href="/login"
                   className="inline-flex items-center gap-2 text-sm text-fg-muted hover:text-accent-500 transition-colors"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <Icon path={mdiArrowLeft} size={0.6} aria-hidden="true" />
                   Back to Login
                 </Link>
               </div>

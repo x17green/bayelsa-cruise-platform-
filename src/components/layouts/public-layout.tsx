@@ -2,22 +2,23 @@
 
 import { motion } from 'framer-motion'
 import { 
-  Anchor, 
-  Facebook, 
-  Instagram, 
-  LogIn, 
-  Mail, 
-  MapPin, 
-  Phone, 
-  Twitter, 
-  UserPlus, 
-  Waves 
-} from 'lucide-react'
+  mdiAnchor,
+  mdiEmail,
+  mdiFacebook,
+  mdiInstagram,
+  mdiLogin,
+  mdiMapMarker,
+  mdiPhone,
+  mdiTwitter,
+  mdiAccountPlus,
+  mdiWaves
+} from '@mdi/js'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { type ReactNode } from 'react'
 
 import { Button } from '@/src/components/ui/button'
+import { Icon } from '@/src/components/ui/icon'
 import { useAuth } from '@/src/hooks/use-auth'
 
 /**
@@ -56,7 +57,7 @@ function PublicHeader() {
         <Link href="/" className="flex items-center gap-2 group">
           <div className="relative">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 flex items-center justify-center ring-2 ring-accent-700 ring-offset-2 ring-offset-bg-900 transition-transform duration-300 group-hover:scale-105">
-              <Waves className="w-5 h-5 text-white" />
+              <Icon path={mdiWaves} size={0.8} className="text-white" aria-hidden={true} />
             </div>
             <div className="absolute inset-0 bg-accent-500 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30" />
           </div>
@@ -94,7 +95,7 @@ function PublicHeader() {
               onClick={handleDashboardClick}
               className="glass-strong border border-accent-700 text-accent-300 hover:text-accent-200 hover:border-accent-600 transition-all duration-200"
             >
-              <Anchor className="w-4 h-4 mr-2" />
+              <Icon path={mdiAnchor} size={0.6} className="mr-2" aria-hidden={true} />
               {appUser?.role === 'operator' || appUser?.role === 'staff' || appUser?.role === 'admin' 
                 ? 'Operator Portal' 
                 : 'My Dashboard'}
@@ -106,13 +107,13 @@ function PublicHeader() {
                   variant="ghost"
                   className="text-accent-400 hover:text-accent-300 hover:bg-glass-01"
                 >
-                  <LogIn className="w-4 h-4 mr-2" />
+                  <Icon path={mdiLogin} size={0.6} className="mr-2" aria-hidden={true} />
                   Sign In
                 </Button>
               </Link>
               <Link href="/signup">
                 <Button className="bg-accent-600 text-white hover:bg-accent-500 border border-accent-700 shadow-lg shadow-accent-900/30 transition-all duration-200">
-                  <UserPlus className="w-4 h-4 mr-2" />
+                  <Icon path={mdiAccountPlus} size={0.6} className="mr-2" aria-hidden={true} />
                   Sign Up
                 </Button>
               </Link>
@@ -160,7 +161,7 @@ function PublicFooter() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-600 to-accent-400 flex items-center justify-center">
-                <Waves className="w-5 h-5 text-white" />
+                <Icon path={mdiWaves} size={0.8} className="text-white" aria-hidden={true} />
               </div>
               <p className="font-bold text-xl text-fg">Blue Waters</p>
             </div>
@@ -172,15 +173,15 @@ function PublicFooter() {
             {/* Contact Info */}
             <div className="space-y-2 text-sm">
               <div className="flex items-start gap-2 text-fg-muted">
-                <MapPin className="w-4 h-4 mt-0.5 text-accent-500" />
+                <Icon path={mdiMapMarker} size={0.6} className="mt-0.5 text-accent-500" aria-hidden={true} />
                 <span>Ministry of Blue Waters<br />Yenagoa, Bayelsa State</span>
               </div>
               <div className="flex items-center gap-2 text-fg-muted">
-                <Phone className="w-4 h-4 text-accent-500" />
+                <Icon path={mdiPhone} size={0.6} className="text-accent-500" aria-hidden={true} />
                 <span>+234 800 BLUE WATERS</span>
               </div>
               <div className="flex items-center gap-2 text-fg-muted">
-                <Mail className="w-4 h-4 text-accent-500" />
+                <Icon path={mdiEmail} size={0.6} className="text-accent-500" aria-hidden={true} />
                 <span>support@bluewaters.gov.ng</span>
               </div>
             </div>
@@ -251,24 +252,27 @@ function PublicFooter() {
               target="_blank"
               rel="noopener noreferrer"
               className="glass-subtle p-2 rounded-full hover:glass-strong transition-all duration-200 group"
+              aria-label="Facebook"
             >
-              <Facebook className="w-5 h-5 text-fg-muted group-hover:text-accent-400 transition-colors duration-200" />
+              <Icon path={mdiFacebook} size={0.8} className="text-fg-muted group-hover:text-accent-400 transition-colors duration-200" aria-hidden={true} />
             </Link>
             <Link
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
               className="glass-subtle p-2 rounded-full hover:glass-strong transition-all duration-200 group"
+              aria-label="Twitter"
             >
-              <Twitter className="w-5 h-5 text-fg-muted group-hover:text-accent-400 transition-colors duration-200" />
+              <Icon path={mdiTwitter} size={0.8} className="text-fg-muted group-hover:text-accent-400 transition-colors duration-200" aria-hidden={true} />
             </Link>
             <Link
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
               className="glass-subtle p-2 rounded-full hover:glass-strong transition-all duration-200 group"
+              aria-label="Instagram"
             >
-              <Instagram className="w-5 h-5 text-fg-muted group-hover:text-accent-400 transition-colors duration-200" />
+              <Icon path={mdiInstagram} size={0.8} className="text-fg-muted group-hover:text-accent-400 transition-colors duration-200" aria-hidden={true} />
             </Link>
           </div>
         </div>

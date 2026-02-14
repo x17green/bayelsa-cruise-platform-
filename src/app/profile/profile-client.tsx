@@ -2,9 +2,10 @@
 
 import { type User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Lock, LogOut, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronLeft, mdiLock, mdiLogout, mdiShieldAccount } from '@mdi/js'
 
 import { signOut } from '@/src/app/auth/actions'
 import { Button } from '@/src/components/ui/button'
@@ -44,12 +45,12 @@ export default function ProfileClient({ user, userData }: ProfileClientProps) {
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <Icon path={mdiChevronLeft} size={0.6} className="mr-2" aria-hidden="true" />
                   Dashboard
                 </Button>
               </Link>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="w-4 h-4 mr-2" />
+                <Icon path={mdiLogout} size={0.6} className="mr-2" aria-hidden="true" />
                 Sign Out
               </Button>
             </div>
@@ -85,7 +86,7 @@ export default function ProfileClient({ user, userData }: ProfileClientProps) {
                 <CardContent>
                   <Link href="/forgot-password">
                     <Button variant="outline" className="w-full">
-                      <Lock className="w-4 h-4 mr-2" />
+                      <Icon path={mdiLock} size={0.6} className="mr-2" aria-hidden="true" />
                       Change Password
                     </Button>
                   </Link>
@@ -104,7 +105,7 @@ export default function ProfileClient({ user, userData }: ProfileClientProps) {
                   <div>
                     <p className="text-xs text-foreground/50 mb-1">Role</p>
                     <div className="flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-primary" />
+                      <Icon path={mdiShieldAccount} size={0.6} className="text-primary" aria-hidden="true" />
                       <span className="text-sm font-medium capitalize">{userData.role}</span>
                     </div>
                   </div>

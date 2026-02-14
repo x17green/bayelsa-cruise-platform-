@@ -27,15 +27,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
+import { Icon } from '@/src/components/ui/icon'
 import {
-  Users,
-  UserCheck,
-  UserX,
-  Ship,
-  Clock,
-  RefreshCw,
-  Download,
-} from 'lucide-react'
+  mdiAccountGroup,
+  mdiAccountCheck,
+  mdiAccountOff,
+  mdiFerry,
+  mdiClock,
+  mdiRefresh,
+  mdiDownload,
+} from '@mdi/js'
 
 interface CheckinData {
   id: string
@@ -179,7 +180,7 @@ export function BoardingDashboard({
             <CardTitle className="text-sm font-medium">
               Total Passengers
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Icon path={mdiAccountGroup} size={0.6} className="text-muted-foreground" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -191,7 +192,7 @@ export function BoardingDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Checked In</CardTitle>
-            <UserCheck className="h-4 w-4 text-green-600" />
+            <Icon path={mdiAccountCheck} size={0.6} className="text-green-600" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
@@ -203,7 +204,7 @@ export function BoardingDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Remaining</CardTitle>
-            <UserX className="h-4 w-4 text-orange-600" />
+            <Icon path={mdiAccountOff} size={0.6} className="text-orange-600" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">
@@ -215,7 +216,7 @@ export function BoardingDashboard({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Progress</CardTitle>
-            <Ship className="h-4 w-4 text-muted-foreground" />
+            <Icon path={mdiFerry} size={0.6} className="text-muted-foreground" aria-hidden={true} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -234,8 +235,11 @@ export function BoardingDashboard({
           disabled={refreshing}
           className="gap-2"
         >
-          <RefreshCw
-            className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+          <Icon
+            path={mdiRefresh}
+            size={0.6}
+            className={refreshing ? 'animate-spin' : ''}
+            aria-hidden={true}
           />
           Refresh
         </Button>
@@ -244,7 +248,7 @@ export function BoardingDashboard({
           variant="outline"
           className="gap-2"
         >
-          <Download className="h-4 w-4" />
+          <Icon path={mdiDownload} size={0.6} aria-hidden={true} />
           Download PDF Manifest
         </Button>
         <Button
@@ -252,7 +256,7 @@ export function BoardingDashboard({
           variant="outline"
           className="gap-2"
         >
-          <Download className="h-4 w-4" />
+          <Icon path={mdiDownload} size={0.6} aria-hidden={true} />
           Download CSV Manifest
         </Button>
       </div>
@@ -319,7 +323,7 @@ export function BoardingDashboard({
                         </TableCell>
                         <TableCell className="text-xs">
                           <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
+                            <Icon path={mdiClock} size={0.5} aria-hidden={true} />
                             {new Date(
                               checkin.checkedInAt
                             ).toLocaleTimeString()}

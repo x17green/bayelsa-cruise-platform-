@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiStar } from '@mdi/js'
 import Image from 'next/image'
 
 const testimonials = [
@@ -94,13 +95,16 @@ export default function Testimonials() {
                 {/* Rating */}
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star
+                    <Icon
                       key={i}
-                      className={`w-5 h-5 ${
+                      path={mdiStar}
+                      size={0.8}
+                      className={`${
                         i < testimonial.rating
                           ? 'fill-accent-500 text-accent-500'
                           : 'text-fg-subtle'
                       }`}
+                      aria-hidden={true}
                     />
                   ))}
                 </div>

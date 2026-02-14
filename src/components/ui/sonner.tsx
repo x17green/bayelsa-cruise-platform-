@@ -68,7 +68,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         classNames: {
           // Toast container - glassmorphism
           toast:
-            'group toast group-[.toaster]:bg-glass-03 group-[.toaster]:backdrop-blur-base group-[.toaster]:text-fg-DEFAULT group-[.toaster]:border-glass group-[.toaster]:shadow-[0_8px_32px_rgba(0,0,0,0.3)]',
+            'group toast group-[.toaster]:bg-glass-03 group-[.toaster]:backdrop-blur-base group-[.toaster]:text-fg-DEFAULT group-[.toaster]:border-glass group-[.toaster]:shadow-xl',
           // Description text - muted
           description: 'group-[.toast]:text-fg-muted',
           // Action button - primary styling

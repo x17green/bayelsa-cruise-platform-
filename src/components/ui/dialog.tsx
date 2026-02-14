@@ -1,10 +1,11 @@
 'use client'
 
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiClose } from '@mdi/js'
 
 const Dialog = DialogPrimitive.Root
 
@@ -97,8 +98,9 @@ const DialogContent = React.forwardRef<
           'data-[state=open]:bg-glass-02',
           'data-[state=open]:text-fg-muted',
         )}
+        aria-label="Close"
       >
-        <X className="size-4" />
+        <Icon path={mdiClose} size={0.6} aria-hidden="true" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>

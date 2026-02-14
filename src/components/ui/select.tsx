@@ -3,10 +3,11 @@
 import * as SelectPrimitive from '@radix-ui/react-select'
 // eslint-disable-next-line import/named
 import { cva, VariantProps } from 'class-variance-authority'
-import { Check, ChevronDown, ChevronUp } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiCheck, mdiChevronDown, mdiChevronUp } from '@mdi/js'
 
 const Select = SelectPrimitive.Root
 
@@ -119,7 +120,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-fg-muted transition-transform duration-normal data-[state=open]:rotate-180" />
+      <Icon path={mdiChevronDown} size={0.6} className="text-fg-muted transition-transform duration-normal data-[state=open]:rotate-180" aria-hidden="true" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))
@@ -139,7 +140,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronUp className="size-4" />
+    <Icon path={mdiChevronUp} size={0.6} aria-hidden="true" />
   </SelectPrimitive.ScrollUpButton>
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
@@ -158,7 +159,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronDown className="size-4" />
+    <Icon path={mdiChevronDown} size={0.6} aria-hidden="true" />
   </SelectPrimitive.ScrollDownButton>
 ))
 SelectScrollDownButton.displayName =
@@ -265,7 +266,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-accent-400" />
+        <Icon path={mdiCheck} size={0.6} className="text-accent-400" aria-hidden="true" />
       </SelectPrimitive.ItemIndicator>
     </span>
 

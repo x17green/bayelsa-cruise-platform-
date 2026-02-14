@@ -2,7 +2,8 @@
 
 import { Button, Card, CardBody, Input, Navbar, NavbarBrand, NavbarContent, NavbarItem, Select, SelectItem, Slider } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Clock, MapPin, Star, Users } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiArrowLeft, mdiClock, mdiMapMarker, mdiStar, mdiAccountGroup } from '@mdi/js'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -135,7 +136,7 @@ export default function Search() {
             variant="ghost"
             className="mb-4 text-accent-500 flex items-center gap-2"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <Icon path={mdiArrowLeft} size={0.6} aria-hidden="true" />
             Back to Home
           </Button>
           <h1 className="text-4xl font-bold text-accent-500 mb-2">Search Trips</h1>
@@ -280,15 +281,15 @@ export default function Search() {
 
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                             <div className="flex items-center gap-2 text-sm text-fg-muted">
-                              <MapPin className="w-4 h-4 text-accent-500" />
+                              <Icon path={mdiMapMarker} size={0.6} className="text-accent-500" aria-hidden="true" />
                               {trip.route}
                             </div>
                             <div className="flex items-center gap-2 text-sm text-fg-muted">
-                              <Clock className="w-4 h-4 text-accent-500" />
+                              <Icon path={mdiClock} size={0.6} className="text-accent-500" aria-hidden="true" />
                               {trip.departure}
                             </div>
                             <div className="flex items-center gap-2 text-sm text-fg-muted">
-                              <Users className="w-4 h-4 text-accent-500" />
+                              <Icon path={mdiAccountGroup} size={0.6} className="text-accent-500" aria-hidden="true" />
                               {trip.available} available
                             </div>
                           </div>
@@ -296,13 +297,16 @@ export default function Search() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {[...Array(5)].map((_, i) => (
-                                <Star
+                                <Icon
                                   key={i}
-                                  className={`w-4 h-4 ${
+                                  path={mdiStar}
+                                  size={0.6}
+                                  className={
                                     i < Math.floor(trip.rating)
                                       ? 'fill-accent-500 text-accent-500'
                                       : 'text-fg-dim'
-                                  }`}
+                                  }
+                                  aria-hidden="true"
                                 />
                               ))}
                               <span className="text-sm font-semibold text-fg">

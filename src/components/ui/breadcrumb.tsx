@@ -1,9 +1,10 @@
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { ChevronRight, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
+import { Icon } from '@/src/components/ui/icon'
+import { mdiChevronRight, mdiDotsHorizontal } from '@mdi/js'
 
 /**
  * Breadcrumb Component - Blue Waters Design System
@@ -140,7 +141,7 @@ const BreadcrumbSeparator = ({
     )}
     {...props}
   >
-    {children ?? <ChevronRight />}
+    {children ?? <Icon path={mdiChevronRight} size={0.6} aria-hidden="true" />}
   </li>
 )
 BreadcrumbSeparator.displayName = 'BreadcrumbSeparator'
@@ -159,7 +160,7 @@ const BreadcrumbEllipsis = ({
     )}
     {...props}
   >
-    <MoreHorizontal className="h-4 w-4" />
+    <Icon path={mdiDotsHorizontal} size={0.6} aria-hidden="true" />
     <span className="sr-only">More</span>
   </span>
 )
