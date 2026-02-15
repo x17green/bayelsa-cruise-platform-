@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "npx eslint src --max-warnings 50",
     "test": "echo 'No tests specified yet'",
     "prepare": "husky",
     "migration:update-tracker": "node scripts/design-system/update-tracker.js",
