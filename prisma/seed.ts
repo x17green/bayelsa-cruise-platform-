@@ -407,6 +407,10 @@ async function main() {
         },
       },
     },
+    include: {
+      items: true,
+      payments: true,
+    },
   })
 
   const booking2 = await prisma.booking.create({
@@ -428,6 +432,10 @@ async function main() {
           ticketReference: 'BW-2026-0002',
         },
       },
+    },
+    include: {
+      items: true,
+      payments: true,
     },
   })
 
