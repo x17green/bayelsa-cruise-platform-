@@ -183,22 +183,37 @@ export async function getAvailableSeats(scheduleId: string): Promise<number> {
       return 0
     }
 
-    // Get all active locks
-    const lockPattern = buildRedisKey(REDIS_KEYS.SEAT_LOCK, scheduleId, '*')
-    const lockKeys = await redis.keys(lockPattern)
-    
+    // Try to get locked seats from Redis, but fall back gracefully if Redis is unavailable
     let totalLockedSeats = 0
-    for (const key of lockKeys) {
-      const lock = await redis.get<SeatLock>(key)
-      if (lock) {
-        totalLockedSeats += lock.seats
+    try {
+      const lockPattern = buildRedisKey(REDIS_KEYS.SEAT_LOCK, scheduleId, '*')
+      const lockKeys = await redis.keys(lockPattern)
+
+      for (const key of lockKeys) {
+        const lock = await redis.get<SeatLock>(key)
+        if (lock) {
+          totalLockedSeats += lock.seats
+        }
       }
+    } catch (redisError) {
+      // Redis is not available, continue with just booked seats
+      console.warn('Redis unavailable for seat lock check, using basic calculation:', redisError)
     }
 
     return Math.max(0, schedule.capacity - schedule.bookedSeats - totalLockedSeats)
   } catch (error) {
     console.error('Error getting available seats:', error)
-    return 0
+    // Fallback: just return capacity minus booked seats if everything fails
+    try {
+      const schedule = await prisma.tripSchedule.findUnique({
+        where: { id: scheduleId },
+        select: { capacity: true, bookedSeats: true },
+      })
+      return schedule ? Math.max(0, schedule.capacity - schedule.bookedSeats) : 0
+    } catch (fallbackError) {
+      console.error('Fallback calculation also failed:', fallbackError)
+      return 0
+    }
   }
 }
 
