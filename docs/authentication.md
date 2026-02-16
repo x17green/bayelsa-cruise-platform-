@@ -199,7 +199,6 @@ Features:
 - Email/password authentication
 - Remember me checkbox
 - Forgot password link
-- Demo credentials display
 - Automatic redirect to dashboard on success
 
 ### Signup Page

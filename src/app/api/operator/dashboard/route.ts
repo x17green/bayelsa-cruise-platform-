@@ -291,7 +291,7 @@ export async function GET(request: NextRequest) {
     return apiResponse({
       operator: {
         id: operator.id,
-        name: operator.companyName,
+        name: operator.organizationName,
         verified: operator.verified,
         rating: avgRating._avg?.rating || 0,
         totalTrips,
