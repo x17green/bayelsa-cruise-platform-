@@ -273,7 +273,7 @@ export function FooterLogoSuite({ className }: FooterLogoSuiteProps) {
     <div className={cn("flex flex-col items-center gap-3", className)}>
       <MinistryBlueSeal size="sm" />
       <p className="text-xs text-fg-muted text-center max-w-xs">
-        Bayelsa Boat Club is a division of the Bayelsa State Ministry of Marine and Blue Economy
+        The Bayelsa Boat Club is a division of the < br /> Ministry of Marine and Blue Economy <br /> Bayelsa State - Nigeria.
       </p>
     </div>
   );
