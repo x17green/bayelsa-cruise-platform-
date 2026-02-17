@@ -53,7 +53,7 @@ export default function LogIn() {
               Welcome Back
             </h1>
             <p className="text-lg text-fg-muted">
-              Sign in to your Yenagoa Boat Club account
+              Sign in to your Bayelsa Boat Club account
             </p>
           </div>
 

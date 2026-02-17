@@ -92,7 +92,7 @@ const LICENSE_INFO = {
 }
 
 const PROJECT_INFO = {
-  name: "Blue Waters - Bayelsa Boat Cruise System",
+  name: "Blue Waters - Bayelsa Boat Club Boat Cruise System",
   version: "1.0.0",
   description: "Advanced seat management and booking system for boat cruises in Bayelsa, Nigeria",
   features: [
