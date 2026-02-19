@@ -8,7 +8,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-import { apiError, apiResponse, UnauthorizedError, verifyAuth, verifyRole } from '@/src/lib/api-auth'
+import { apiError, apiResponse, UnauthorizedError, verifyRole } from '@/src/lib/api-auth'
 import { prisma } from '@/src/lib/prisma.client'
 import { getAvailableSeats } from '@/src/lib/seat-lock'
 
@@ -87,6 +87,52 @@ export async function GET(
     // Debug: log requested trip id and how many schedules were found
     console.debug(`GET /api/trips/${id}/schedules → found ${schedules.length} schedule(s)`)
 
+    // --- Try Redis cache for schedules (short TTL) ---
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'schedules', id, `start:${startDate||'_'}`, `end:${endDate||'_'}`, `status:${status||'_'}`)
+      const cached = await redis.get<string | object>(cacheKey)
+      if (cached) {
+        let payload: any = null
+        if (typeof cached === 'string') {
+          try {
+            payload = JSON.parse(cached)
+          } catch (parseErr) {
+            console.warn('Schedules cache parse failed — deleting malformed cache key', { cacheKey, cached, parseErr })
+            try { await redis.del(cacheKey) } catch (delErr) { console.warn('Failed to delete malformed cache key', delErr) }
+            payload = null
+          }
+        } else if (typeof cached === 'object') {
+          payload = cached
+        }
+
+        if (payload) {
+          // compute ETag and support conditional GET for schedules
+          const { createHash } = await import('crypto')
+          const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+          const ifNoneMatch = request.headers.get('if-none-match')
+          if (ifNoneMatch && ifNoneMatch === etag) {
+            return new Response(null, {
+              status: 304,
+              headers: {
+                'ETag': etag,
+                'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+                'X-Cache': 'HIT',
+              },
+            })
+          }
+
+          return apiResponse(payload, 200, {
+            'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+            'X-Cache': 'HIT',
+            'ETag': etag,
+          })
+        }
+      }
+    } catch (cacheErr) {
+      console.warn('Schedules cache read failed', cacheErr)
+    }
+
     // Get real-time available seats for each schedule
     const schedulesWithAvailability = await Promise.all(
       schedules.map(async (schedule) => {
@@ -121,8 +167,36 @@ export async function GET(
       }),
     )
 
-    return apiResponse({
-      schedules: schedulesWithAvailability,
+    const payload = { schedules: schedulesWithAvailability }
+
+    // Try to populate schedules cache (best-effort)
+    try {
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'schedules', id, `start:${startDate||'_'}`, `end:${endDate||'_'}`, `status:${status||'_'}`)
+      await redis.setex(cacheKey, REDIS_TTL.API_CACHE_SCHEDULES, JSON.stringify(payload))
+    } catch (cacheErr) {
+      console.warn('Schedules cache write failed', cacheErr)
+    }
+
+    // Compute ETag and support conditional GETs for schedules
+    const { createHash } = await import('crypto')
+    const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+    const ifNoneMatch = request.headers.get('if-none-match')
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      return new Response(null, {
+        status: 304,
+        headers: {
+          'ETag': etag,
+          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+          'X-Cache': 'MISS',
+        },
+      })
+    }
+
+    return apiResponse(payload, 200, {
+      'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+      'X-Cache': 'MISS',
+      'ETag': etag,
     })
 
   } catch (error) {
@@ -250,6 +324,17 @@ export async function POST(
         changes: validatedData,
       },
     })
+
+    // Invalidate caches for this trip's schedules and trips listing (best-effort)
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
+      if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+      const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+    } catch (err) {
+      console.warn('Failed to invalidate cache after schedule create', err)
+    }
 
     return apiResponse({
       schedule: {

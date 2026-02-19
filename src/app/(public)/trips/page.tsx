@@ -1,16 +1,18 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
-import Link from 'next/link'
+import { mdiAccountGroup, mdiArrowRight, mdiClock, mdiMagnify, mdiStar } from '@mdi/js'
+import Icon from '@mdi/react'
 import Image from 'next/image'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import Icon from '@mdi/react'
-import { mdiClock, mdiMapMarker, mdiStar, mdiAccountGroup, mdiArrowRight, mdiMagnify } from '@mdi/js'
+
 
 // Trip interface matching API response
 interface Trip {
@@ -62,6 +64,8 @@ export default function TripsPage() {
 
   // Fetch trips from API
   useEffect(() => {
+    let mounted = true
+
     const fetchTrips = async () => {
       try {
         setLoading(true)
@@ -78,35 +82,51 @@ export default function TripsPage() {
           throw new Error('Failed to fetch trips')
         }
         const data = await response.json()
-        setTrips(data.trips || [])
+        if (mounted) setTrips(data.trips || [])
+
+        // If the initial 7-day prefetch returned no schedule ports, expand the window
+        const hasSchedulePorts = (data.trips || []).some((t: any) => (t.schedules || []).some((s: any) => s.departurePort && s.arrivalPort))
+        if (!hasSchedulePorts) {
+          try {
+            const extendedEnd = new Date(startIso)
+            extendedEnd.setUTCDate(extendedEnd.getUTCDate() + 30)
+            const extRes = await fetch(`/api/trips?includeSchedules=true&limit=50&startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(extendedEnd.toISOString())}`)
+            if (extRes.ok) {
+              const extData = await extRes.json()
+              if (mounted) setTrips(extData.trips || [])
+            }
+          } catch (err) {
+            // non-fatal — keep initial results
+            console.warn('Trips: extended schedule fetch failed', err)
+          }
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load trips')
+        if (mounted) setError(err instanceof Error ? err.message : 'Failed to load trips')
         console.error('Error fetching trips:', err)
       } finally {
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 
     fetchTrips()
+    return () => {
+      mounted = false
+    }
   }, [])
 
   // Filter and sort trips based on current state
   const filteredAndSortedTrips = useMemo(() => {
     let results = [...trips]
 
-    // Apply search filters
-    if (searchFrom) {
-      results = results.filter(trip =>
-        trip.title.toLowerCase().includes(searchFrom.toLowerCase()) ||
-        trip.description.toLowerCase().includes(searchFrom.toLowerCase())
-      )
+    // Apply search filters (use schedule ports when available)
+    if (searchFrom && searchFrom !== 'any') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      results = results.filter(trip => (trip.schedules || []).some((s: any) => s.departurePort === searchFrom))
     }
 
-    if (searchTo) {
-      results = results.filter(trip =>
-        trip.title.toLowerCase().includes(searchTo.toLowerCase()) ||
-        trip.description.toLowerCase().includes(searchTo.toLowerCase())
-      )
+    if (searchTo && searchTo !== 'any') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      results = results.filter(trip => (trip.schedules || []).some((s: any) => s.arrivalPort === searchTo))
     }
 
     if (maxPrice !== undefined) {
@@ -159,23 +179,35 @@ export default function TripsPage() {
             {/* From */}
             <div className="space-y-2">
               <Label htmlFor="from">From</Label>
-              <Input
-                id="from"
-                placeholder="e.g., Yenagoa"
-                value={searchFrom}
-                onChange={(e) => setSearchFrom(e.target.value)}
-              />
+              <Select value={searchFrom} onValueChange={(v: string) => setSearchFrom(v)}>
+                <SelectTrigger id="from" className="glass w-full">
+                  <SelectValue placeholder="Any departure" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any</SelectItem>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {Array.from(new Set(trips.flatMap((t: any) => (t.schedules || []).map((s: any) => s.departurePort || '')))).filter(Boolean).map((port: any) => (
+                    <SelectItem key={port} value={port}>{port}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* To */}
             <div className="space-y-2">
               <Label htmlFor="to">To</Label>
-              <Input
-                id="to"
-                placeholder="e.g., Port Harcourt"
-                value={searchTo}
-                onChange={(e) => setSearchTo(e.target.value)}
-              />
+              <Select value={searchTo} onValueChange={(v: string) => setSearchTo(v)}>
+                <SelectTrigger id="to" className="glass w-full">
+                  <SelectValue placeholder="Any arrival" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any</SelectItem>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {Array.from(new Set(trips.flatMap((t: any) => (t.schedules || []).map((s: any) => s.arrivalPort || '')))).filter(Boolean).map((port: any) => (
+                    <SelectItem key={port} value={port}>{port}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Max Price */}
@@ -193,19 +225,19 @@ export default function TripsPage() {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Label htmlFor="sortBy">Sort by:</Label>
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                <SelectTrigger id="sortBy" className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="popularity">Most Popular</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="duration">Shortest Duration</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <Label htmlFor="sortBy">Sort by:</Label>
+                <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'popularity' | 'price-low' | 'price-high' | 'duration')}>
+                  <SelectTrigger id="sortBy" className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="popularity">Most Popular</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="duration">Shortest Duration</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
             <Button
               variant="outline"
@@ -263,7 +295,7 @@ export default function TripsPage() {
             Try Again
           </Button>
         </Card>
-      ) : trips.length === 0 ? (
+      ) : filteredAndSortedTrips.length === 0 ? (
         <Card className="glass-subtle p-12 text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
             <Icon path={mdiMagnify} size={1} className="text-muted-foreground" aria-hidden={true} />
@@ -278,7 +310,7 @@ export default function TripsPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trips.map((trip) => (
+          {filteredAndSortedTrips.map((trip) => (
             <TripCard key={trip.id} trip={trip} />
           ))}
         </div>
@@ -354,7 +386,7 @@ function TripCard({ trip }: { trip: Trip }) {
         {/* Amenities */}
         {Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])])).length > 0 && (
           (() => {
-            const combined = Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])]));
+            const combined = Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])]))
             return (
               <div>
                 <div className="flex flex-wrap gap-1 mb-2">

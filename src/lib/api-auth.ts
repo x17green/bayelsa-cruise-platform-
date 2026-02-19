@@ -4,8 +4,9 @@
  * Verifies Supabase JWT tokens and extracts user information
  */
 
-import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest } from 'next/server'
+
+import { createClient } from '@/src/lib/supabase/server'
 
 export interface AuthUser {
   id: string
@@ -27,7 +28,7 @@ export class UnauthorizedError extends Error {
  * @param request - Next.js request object
  * @returns Authenticated user object
  */
-export async function verifyAuth(request: NextRequest): Promise<AuthUser> {
+export async function verifyAuth(_request: NextRequest): Promise<AuthUser> {
   const supabase = await createClient()
   
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -59,7 +60,7 @@ export async function verifyAuth(request: NextRequest): Promise<AuthUser> {
  */
 export async function verifyRole(
   request: NextRequest,
-  allowedRoles: string[]
+  allowedRoles: string[],
 ): Promise<AuthUser> {
   const user = await verifyAuth(request)
 
@@ -73,13 +74,15 @@ export async function verifyRole(
 /**
  * API Response helper
  */
-export function apiResponse<T>(data: T, status: number = 200) {
-  return Response.json(data, { status })
+export function apiResponse<T>(data: T, status: number = 200, headers?: Record<string, string>) {
+  const init: ResponseInit = { status, headers }
+  return Response.json(data, init)
 }
 
 /**
  * API Error response helper
  */
-export function apiError(message: string, status: number = 400) {
-  return Response.json({ error: message }, { status })
+export function apiError(message: string, status: number = 400, headers?: Record<string, string>) {
+  const init: ResponseInit = { status, headers }
+  return Response.json({ error: message }, init)
 }

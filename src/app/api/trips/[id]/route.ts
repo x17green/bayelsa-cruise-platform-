@@ -9,7 +9,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-import { apiError, apiResponse, UnauthorizedError, verifyAuth, verifyRole } from '@/src/lib/api-auth'
+import { apiError, apiResponse, UnauthorizedError, verifyRole } from '@/src/lib/api-auth'
 import { prisma } from '@/src/lib/prisma.client'
 
 interface RouteParams {
@@ -202,6 +202,15 @@ export async function PATCH(
       },
     })
 
+    // Invalidate trips cache (best-effort)
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const keys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (keys && keys.length > 0) await Promise.all(keys.map(k => redis.del(k)))
+    } catch (err) {
+      console.warn('Failed to invalidate trips cache after update', err)
+    }
+
     return apiResponse({
       trip: updatedTrip,
       message: 'Trip updated successfully',
@@ -285,6 +294,17 @@ export async function DELETE(
         changes: { status: 'archived' },
       },
     })
+
+    // Invalidate trips + schedules cache for this trip (best-effort)
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+      const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', id, '*'))
+      if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+    } catch (err) {
+      console.warn('Failed to invalidate caches after trip delete', err)
+    }
 
     return apiResponse({
       message: 'Trip archived successfully',

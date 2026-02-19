@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
 
       // Create booking items
       await tx.bookingItem.createMany({
-        data: validatedData.passengers.map((passenger, index) => ({
+        data: validatedData.passengers.map((passenger) => ({
           bookingId: newBooking.id,
           priceTierId: validatedData.priceTierId,
           seatNumber: null, // Assigned later if vessel has assigned seating
@@ -136,6 +136,21 @@ export async function POST(request: NextRequest) {
     })
 
     // 8. Return booking with payment information
+
+    // Invalidate caches that may be affected by this booking (schedules/trips)
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const tripId = schedule.trip?.id
+      if (tripId) {
+        const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
+        if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+      }
+      const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+    } catch (err) {
+      console.warn('Failed to invalidate cache after booking create', err)
+    }
+
     return apiResponse({
       booking: {
         id: booking.id,

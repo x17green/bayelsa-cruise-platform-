@@ -8,7 +8,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-import { apiError, apiResponse, UnauthorizedError, verifyAuth, verifyRole } from '@/src/lib/api-auth'
+import { apiError, apiResponse, UnauthorizedError, verifyRole } from '@/src/lib/api-auth'
 import { prisma } from '@/src/lib/prisma.client'
 
 const createTripSchema = z.object({
@@ -44,6 +44,56 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const where: any = {
       isActive: true,
+    }
+
+    // --- Redis-backed cache: attempt read before hitting DB ---
+    // Cache key includes query params so different queries are cached separately
+    try {
+      // lazy import to avoid circular deps during tests
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'trips', `cat:${category||'_'}`, `op:${operatorId||'_'}`, `q:${search||'_'}`, `incSchedules:${includeSchedules}`, `start:${scheduleStart||'_'}`, `end:${scheduleEnd||'_'}`, `l:${limit}`, `o:${offset}`)
+      const cached = await redis.get<string | object>(cacheKey)
+      if (cached) {
+        let payload: any = null
+        if (typeof cached === 'string') {
+          try {
+            payload = JSON.parse(cached)
+          } catch (parseErr) {
+            console.warn('Trips cache parse failed — deleting malformed cache key', { cacheKey, cached, parseErr })
+            try { await redis.del(cacheKey) } catch (delErr) { console.warn('Failed to delete malformed cache key', delErr) }
+            payload = null
+          }
+        } else if (typeof cached === 'object') {
+          // Upstash may return parsed objects in some contexts — accept it
+          payload = cached
+        }
+
+        if (payload) {
+          // compute ETag and support conditional GET
+          const { createHash } = await import('crypto')
+          const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+          const ifNoneMatch = request.headers.get('if-none-match')
+          if (ifNoneMatch && ifNoneMatch === etag) {
+            return new Response(null, {
+              status: 304,
+              headers: {
+                'ETag': etag,
+                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+                'X-Cache': 'HIT',
+              },
+            })
+          }
+
+          return apiResponse(payload, 200, {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+            'X-Cache': 'HIT',
+            'ETag': etag,
+          })
+        }
+      }
+    } catch (cacheErr) {
+      // non-fatal — continue to DB query
+      console.warn('Trips cache read failed', cacheErr)
     }
 
     if (category) {
@@ -159,6 +209,8 @@ export async function GET(request: NextRequest) {
             bookedSeats: s.bookedSeats,
             availableSeats: s.capacity - s.bookedSeats,
             status: s.status,
+            departurePort: s.departurePort,
+            arrivalPort: s.arrivalPort,
             priceTiers: (s.priceTiers || []).map((pt: any) => ({
               id: pt.id,
               name: pt.name,
@@ -171,7 +223,7 @@ export async function GET(request: NextRequest) {
       }),
     )
 
-    return apiResponse({
+    const payload = {
       trips: tripsWithPricing,
       pagination: {
         total,
@@ -179,6 +231,36 @@ export async function GET(request: NextRequest) {
         offset,
         hasMore: offset + limit < total,
       },
+    }
+
+    // Try to populate cache (best-effort)
+    try {
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'trips', `cat:${category||'_'}`, `op:${operatorId||'_'}`, `q:${search||'_'}`, `incSchedules:${includeSchedules}`, `start:${scheduleStart||'_'}`, `end:${scheduleEnd||'_'}`, `l:${limit}`, `o:${offset}`)
+      await redis.setex(cacheKey, REDIS_TTL.API_CACHE_TRIPS, JSON.stringify(payload))
+    } catch (cacheErr) {
+      console.warn('Trips cache write failed', cacheErr)
+    }
+
+    // Compute ETag for payload and handle conditional GETs
+    const { createHash } = await import('crypto')
+    const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+    const ifNoneMatch = request.headers.get('if-none-match')
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      return new Response(null, {
+        status: 304,
+        headers: {
+          'ETag': etag,
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+          'X-Cache': 'MISS',
+        },
+      })
+    }
+
+    return apiResponse(payload, 200, {
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      'X-Cache': 'MISS',
+      'ETag': etag,
     })
 
   } catch (error) {
@@ -250,6 +332,17 @@ export async function POST(request: NextRequest) {
         changes: validatedData,
       },
     })
+
+    // Invalidate related caches (best-effort)
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const keys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (keys && keys.length > 0) {
+        await Promise.all(keys.map((k) => redis.del(k)))
+      }
+    } catch (err) {
+      console.warn('Failed to invalidate trips cache after create', err)
+    }
 
     return apiResponse({
       trip: {

@@ -1,29 +1,29 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import Icon from '@mdi/react'
 import {
+  mdiAccountGroup,
+  mdiAlertCircle,
+  mdiArrowRight,
+  mdiCalendar,
+  mdiCheckCircle,
   mdiClock,
+  mdiFerry,
+  mdiInformation,
+  mdiLoading,
   mdiMapMarker,
   mdiStar,
-  mdiAccountGroup,
-  mdiArrowRight,
-  mdiCheckCircle,
-  mdiAlertCircle,
-  mdiFerry,
-  mdiCalendar,
-  mdiInformation,
-  mdiChevronLeft,
-  mdiLoading,
 } from '@mdi/js'
+import Icon from '@mdi/react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 // API Response Types
@@ -508,7 +508,7 @@ export default function TripDetailPage() {
                             onClick={() => setSelectedTierId(pt.id)}
                             className={cn(
                               'flex items-center justify-between p-3 rounded-lg border',
-                              selectedTierId === pt.id ? 'ring-2 ring-accent-400 bg-accent-50' : 'hover:shadow-sm'
+                              selectedTierId === pt.id ? 'ring-2 ring-accent-400 bg-accent-50' : 'hover:shadow-sm',
                             )}
                           >
                             <div className="text-left">
@@ -585,7 +585,7 @@ function ScheduleOption({
         'w-full p-3 border rounded-lg text-left transition-all',
         isSelected && 'border-primary bg-primary/5',
         !isAvailable && 'opacity-50 cursor-not-allowed',
-        isAvailable && !isSelected && 'hover:border-primary/50'
+        isAvailable && !isSelected && 'hover:border-primary/50',
       )}
     >
       <div className="flex items-center justify-between mb-1">
@@ -623,9 +623,9 @@ function ScheduleOption({
 }
 
 function getNextAvailableDate() {
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  return tomorrow.toISOString().split('T')[0]
+  // Use today's date (UTC-based string) so the week picker starts from today
+  const now = new Date()
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString().split('T')[0]
 }
 
 function getNextNDates(n: number, from?: Date) {
