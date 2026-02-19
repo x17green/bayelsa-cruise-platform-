@@ -63,7 +63,7 @@ export async function GET(
       where.status = status
     }
 
-    // Fetch schedules
+    // Fetch schedules (ensure price tiers are ordered by amountKobo asc so clients can rely on index 0 == lowest price)
     const schedules = await prisma.tripSchedule.findMany({
       where,
       include: {
@@ -72,7 +72,9 @@ export async function GET(
             vessel: true,
           },
         },
-        priceTiers: true,
+        priceTiers: {
+          orderBy: { amountKobo: 'asc' },
+        },
         _count: {
           select: {
             bookings: true,
@@ -82,6 +84,9 @@ export async function GET(
       orderBy: { startTime: 'asc' },
     })
 
+    // Debug: log requested trip id and how many schedules were found
+    console.debug(`GET /api/trips/${id}/schedules → found ${schedules.length} schedule(s)`)
+
     // Get real-time available seats for each schedule
     const schedulesWithAvailability = await Promise.all(
       schedules.map(async (schedule) => {
@@ -89,6 +94,7 @@ export async function GET(
 
         return {
           id: schedule.id,
+          tripId: schedule.tripId, // include tripId so clients can validate
           startTime: schedule.startTime,
           endTime: schedule.endTime,
           departurePort: schedule.departurePort,
@@ -101,11 +107,13 @@ export async function GET(
             id: pt.id,
             name: pt.name,
             description: pt.description,
-            price: (pt.priceKobo || 0) / 100,
+            // prefer amountKobo (BigInt) when present, fallback to priceKobo
+            price: ((pt.amountKobo ? Number(pt.amountKobo) : (pt.priceKobo ?? 0)) ) / 100,
             capacity: pt.capacity,
           })),
           bookingsCount: schedule._count.bookings,
           trip: {
+            id: schedule.tripId,
             title: schedule.trip.title,
             vessel: schedule.trip.vessel?.name,
           },

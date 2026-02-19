@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -39,6 +40,10 @@ interface ApiTrip {
     name: string
     registrationNo: string
     capacity: number
+    vesselMetadata?: {
+      image?: string | null
+      amenities?: string[]
+    }
   }
   operator: {
     id: string
@@ -91,10 +96,24 @@ export default function TripDetailPage() {
 
   const [trip, setTrip] = useState<ApiTrip | null>(null)
   const [schedules, setSchedules] = useState<DetailedSchedule[]>([])
+  const [weekAvailability, setWeekAvailability] = useState<Record<string, DetailedSchedule[]>>({})
+  const [tripStartingPrice, setTripStartingPrice] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState(getNextAvailableDate())
+
+  // When date changes clear any schedule/tier selection
+  useEffect(() => {
+    setSelectedSchedule(null)
+    setSelectedTierId(null)
+  }, [selectedDate])
+
+  // current schedule (computed from schedules state)
+  const schedule = schedules.find((s) => s.id === selectedSchedule)
+
+  // Selected price tier for the currently-selected schedule
+  const [selectedTierId, setSelectedTierId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchTripData = async () => {
@@ -110,13 +129,25 @@ export default function TripDetailPage() {
         const tripData = await tripResponse.json()
         setTrip(tripData.trip)
 
-        // Fetch detailed schedules
-        const schedulesResponse = await fetch(`/api/trips/${tripId}/schedules`)
+        // Fetch detailed schedules for the selected date (startDate = selectedDate 00:00 UTC, endDate = next day 00:00 UTC)
+        const startIso = new Date(selectedDate + 'T00:00:00.000Z').toISOString()
+        const endDateObj = new Date(selectedDate + 'T00:00:00.000Z')
+        endDateObj.setUTCDate(endDateObj.getUTCDate() + 1)
+        const endIso = endDateObj.toISOString()
+
+        const schedulesResponse = await fetch(`/api/trips/${tripId}/schedules?startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(endIso)}`)
         if (!schedulesResponse.ok) {
           throw new Error('Failed to fetch schedules')
         }
         const schedulesData = await schedulesResponse.json()
-        setSchedules(schedulesData.schedules)
+
+        // Defensive: ensure schedules belong to this trip (server now returns tripId)
+        const filtered = (schedulesData.schedules || []).filter((s: any) => s.tripId === tripId)
+        if (filtered.length !== (schedulesData.schedules || []).length) {
+          console.warn(`Trip detail: filtered schedules for trip ${tripId} — ${filtered.length}/${(schedulesData.schedules || []).length} matched`)
+        }
+
+        setSchedules(filtered)
 
       } catch (err) {
         console.error('Error fetching trip data:', err)
@@ -129,6 +160,68 @@ export default function TripDetailPage() {
     if (tripId) {
       fetchTripData()
     }
+  }, [tripId, selectedDate])
+
+  // Default selected tier when schedule changes (server returns tiers ordered asc)
+  useEffect(() => {
+    if (schedule && schedule.priceTiers && schedule.priceTiers.length > 0) {
+      setSelectedTierId(schedule.priceTiers[0].id)
+    } else {
+      setSelectedTierId(null)
+    }
+  }, [schedule])
+
+  // Week availability fetch (next 7 days from selectedDate)
+  useEffect(() => {
+    if (!tripId) return
+    const weekStart = new Date(selectedDate + 'T00:00:00.000Z')
+    const weekEnd = new Date(weekStart)
+    weekEnd.setUTCDate(weekEnd.getUTCDate() + 6)
+
+    const run = async () => {
+      try {
+        const res = await fetch(`/api/trips/${tripId}/schedules?startDate=${encodeURIComponent(weekStart.toISOString())}&endDate=${encodeURIComponent(weekEnd.toISOString())}`)
+        if (!res.ok) return
+        const json = await res.json()
+        const map: Record<string, DetailedSchedule[]> = {}
+        ;(json.schedules || []).forEach((s: any) => {
+          const iso = s.startTime.split('T')[0]
+          map[iso] = map[iso] || []
+          map[iso].push(s)
+        })
+        setWeekAvailability(map)
+      } catch (err) {
+        console.warn('week availability fetch failed', err)
+      }
+    }
+
+    run()
+  }, [tripId, selectedDate])
+
+  // Fetch trip-wide starting price (independent of selectedDate)
+  useEffect(() => {
+    if (!tripId) {
+      setTripStartingPrice(null)
+      return
+    }
+
+    const run = async () => {
+      try {
+        const res = await fetch(`/api/trips/${tripId}/schedules`)
+        if (!res.ok) {
+          setTripStartingPrice(null)
+          return
+        }
+        const json = await res.json()
+        const prices: number[] = (json.schedules || []).flatMap((s: any) => (s.priceTiers || []).map((pt: any) => pt.price))
+        setTripStartingPrice(prices.length > 0 ? Math.min(...prices) : null)
+      } catch (err) {
+        console.warn('failed to fetch trip starting price', err)
+        setTripStartingPrice(null)
+      }
+    }
+
+    run()
   }, [tripId])
 
   if (loading) {
@@ -160,12 +253,15 @@ export default function TripDetailPage() {
     )
   }
 
-  const schedule = schedules.find((s) => s.id === selectedSchedule)
+  // Combine trip-level and vessel-level amenities (dedupe)
+  const combinedAmenities = Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])]))
 
   const handleBookNow = () => {
     if (!selectedSchedule) return
-    // Navigate to booking page with trip and schedule info
-    router.push(`/book?trip=${trip.id}&schedule=${selectedSchedule}&date=${selectedDate}`)
+    // Navigate to booking page with trip, schedule and selected price tier
+    const params = new URLSearchParams({ trip: trip.id, schedule: selectedSchedule, date: selectedDate })
+    if (selectedTierId) params.set('priceTierId', selectedTierId)
+    router.push(`/book?${params.toString()}`)
   }
 
   return (
@@ -174,9 +270,28 @@ export default function TripDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Hero Image */}
-          <div className="relative h-[400px] rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-600">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white text-9xl opacity-20">🚢</span>
+          <div className="relative h-[400px] rounded-lg overflow-hidden bg-muted">
+            {trip.vessel?.vesselMetadata?.image ? (
+              <Image
+                src={trip.vessel.vesselMetadata.image}
+                alt={`${trip.vessel.name} image`}
+                fill
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-600">
+                <span className="text-white text-9xl opacity-20">🚢</span>
+              </div>
+            )}
+
+            {/* subtle overlay for text */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+            {/* vessel caption */}
+            <div className="absolute bottom-6 left-6 text-white">
+              <h2 className="text-2xl font-semibold drop-shadow">{trip.vessel.name}</h2>
+              <p className="text-sm drop-shadow">{trip.vessel.registrationNo}</p>
             </div>
           </div>
 
@@ -195,7 +310,13 @@ export default function TripDetailPage() {
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground mb-1">Starting from</p>
-                <p className="text-3xl font-bold">₦{Math.min(...schedules.flatMap(s => s.priceTiers?.map(pt => pt.price) || [0])).toLocaleString()}</p>
+                <p className="text-3xl font-bold">
+                  {tripStartingPrice != null
+                    ? `₦${tripStartingPrice.toLocaleString()}`
+                    : (schedules.length > 0
+                        ? `₦${Math.min(...schedules.flatMap(s => s.priceTiers?.map(pt => pt.price) || [0])).toLocaleString()}`
+                        : '—')}
+                </p>
                 <p className="text-sm text-muted-foreground">per person</p>
               </div>
             </div>
@@ -213,7 +334,7 @@ export default function TripDetailPage() {
                     </div>
                     <div>
                       <p className="font-semibold">Departure Port</p>
-                      <p className="text-sm text-muted-foreground">Bayelsa Port</p>
+                      <p className="text-sm text-muted-foreground">{schedule?.departurePort ?? (schedules[0]?.departurePort ?? '—')}</p>
                     </div>
                   </div>
                   <Icon path={mdiArrowRight} size={1} className="text-muted-foreground" aria-hidden={true} />
@@ -223,7 +344,7 @@ export default function TripDetailPage() {
                     </div>
                     <div>
                       <p className="font-semibold">Arrival Port</p>
-                      <p className="text-sm text-muted-foreground">Destination Port</p>
+                      <p className="text-sm text-muted-foreground">{schedule?.arrivalPort ?? (schedules[0]?.arrivalPort ?? '—')}</p>
                     </div>
                   </div>
                 </div>
@@ -294,11 +415,11 @@ export default function TripDetailPage() {
                 </div>
               </div>
 
-              {trip.amenities.length > 0 && (
+              {combinedAmenities.length > 0 && (
                 <div>
                   <h4 className="font-semibold mb-3">Amenities:</h4>
                   <div className="flex flex-wrap gap-2">
-                    {trip.amenities.map((amenity) => (
+                    {combinedAmenities.map((amenity) => (
                       <Badge key={amenity} variant="secondary">
                         {amenity}
                       </Badge>
@@ -334,6 +455,25 @@ export default function TripDetailPage() {
                     min={getNextAvailableDate()}
                     className="w-full px-3 py-2 border rounded-md"
                   />
+
+                  {/* Small week picker — highlights dates that have schedules */}
+                  <div className="mt-3 grid grid-cols-7 gap-2">
+                    {getNextNDates(7, new Date(selectedDate)).map((d) => {
+                      const iso = d.toISOString().split('T')[0]
+                      const has = Boolean(weekAvailability[iso] && weekAvailability[iso].length)
+                      return (
+                        <button
+                          key={iso}
+                          onClick={() => setSelectedDate(iso)}
+                          className={`text-xs py-2 rounded-md ${selectedDate === iso ? 'ring-2 ring-accent-500 bg-accent-50' : has ? 'bg-success-600 text-white' : 'bg-muted'}`}
+                          title={has ? `${weekAvailability[iso].length} schedule(s)` : 'No schedules'}
+                        >
+                          <div className="font-semibold">{d.toLocaleDateString(undefined, { weekday: 'short' }).slice(0,3)}</div>
+                          <div className="text-xs mt-1">{d.getDate()}</div>
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
 
                 {/* Schedule Options */}
@@ -356,13 +496,39 @@ export default function TripDetailPage() {
                   )}
                 </div>
 
-                {/* Price Summary */}
+                {/* Price Summary (show/select price tiers) */}
                 {schedule && schedule.priceTiers && schedule.priceTiers.length > 0 && (
-                  <div className="pt-4 border-t space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Price per person</span>
-                      <span className="font-semibold">₦{Math.min(...schedule.priceTiers.map(pt => pt.price)).toLocaleString()}</span>
+                  <div className="pt-4 border-t space-y-3">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Choose fare class</div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {schedule.priceTiers.map((pt) => (
+                          <button
+                            key={pt.id}
+                            onClick={() => setSelectedTierId(pt.id)}
+                            className={cn(
+                              'flex items-center justify-between p-3 rounded-lg border',
+                              selectedTierId === pt.id ? 'ring-2 ring-accent-400 bg-accent-50' : 'hover:shadow-sm'
+                            )}
+                          >
+                            <div className="text-left">
+                              <div className="font-semibold">{pt.name}</div>
+                              {pt.description && <div className="text-xs text-muted-foreground">{pt.description}</div>}
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold">₦{pt.price.toLocaleString()}</div>
+                              {pt.capacity != null && <div className="text-xs text-muted-foreground">{pt.capacity} seats</div>}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
+
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Price per person</span>
+                      <span className="font-semibold">₦{(schedule.priceTiers.find(pt => pt.id === selectedTierId)?.price ?? Math.min(...schedule.priceTiers.map(pt => pt.price))).toLocaleString()}</span>
+                    </div>
+
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Available seats</span>
                       <span className="font-semibold">{schedule.availableSeats}</span>
@@ -423,8 +589,14 @@ function ScheduleOption({
       )}
     >
       <div className="flex items-center justify-between mb-1">
-        <span className="font-semibold">{startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-        <span className="text-sm text-muted-foreground">→ {endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+        <div>
+          <div className="text-sm text-muted-foreground">{startTime.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+          <div className="font-semibold">{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+        </div>
+        <div className="text-sm text-muted-foreground text-right">
+          <div>→</div>
+          <div>{endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+        </div>
       </div>
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted-foreground">{schedule.availableSeats} seats left</span>
@@ -454,4 +626,15 @@ function getNextAvailableDate() {
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
   return tomorrow.toISOString().split('T')[0]
+}
+
+function getNextNDates(n: number, from?: Date) {
+  const start = from ? new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate())) : new Date()
+  const dates: Date[] = []
+  for (let i = 0; i < n; i++) {
+    const d = new Date(start)
+    d.setUTCDate(start.getUTCDate() + i)
+    dates.push(d)
+  }
+  return dates
 }

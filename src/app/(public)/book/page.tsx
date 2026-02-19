@@ -7,7 +7,8 @@ import { mdiArrowLeft, mdiClock, mdiGasStation, mdiMapMarker, mdiStar, mdiAccoun
 import Image from 'next/image'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { mockTrips, getTripById, type MockTrip, type MockSchedule } from '@/src/lib/mock-data'
+import { cn } from '@/lib/utils'
+// Replaced client-side mocks with API-backed data
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
@@ -22,33 +23,106 @@ function BookContent() {
   const scheduleIdFromUrl = searchParams.get('schedule')
   const dateFromUrl = searchParams.get('date')
   
-  const [selectedTripData, setSelectedTripData] = useState<MockTrip | null>(null)
-  const [selectedSchedule, setSelectedSchedule] = useState<MockSchedule | null>(null)
+  const [selectedTripData, setSelectedTripData] = useState<any | null>(null)
+  const [selectedSchedule, setSelectedSchedule] = useState<any | null>(null)
+  const [selectedPriceTierId, setSelectedPriceTierId] = useState<string | null>(null)
   const [passengers, setPassengers] = useState(1)
   const [searchDate, setSearchDate] = useState(dateFromUrl || getNextAvailableDate())
-  const [filteredTrips, setFilteredTrips] = useState(mockTrips)
+  const [filteredTrips, setFilteredTrips] = useState<any[]>([])
+  const [loadingTrips, setLoadingTrips] = useState(false)
 
-  // Load trip and schedule from URL params
+  // Load trips list from API
   useEffect(() => {
-    if (tripIdFromUrl) {
-      const trip = getTripById(tripIdFromUrl)
-      if (trip) {
-        setSelectedTripData(trip)
-        
-        // Also set the schedule if provided
-        if (scheduleIdFromUrl) {
-          const schedule = trip.schedules.find((s: MockSchedule) => s.id === scheduleIdFromUrl)
-          if (schedule) {
-            setSelectedSchedule(schedule)
-          }
-        }
+    const loadTrips = async () => {
+      try {
+        setLoadingTrips(true)
+        const res = await fetch('/api/trips?includeSchedules=true&limit=50')
+        if (!res.ok) throw new Error('Failed to load trips')
+        const data = await res.json()
+        setFilteredTrips(data.trips || [])
+      } catch (err) {
+        console.error('Error loading trips:', err)
+        setFilteredTrips([])
+      } finally {
+        setLoadingTrips(false)
       }
     }
-  }, [tripIdFromUrl, scheduleIdFromUrl])
+
+    loadTrips()
+  }, [])
+
+  // Load trip + schedules when tripId is present in URL
+  useEffect(() => {
+    if (!tripIdFromUrl) return
+
+    const fetchTripAndSchedules = async () => {
+      try {
+        const tripRes = await fetch(`/api/trips/${tripIdFromUrl}`)
+        if (!tripRes.ok) throw new Error('Trip not found')
+        const tripJson = await tripRes.json()
+
+        // Fetch schedules (detailed with price tiers)
+        const schedulesRes = await fetch(`/api/trips/${tripIdFromUrl}/schedules?startDate=${searchDate}`)
+        const schedulesJson = schedulesRes.ok ? await schedulesRes.json() : { schedules: [] }
+
+        // Defensive: filter schedules by tripId (server returns tripId)
+        const incomingSchedules = (schedulesJson.schedules || [])
+        const filteredSchedules = incomingSchedules.filter((s: any) => s.tripId === tripIdFromUrl)
+        if (filteredSchedules.length !== incomingSchedules.length) {
+          console.warn(`Book page: filtered schedules for trip ${tripIdFromUrl} — ${filteredSchedules.length}/${incomingSchedules.length} matched`) 
+        }
+
+        const mappedTrip = {
+          ...tripJson.trip,
+          schedules: filteredSchedules.map((s: any) => ({
+            id: s.id,
+            // include full date + time and ports so UI can display unambiguous schedule info
+            departureDate: new Date(s.startTime).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
+            departureTime: new Date(s.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            arrivalTime: new Date(s.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            departurePort: s.departurePort,
+            arrivalPort: s.arrivalPort,
+            price: s.priceTiers?.[0]?.price ?? 0,
+            availableSeats: s.availableSeats,
+            status: s.status === 'scheduled' ? (s.availableSeats === 0 ? 'sold-out' : s.availableSeats <= 5 ? 'filling-fast' : 'available') : s.status,
+            raw: s,
+          })),
+        }
+
+        setSelectedTripData(mappedTrip)
+
+        if (scheduleIdFromUrl) {
+          const schedule = mappedTrip.schedules.find((sch: any) => sch.id === scheduleIdFromUrl)
+          if (schedule) {
+            setSelectedSchedule(schedule)
+            // default selected price tier to lowest (server orders tiers asc)
+            setSelectedPriceTierId(schedule.raw?.priceTiers?.[0]?.id ?? null)
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching trip/schedules:', err)
+      }
+    }
+
+    fetchTripAndSchedules()
+  }, [tripIdFromUrl, scheduleIdFromUrl, searchDate])
 
   useEffect(() => {
-    // In a real app, this would filter based on actual data
-    setFilteredTrips(mockTrips)
+    // Update filtered trips when date changes (simple refresh)
+    const refreshTripsForDate = async () => {
+      try {
+        setLoadingTrips(true)
+        const res = await fetch(`/api/trips?includeSchedules=true&limit=50&startDate=${searchDate}`)
+        const data = await res.json()
+        setFilteredTrips(data.trips || [])
+      } catch (err) {
+        setFilteredTrips([])
+      } finally {
+        setLoadingTrips(false)
+      }
+    }
+
+    refreshTripsForDate()
   }, [searchDate])
 
   function getNextAvailableDate(): string {
@@ -57,28 +131,32 @@ function BookContent() {
     return tomorrow.toISOString().split('T')[0]
   }
 
-  const handleSelectTrip = (trip: MockTrip) => {
+  const handleSelectTrip = (trip: any) => {
     setSelectedTripData(trip)
     setSelectedSchedule(null) // Reset schedule when selecting new trip
   }
 
-  const handleSelectSchedule = (schedule: MockSchedule) => {
+  const handleSelectSchedule = (schedule: any) => {
     setSelectedSchedule(schedule)
+    setSelectedPriceTierId(schedule.raw?.priceTiers?.[0]?.id ?? null)
   }
 
   const handleProceedToCheckout = () => {
     if (selectedTripData && selectedSchedule) {
-      const query = new URLSearchParams({
+      const params = new URLSearchParams({
         trip: selectedTripData.id,
         schedule: selectedSchedule.id,
         passengers: passengers.toString(),
         date: searchDate,
-      }).toString()
-      router.push(`/checkout?${query}`)
+      })
+      if (selectedPriceTierId) params.set('priceTierId', selectedPriceTierId)
+      router.push(`/checkout?${params.toString()}`)
     }
   }
 
-  const totalPrice = selectedSchedule ? selectedSchedule.price * passengers : 0
+  // Price calculation uses selected price tier when available
+  const selectedTierPrice = selectedSchedule?.raw?.priceTiers?.find((pt:any) => pt.id === selectedPriceTierId)?.price ?? selectedSchedule?.price ?? 0
+  const totalPrice = selectedSchedule ? selectedTierPrice * passengers : 0
   const serviceFee = totalPrice * 0.05
   const grandTotal = totalPrice + serviceFee
 
@@ -184,7 +262,7 @@ function BookContent() {
                   animate="visible"
                   className="space-y-4"
                 >
-                  {filteredTrips.map((trip: MockTrip) => (
+                  {filteredTrips.map((trip: any) => (
                     <motion.div
                       key={trip.id}
                       variants={itemVariants}
@@ -194,40 +272,44 @@ function BookContent() {
                       <Card className="glass-card border border-border">
                         <CardContent className="p-0">
                           <div className="flex flex-col md:flex-row h-full">
-                            {/* Image */}
+                            {/* Image (fallback to vessel image / emoji) */}
                             <div className="relative w-full md:w-48 h-48 md:h-auto flex-shrink-0">
-                              <Image
-                                src={trip.images[0]}
-                                alt={trip.name}
-                                fill
-                                className="object-cover"
-                              />
+                              {trip.images?.[0] || trip.vessel?.vesselMetadata?.image ? (
+                                <Image
+                                  src={trip.images?.[0] || trip.vessel?.vesselMetadata?.image}
+                                  alt={trip.title || trip.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-muted flex items-center justify-center text-6xl">🚢</div>
+                              )}
                             </div>
 
                             {/* Content */}
                             <div className="p-6 flex-1 flex flex-col justify-between">
                               <div>
                                 <h3 className="text-lg font-bold text-accent-500 mb-2">
-                                  {trip.name}
+                                  {trip.title}
                                 </h3>
                                 <div className="space-y-3 mb-4">
                                   <div className="flex items-center gap-2 text-fg-muted">
                                     <Icon path={mdiMapMarker} size={0.6} className="text-accent-500" aria-hidden={true} />
-                                    <span className="font-semibold">{trip.departure.location} → {trip.arrival.location}</span>
+                                    <span className="font-semibold">{trip.departurePort || (trip.departure?.location)} → {trip.arrivalPort || (trip.arrival?.location)}</span>
                                   </div>
                                   <div className="flex gap-6 text-sm text-fg-muted">
                                     <div className="flex items-center gap-1">
                                       <Icon path={mdiClock} size={0.6} className="text-accent-500" aria-hidden={true} />
-                                      {trip.duration}
+                                      {trip.durationMinutes ? `${Math.floor(trip.durationMinutes/60)}h ${trip.durationMinutes%60}m` : trip.duration}
                                     </div>
                                     <div className="flex items-center gap-1">
                                       <Icon path={mdiAccountGroup} size={0.6} className="text-accent-500" aria-hidden={true} />
-                                      {trip.vessel.capacity} seats
+                                      {trip.vessel?.capacity ?? '-'} seats
                                     </div>
                                   </div>
                                 </div>
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                  {trip.vessel.amenities.slice(0, 3).map((amenity: string, idx: number) => (
+                                  {Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])])).slice(0, 3).map((amenity: string, idx: number) => (
                                     <Badge key={idx} variant="outline" className="bg-accent-500/10 text-accent-500 border-accent-500">
                                       {amenity}
                                     </Badge>
@@ -244,7 +326,7 @@ function BookContent() {
                                         path={mdiStar}
                                         size={0.6}
                                         className={
-                                          i < Math.floor(trip.rating)
+                                          i < Math.floor(trip.operator?.rating || 0)
                                             ? 'fill-accent-500 text-accent-500'
                                             : 'text-fg-dim'
                                         }
@@ -253,11 +335,11 @@ function BookContent() {
                                     ))}
                                   </div>
                                   <span className="text-sm font-semibold text-fg">
-                                    {trip.rating}
+                                    {trip.operator?.rating ?? '-'}
                                   </span>
                                 </div>
                                 <p className="text-sm text-fg-muted">
-                                  From <span className="text-2xl font-bold text-accent-500">₦{Math.min(...trip.schedules.map((s: MockSchedule) => s.price)).toLocaleString()}</span>
+                                  From <span className="text-2xl font-bold text-accent-500">₦{(trip.pricing?.minPrice || 0).toLocaleString()}</span>
                                 </p>
                               </div>
                             </div>
@@ -288,10 +370,10 @@ function BookContent() {
 
                 <Card className="mb-6 border border-border">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-accent-500 mb-2">{selectedTripData.name}</h3>
+                    <h3 className="text-xl font-bold text-accent-500 mb-2">{selectedTripData.title || selectedTripData.name}</h3>
                     <div className="flex items-center gap-2 text-fg-muted mb-4">
                       <Icon path={mdiMapMarker} size={0.6} className="text-accent-500" aria-hidden={true} />
-                      <span className="font-semibold">{selectedTripData.departure.location} → {selectedTripData.arrival.location}</span>
+                      <span className="font-semibold">{(selectedSchedule?.departurePort) || (selectedTripData.schedules?.[0]?.departurePort) || selectedTripData.departurePort || selectedTripData.departure?.location} → {(selectedSchedule?.arrivalPort) || (selectedTripData.schedules?.[0]?.arrivalPort) || selectedTripData.arrivalPort || selectedTripData.arrival?.location}</span>
                     </div>
                     <p className="text-fg-muted">{selectedTripData.description}</p>
                   </CardContent>
@@ -303,7 +385,7 @@ function BookContent() {
                   animate="visible"
                   className="space-y-3"
                 >
-                  {selectedTripData.schedules.map((schedule: MockSchedule) => (
+                  {(selectedTripData.schedules || []).map((schedule: any) => (
                     <motion.div
                       key={schedule.id}
                       variants={itemVariants}
@@ -322,9 +404,15 @@ function BookContent() {
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
                                 <Icon path={mdiClock} size={0.8} className="text-accent-500" aria-hidden={true} />
-                                <span className="font-bold text-lg">{schedule.departureTime}</span>
+                                <div>
+                                  <div className="text-sm text-fg-muted">{schedule.departureDate}</div>
+                                  <div className="font-bold text-lg">{schedule.departureTime}</div>
+                                </div>
                                 <span className="text-fg-muted">→</span>
-                                <span className="font-semibold text-fg-muted">{schedule.arrivalTime}</span>
+                                <div className="text-right">
+                                  <div className="font-semibold text-fg-muted">{schedule.arrivalTime}</div>
+                                  <div className="text-xs text-fg-muted">{schedule.departurePort} → {schedule.arrivalPort}</div>
+                                </div>
                               </div>
                               <div className="flex items-center gap-4 text-sm">
                                 <Badge
@@ -377,7 +465,7 @@ function BookContent() {
                     <div>
                       <p className="text-sm text-fg-muted mb-1">Route</p>
                       <p className="font-semibold text-accent-500">
-                        {selectedTripData.departure.location} → {selectedTripData.arrival.location}
+                        {selectedTripData.departurePort || selectedSchedule?.raw?.departurePort || selectedTripData.departure?.location || '—'} → {selectedTripData.arrivalPort || selectedSchedule?.raw?.arrivalPort || selectedTripData.arrival?.location || '—'}
                       </p>
                     </div>
 
@@ -416,23 +504,47 @@ function BookContent() {
                       </div>
 
                       <div className="space-y-2 pb-4 border-b border-border">
+                        {/* Tier selector (if available) */}
+                        {selectedSchedule.raw?.priceTiers && selectedSchedule.raw.priceTiers.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="text-sm text-muted-foreground mb-2">Choose fare class</div>
+                            <div className="grid grid-cols-1 gap-2">
+                              {selectedSchedule.raw.priceTiers.map((pt: any) => (
+                                <button
+                                  key={pt.id}
+                                  onClick={() => setSelectedPriceTierId(pt.id)}
+                                  className={cn(
+                                    'flex items-center justify-between p-2 rounded-lg border text-left',
+                                    selectedPriceTierId === pt.id ? 'ring-2 ring-accent-400 bg-accent-50' : 'hover:shadow-sm'
+                                  )}
+                                >
+                                  <div>
+                                    <div className="font-semibold">{pt.name}</div>
+                                    {pt.description && <div className="text-xs text-muted-foreground">{pt.description}</div>}
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="font-semibold">₦{pt.price.toLocaleString()}</div>
+                                    {pt.capacity != null && <div className="text-xs text-muted-foreground">{pt.capacity} seats</div>}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex justify-between text-sm">
                           <span className="text-fg-muted">Price per person</span>
-                          <span className="font-semibold">
-                            ₦{selectedSchedule.price.toLocaleString()}
-                          </span>
+                          <span className="font-semibold">₦{selectedTierPrice.toLocaleString()}</span>
                         </div>
+
                         <div className="flex justify-between text-sm">
                           <span className="text-fg-muted">Subtotal ({passengers}x)</span>
-                          <span className="font-semibold">
-                            ₦{totalPrice.toLocaleString()}
-                          </span>
+                          <span className="font-semibold">₦{totalPrice.toLocaleString()}</span>
                         </div>
+
                         <div className="flex justify-between text-sm">
                           <span className="text-fg-muted">Service Fee (5%)</span>
-                          <span className="font-semibold">
-                            ₦{Math.round(serviceFee).toLocaleString()}
-                          </span>
+                          <span className="font-semibold">₦{Math.round(serviceFee).toLocaleString()}</span>
                         </div>
                       </div>
 

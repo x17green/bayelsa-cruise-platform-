@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
     }
 
     const priceTier = schedule.priceTiers[0]
-    if (!priceTier || priceTier.priceKobo === null) {
+    // Require either amountKobo or priceKobo to be present
+    if (!priceTier || (priceTier.amountKobo == null && priceTier.priceKobo == null)) {
       return apiError('Price tier not found', 404)
     }
 
@@ -86,8 +87,9 @@ export async function POST(request: NextRequest) {
       return apiError(lockResult.message, 409)
     }
 
-    // 6. Calculate total amount
-    const totalAmountKobo = Number(priceTier.amountKobo) * validatedData.numberOfPassengers
+    // 6. Calculate total amount (prefer amountKobo)
+    const unitAmountKobo = priceTier.amountKobo != null ? Number(priceTier.amountKobo) : (priceTier.priceKobo || 0)
+    const totalAmountKobo = unitAmountKobo * validatedData.numberOfPassengers
 
     // 7. Create booking in database (transaction)
     const booking = await prisma.$transaction(async (tx) => {
@@ -115,7 +117,7 @@ export async function POST(request: NextRequest) {
           passengerName: passenger.fullName,
           passengerPhone: passenger.phone,
           passengerEmail: passenger.email,
-          priceKobo: priceTier.priceKobo,
+          priceKobo: unitAmountKobo,
         })),
       })
 

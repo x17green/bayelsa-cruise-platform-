@@ -38,6 +38,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
     const includeSchedules = searchParams.get('includeSchedules') === 'true'
+    const scheduleStart = searchParams.get('startDate')
+    const scheduleEnd = searchParams.get('endDate')
 
     // Build where clause
     const where: any = {
@@ -59,6 +61,16 @@ export async function GET(request: NextRequest) {
       ]
     }
 
+    // helper to build schedule where (used for include)
+    const scheduleWhere: any = { status: 'scheduled' }
+    if (scheduleStart || scheduleEnd) {
+      scheduleWhere.startTime = {}
+      if (scheduleStart) scheduleWhere.startTime.gte = new Date(scheduleStart)
+      if (scheduleEnd) scheduleWhere.startTime.lte = new Date(scheduleEnd)
+    } else {
+      scheduleWhere.startTime = { gte: new Date() }
+    }
+
     // Fetch trips
     const [trips, total] = await Promise.all([
       prisma.trip.findMany({
@@ -70,6 +82,7 @@ export async function GET(request: NextRequest) {
               name: true,
               registrationNo: true,
               capacity: true,
+              vesselMetadata: true, // include image path & metadata
             },
           },
           operator: {
@@ -80,13 +93,17 @@ export async function GET(request: NextRequest) {
             },
           },
 
+          // includeSchedules supports optional date range and returns price tiers so client can show per-day availability/prices
           schedules: includeSchedules ? {
-            where: {
-              startTime: { gte: new Date() },
-              status: 'scheduled',
-            },
+            where: scheduleWhere,
             orderBy: { startTime: 'asc' },
-            take: 5,
+            // if the client passed a date range, return more rows; otherwise keep a small default
+            take: (scheduleStart || scheduleEnd) ? 100 : 5,
+            include: {
+              priceTiers: {
+                orderBy: { amountKobo: 'asc' },
+              },
+            },
           } : false,
         },
         orderBy: { createdAt: 'desc' },
@@ -133,6 +150,22 @@ export async function GET(request: NextRequest) {
             companyName: trip.operator.companyName,
             rating: trip.operator.rating ? Number(trip.operator.rating) : null,
           } : undefined,
+          // Include schedules when the caller requested them so the UI can render per-day availability
+          schedules: (trip as any).schedules ? (trip as any).schedules.map((s: any) => ({
+            id: s.id,
+            startTime: s.startTime,
+            endTime: s.endTime,
+            capacity: s.capacity,
+            bookedSeats: s.bookedSeats,
+            availableSeats: s.capacity - s.bookedSeats,
+            status: s.status,
+            priceTiers: (s.priceTiers || []).map((pt: any) => ({
+              id: pt.id,
+              name: pt.name,
+              price: (pt.amountKobo ? Number(pt.amountKobo) : (pt.priceKobo ?? 0)) / 100,
+              capacity: pt.capacity,
+            })),
+          })) : undefined,
           createdAt: trip.createdAt,
         }
       }),

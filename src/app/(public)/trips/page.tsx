@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,11 +26,22 @@ interface Trip {
     maxPrice: number
     tiers: number
   }
+  schedules?: Array<{
+    id: string
+    startTime: string
+    endTime?: string
+    capacity?: number
+    bookedSeats?: number
+    availableSeats?: number
+    status?: string
+    priceTiers?: Array<{ id: string; name?: string; price: number; capacity?: number }>
+  }>
   vessel?: {
     id: string
     name: string
     registrationNo: string
     capacity: number
+    vesselMetadata?: { image?: string, amenities?: string[] }
   }
   operator?: {
     id: string
@@ -53,7 +65,15 @@ export default function TripsPage() {
     const fetchTrips = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/trips?includeSchedules=true&limit=50')
+
+        // Prefetch trips + schedules for the next 7 days so UI can show weekly availability
+        const today = new Date()
+        const startIso = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())).toISOString()
+        const end = new Date(startIso)
+        end.setUTCDate(end.getUTCDate() + 6)
+        const endIso = end.toISOString()
+
+        const response = await fetch(`/api/trips?includeSchedules=true&limit=50&startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(endIso)}`)
         if (!response.ok) {
           throw new Error('Failed to fetch trips')
         }
@@ -124,7 +144,6 @@ export default function TripsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Search and Filters */}
       <Card className="glass-subtle mb-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -269,13 +288,30 @@ export default function TripsPage() {
 }
 
 function TripCard({ trip }: { trip: Trip }) {
+  // format a Date as local YYYY-MM-DD (stable across timezones)
+  const toLocalISO = (d: Date) => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${dd}`
+  }
+
   return (
     <Card className="glass-card overflow-hidden hover:glass-hover transition-all">
-      {/* Image placeholder */}
-      <div className="relative h-48 bg-gradient-to-br from-blue-500 to-cyan-600">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-white text-6xl opacity-20">🚢</span>
-        </div>
+      {/* Image (use vessel image if available, otherwise fallback) */}
+      <div className="relative h-48 bg-muted">
+        {trip.vessel?.vesselMetadata?.image ? (
+          <Image
+            src={trip.vessel.vesselMetadata.image}
+            alt={trip.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-600">
+            <span className="text-white text-6xl opacity-20">🚢</span>
+          </div>
+        )}
       </div>
 
       <CardHeader>
@@ -316,19 +352,58 @@ function TripCard({ trip }: { trip: Trip }) {
         )}
 
         {/* Amenities */}
-        {trip.amenities && trip.amenities.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {trip.amenities.slice(0, 3).map((amenity) => (
-              <Badge key={amenity} variant="secondary" className="text-xs">
-                {amenity}
-              </Badge>
-            ))}
-            {trip.amenities.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
-                +{trip.amenities.length - 3} more
-              </Badge>
-            )}
-          </div>
+        {Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])])).length > 0 && (
+          (() => {
+            const combined = Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])]));
+            return (
+              <div>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {combined.slice(0, 3).map((amenity) => (
+                    <Badge key={amenity} variant="secondary" className="text-xs">
+                      {amenity}
+                    </Badge>
+                  ))}
+                  {combined.length > 3 && (
+                    <Badge variant="secondary" className="text-xs">
+                      +{combined.length - 3} more
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Weekly availability strip (next 7 days) — compare using LOCAL dates so highlights match user timezone (e.g. Lagos, GMT+1) */}
+                <div className="flex gap-2 text-xs text-muted-foreground">
+                  {getNextNDates(7).map((d) => {
+                    const localIso = toLocalISO(d)
+
+                    // compare schedule local-date (derived from schedule.startTime) to calendar localIso
+                    const has = (trip.schedules || []).some((s) => {
+                      const sd = new Date(s.startTime)
+                      return toLocalISO(sd) === localIso
+                    })
+
+                    const minPrice = (() => {
+                      const s = (trip.schedules || []).find((s) => {
+                        const sd = new Date(s.startTime)
+                        return toLocalISO(sd) === localIso
+                      })
+                      return s?.priceTiers?.[0]?.price ?? null
+                    })()
+
+                    return (
+                      <div key={localIso} className="flex flex-col items-center w-12">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${has ? 'bg-success-600 text-white' : 'bg-muted'}`}>
+                          {d.toLocaleDateString(undefined, { weekday: 'short' }).slice(0,3)}
+                        </div>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {has ? `₦${(minPrice||0).toLocaleString()}` : '—'}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()
         )}
 
         {/* Price */}
@@ -355,4 +430,19 @@ function TripCard({ trip }: { trip: Trip }) {
       </CardFooter>
     </Card>
   )
+}
+
+/**
+ * Return an array of Date objects for the next `n` calendar days (UTC-midnight).
+ * Dates are normalized to UTC midnight so `d.toISOString().split('T')[0]` matches
+ * server-side ISO date strings used in schedule.startTime comparisons.
+ */
+function getNextNDates(n: number, from?: Date): Date[] {
+  const ref = from ? new Date(from) : new Date()
+  const start = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()))
+  const dates: Date[] = []
+  for (let i = 0; i < n; i++) {
+    dates.push(new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate() + i)))
+  }
+  return dates
 }
