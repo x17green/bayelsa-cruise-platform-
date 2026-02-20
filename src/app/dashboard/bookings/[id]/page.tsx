@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -8,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { getBookingById } from '@/lib/mock-data'
 import Icon from '@mdi/react'
 import {
   mdiCalendar,
@@ -26,6 +26,7 @@ import {
   mdiQrcode,
   mdiPrinter,
   mdiInformation,
+  mdiLoading,
 } from '@mdi/js'
 import { cn } from '@/lib/utils'
 
@@ -34,9 +35,43 @@ export default function BookingDetailPage() {
   const router = useRouter()
   const bookingId = params.id as string
 
-  const booking = getBookingById(bookingId)
+  const [booking, setBooking] = useState<any | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!booking) {
+  useEffect(() => {
+    const fetchBooking = async () => {
+      try {
+        setLoading(true)
+        const res = await fetch(`/api/bookings/${bookingId}`)
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          throw new Error(body?.message || 'Booking not found')
+        }
+        const json = await res.json()
+        setBooking(json.booking)
+      } catch (err: any) {
+        setError(err?.message || 'Failed to load booking')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchBooking()
+  }, [bookingId])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+          <Icon path={mdiLoading} size={1.33} className="text-muted-foreground animate-spin" aria-hidden={true} />
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Loading booking…</h1>
+      </div>
+    )
+  }
+
+  if (error || !booking) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -44,7 +79,7 @@ export default function BookingDetailPage() {
         </div>
         <h1 className="text-3xl font-bold mb-2">Booking Not Found</h1>
         <p className="text-muted-foreground mb-6">
-          The booking you're looking for doesn't exist or you don't have access to it.
+          {error || "The booking you're looking for doesn't exist or you don't have access to it."}
         </p>
         <Button asChild>
           <Link href="/dashboard/bookings">View All Bookings</Link>
@@ -91,9 +126,9 @@ export default function BookingDetailPage() {
     },
   }
 
-  const status = statusConfig[booking.status]
+  const status = statusConfig[booking.status as keyof typeof statusConfig]
   const statusIconPath = status.icon
-  const isPast = new Date(booking.departureDate) < new Date() || booking.status === 'completed'
+  const isPast = new Date(booking.tripSchedule?.startTime || '') < new Date() || booking.status === 'completed'
   const isCancelled = booking.status === 'cancelled'
   const showQRCode = booking.status === 'confirmed' || booking.status === 'checked-in'
 
@@ -105,7 +140,7 @@ export default function BookingDetailPage() {
           {/* Header */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold">{booking.tripName}</h1>
+              <h1 className="text-4xl font-bold">{booking.tripSchedule?.trip?.title || booking.tripName}</h1>
             </div>
             <div className="flex items-center gap-4">
               <Badge variant={status.variant} className="flex items-center gap-1">
@@ -113,7 +148,7 @@ export default function BookingDetailPage() {
                 {status.label}
               </Badge>
               <p className="text-muted-foreground">
-                Booking Ref: <span className="font-mono font-semibold">{booking.bookingReference}</span>
+                Booking Ref: <span className="font-mono font-semibold">{booking.reference || booking.bookingReference}</span>
               </p>
             </div>
           </div>
@@ -142,7 +177,7 @@ export default function BookingDetailPage() {
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground mb-1">Date & Time</p>
                   <p className="font-semibold text-lg">
-                    {new Date(booking.departureDate).toLocaleDateString('en-US', {
+                    {new Date(booking.tripSchedule?.startTime || booking.departureDate).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
@@ -151,9 +186,9 @@ export default function BookingDetailPage() {
                   </p>
                   <div className="flex items-center gap-2 text-muted-foreground mt-1">
                     <Icon path={mdiClock} size={0.67} className="" aria-hidden={true} />
-                    <span>Departure: {booking.departureTime}</span>
+                    <span>Departure: {new Date(booking.tripSchedule?.startTime || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span>•</span>
-                    <span>Arrival: {booking.arrivalTime}</span>
+                    <span>Arrival: {new Date(booking.tripSchedule?.endTime || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </div>
               </div>
@@ -171,7 +206,7 @@ export default function BookingDetailPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-green-500" />
                       <div>
-                        <p className="font-semibold">{booking.departure}</p>
+                        <p className="font-semibold">{booking.tripSchedule?.departurePort}</p>
                         <p className="text-sm text-muted-foreground">Departure Point</p>
                       </div>
                     </div>
@@ -179,7 +214,7 @@ export default function BookingDetailPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-blue-500" />
                       <div>
-                        <p className="font-semibold">{booking.arrival}</p>
+                        <p className="font-semibold">{booking.tripSchedule?.arrivalPort}</p>
                         <p className="text-sm text-muted-foreground">Arrival Point</p>
                       </div>
                     </div>
@@ -199,10 +234,10 @@ export default function BookingDetailPage() {
                     Passenger{booking.passengers.length > 1 ? 's' : ''} ({booking.passengers.length})
                   </p>
                   <div className="space-y-3">
-                    {booking.passengers.map((passenger, idx) => (
+                    {booking.passengers.map((passenger: any, idx: number) => (
                       <div key={idx} className="p-3 border rounded-lg">
                         <p className="font-semibold mb-1">
-                          {passenger.firstName} {passenger.lastName}
+                          {passenger.fullName}
                           {passenger.seatNumber && (
                             <Badge variant="secondary" className="ml-2">
                               Seat {passenger.seatNumber}
@@ -311,7 +346,7 @@ export default function BookingDetailPage() {
 
                   <div className="text-center">
                     <p className="font-mono font-semibold text-lg mb-1">
-                      {booking.bookingReference}
+                      {booking.reference || booking.bookingReference}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       Scan or enter this code at check-in

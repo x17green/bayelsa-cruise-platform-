@@ -5,7 +5,7 @@ import Icon from '@mdi/react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
@@ -17,25 +17,52 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/ta
 import { useAuth } from '@/src/hooks/use-auth'
 import { createClient } from '@/src/lib/supabase/client'
 
-const mockTrips: any = {
-  '1': { name: 'Express Commute', price: 3500 },
-  '2': { name: 'Bayelsa Heritage Cruise', price: 5000 },
-  '3': { name: 'Scenic Waterfront Tour', price: 6000 },
-  '4': { name: 'Evening Cruise', price: 12000 },
-}
-
 function CheckoutContent() {
   const searchParams = useSearchParams()
   const { user } = useAuth()
   const tripId = searchParams.get('trip')
+  const scheduleId = searchParams.get('schedule')
+  const priceTierIdParam = searchParams.get('priceTierId')
   const passengersCount = Number(searchParams.get('passengers')) || 1
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [loading, setLoading] = useState(false)
   const [bookingComplete, setBookingComplete] = useState(false)
   const [bookingRef, setBookingRef] = useState('')
 
-  const trip = tripId ? mockTrips[tripId] : null
-  const subtotal = trip ? trip.price * passengersCount : 0
+  const [schedule, setSchedule] = useState<any | null>(null)
+  const [selectedPriceTierId, setSelectedPriceTierId] = useState<string | null>(priceTierIdParam)
+  const [trip, setTrip] = useState<any | null>(null)
+
+  // Load schedule/trip details
+  useEffect(() => {
+    if (!tripId || !scheduleId) return
+
+    const loadSchedule = async () => {
+      try {
+        const res = await fetch(`/api/trips/${tripId}/schedules`)
+        if (!res.ok) throw new Error('Failed to load schedule')
+        const json = await res.json()
+        const found = (json.schedules || []).find((s: any) => s.id === scheduleId)
+        if (found) {
+          if (found.tripId && found.tripId !== tripId) {
+            console.warn(`Checkout: schedule ${found.id} belongs to trip ${found.tripId} but expected ${tripId}`)
+          }
+          setSchedule(found)
+          // ensure UI reads `trip.name`
+          setTrip({ name: found.trip?.title, vessel: found.trip?.vessel, departurePort: found.departurePort, arrivalPort: found.arrivalPort })
+          // default selected tier from query or lowest-priced tier
+          setSelectedPriceTierId(priceTierIdParam ?? (found.priceTiers?.[0]?.id ?? null))
+        }
+      } catch (err) {
+        console.error('Error loading schedule:', err)
+      }
+    }
+
+    loadSchedule()
+  }, [tripId, scheduleId])
+
+  const selectedTierObj = schedule?.priceTiers?.find((pt: any) => pt.id === selectedPriceTierId) || schedule?.priceTiers?.[0]
+  const subtotal = schedule && selectedTierObj ? selectedTierObj.price * passengersCount : 0
   const serviceFee = Math.round(subtotal * 0.05)
   const total = subtotal + serviceFee
 
@@ -68,28 +95,49 @@ function CheckoutContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!user) {
+      // User must be signed in to create a booking
+      window.location.href = '/auth/signin'
+      return
+    }
+
+    if (!schedule || !schedule.priceTiers?.[0]) {
+      console.error('No schedule/price tier selected')
+      return
+    }
+
     setLoading(true)
 
     try {
-      const bookingRef = generateBookingReference()
-      // TODO: Insert booking into database when backend is ready
-      const _bookingData = {
-        user_id: user?.id,
-        trip_id: tripId,
-        number_of_passengers: passengersCount,
-        total_amount: total,
-        booking_status: 'pending',
-        payment_status: 'pending',
-        booking_reference: bookingRef,
-        special_requests: '',
+      const payload = {
+        tripScheduleId: schedule.id,
+        numberOfPassengers: passengersCount,
+        priceTierId: selectedPriceTierId ?? schedule.priceTiers[0].id,
+        passengers: Array.from({ length: passengersCount }).map(() => ({
+          fullName: formData.fullName,
+          phone: formData.phone,
+          email: formData.email,
+        })),
       }
 
-      // In a real app, you would create the booking in the database
-      // For now, we'll just simulate success
-      setBookingRef(bookingRef)
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null)
+        throw new Error(err?.message || 'Failed to create booking')
+      }
+
+      const json = await res.json()
+      setBookingRef(json.booking.reference)
       setBookingComplete(true)
     } catch (error) {
       console.error('Booking error:', error)
+      // TODO: show UI error toast
     } finally {
       setLoading(false)
     }

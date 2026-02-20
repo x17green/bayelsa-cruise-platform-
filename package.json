@@ -8,7 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "npx eslint src --max-warnings 50",
-    "test": "echo 'No tests specified yet'",
+    "test": "tsx scripts/check-trip-route-backfill.ts", 
+    "test:backfill": "tsx scripts/check-trip-route-backfill.ts",
+    "test:redis-key": "tsx scripts/test-redis-key-format.ts",
+"test:ci": "npm run test:backfill && npm run test:redis-key && npm run test:etag && cross-env PRISMA_CAPTURE_QUERIES_FOR_TEST=true npm run test:etag:no-db",
+    "test:etag": "tsx scripts/test-etag-shortcircuit.ts",
+    "test:etag:no-db": "tsx scripts/test-etag-no-db.ts",
+    "migration:backfill": "tsx scripts/run-trip-route-backfill.ts",
     "prepare": "husky",
     "migration:update-tracker": "node scripts/design-system/update-tracker.js",
     "migration:report": "node scripts/design-system/update-tracker.js --report",
@@ -60,6 +66,7 @@
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "@upstash/redis": "^1.36.2",
+    "swr": "^2.2.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -115,7 +122,8 @@
     "storybook": "^8.6.15",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.21.0",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "cross-env": "^7.0.3"
   },
   "pnpm": {
     "overrides": {

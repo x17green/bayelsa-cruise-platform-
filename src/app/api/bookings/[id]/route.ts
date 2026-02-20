@@ -186,6 +186,29 @@ export async function PATCH(
       data: { updatedAt: new Date() },
     })
 
+    // Invalidate caches related to this booking's schedule (best-effort)
+    try {
+      const bookingFull = await prisma.booking.findUnique({ where: { id }, include: { tripSchedule: true } })
+      const tripId = bookingFull?.tripSchedule?.tripId
+      if (tripId) {
+        const { redis, buildRedisKey, REDIS_KEYS } = await import('@/src/lib/redis')
+        const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
+        if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+        const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+        if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+
+        // invalidate availability snapshot for any schedules belonging to this trip (best-effort)
+        try {
+          const scheduleId = bookingFull?.tripSchedule?.id
+          if (scheduleId) await redis.del(buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, scheduleId))
+        } catch (e) {
+          console.warn('Failed to invalidate availability snapshot after booking update', e)
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to invalidate cache after booking update', err)
+    }
+
     return apiResponse({ message: 'Booking updated successfully' })
 
   } catch (error) {
@@ -293,6 +316,25 @@ export async function DELETE(
 
     // Release seat locks in Redis
     await releaseSeats(booking.tripScheduleId, user.id)
+
+    // Invalidate caches for affected trip/schedules (best-effort)
+    try {
+      const tripId = booking.tripSchedule.tripId
+      const { redis, buildRedisKey, REDIS_KEYS } = await import('@/src/lib/redis')
+      const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
+      if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+      const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+
+      // invalidate availability snapshot for this schedule (best-effort)
+      try {
+        await redis.del(buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, booking.tripScheduleId))
+      } catch (e) {
+        console.warn('Failed to invalidate availability snapshot after booking cancel', e)
+      }
+    } catch (err) {
+      console.warn('Failed to invalidate cache after booking cancel', err)
+    }
 
     return apiResponse({
       message: 'Booking cancelled successfully',

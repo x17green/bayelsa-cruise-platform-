@@ -8,7 +8,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-import { apiError, apiResponse, UnauthorizedError, verifyAuth, verifyRole } from '@/src/lib/api-auth'
+import { apiError, apiResponse, UnauthorizedError, verifyRole } from '@/src/lib/api-auth'
 import { prisma } from '@/src/lib/prisma.client'
 import { getAvailableSeats } from '@/src/lib/seat-lock'
 
@@ -63,7 +63,74 @@ export async function GET(
       where.status = status
     }
 
-    // Fetch schedules
+    // --- Redis short-circuit: check ETAG and cache BEFORE hitting Prisma ---
+    try {
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'schedules', id, `start:${startDate||'_'}`, `end:${endDate||'_'}`, `status:${status||'_'}`)
+      const etagKey = `${cacheKey}:etag`
+      const ifNoneMatchHdr = request.headers.get('if-none-match')
+
+      // Fast path: if client sent If-None-Match and we have a cached ETag -> short-circuit 304 without DB
+      try {
+        const cachedEtag = await redis.get<string>(etagKey)
+        if (ifNoneMatchHdr && cachedEtag && ifNoneMatchHdr === cachedEtag) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              'ETag': cachedEtag,
+              'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+              'X-Cache': 'HIT',
+            },
+          })
+        }
+      } catch (etagErr) {
+        // continue to attempt payload read if ETag fetch fails
+        console.warn('Failed to read schedules etag key', etagErr)
+      }
+
+      const cached = await redis.get<string | object>(cacheKey)
+      if (cached) {
+        let payload: any = null
+        if (typeof cached === 'string') {
+          try {
+            payload = JSON.parse(cached)
+          } catch (parseErr) {
+            console.warn('Schedules cache parse failed — deleting malformed cache key', { cacheKey, cached, parseErr })
+            try { await redis.del(cacheKey) } catch (delErr) { console.warn('Failed to delete malformed cache key', delErr) }
+            payload = null
+          }
+        } else if (typeof cached === 'object') {
+          payload = cached
+        }
+
+        if (payload) {
+          // compute ETag and support conditional GET for schedules
+          const { createHash } = await import('crypto')
+          const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+          const ifNoneMatch = request.headers.get('if-none-match')
+          if (ifNoneMatch && ifNoneMatch === etag) {
+            return new Response(null, {
+              status: 304,
+              headers: {
+                'ETag': etag,
+                'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+                'X-Cache': 'HIT',
+              },
+            })
+          }
+
+          return apiResponse(payload, 200, {
+            'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+            'X-Cache': 'HIT',
+            'ETag': etag,
+          })
+        }
+      }
+    } catch (cacheErr) {
+      console.warn('Schedules cache read failed', cacheErr)
+    }
+
+    // Fetch schedules (ensure price tiers are ordered by amountKobo asc so clients can rely on index 0 == lowest price)
     const schedules = await prisma.tripSchedule.findMany({
       where,
       include: {
@@ -72,7 +139,9 @@ export async function GET(
             vessel: true,
           },
         },
-        priceTiers: true,
+        priceTiers: {
+          orderBy: { amountKobo: 'asc' },
+        },
         _count: {
           select: {
             bookings: true,
@@ -82,6 +151,10 @@ export async function GET(
       orderBy: { startTime: 'asc' },
     })
 
+    // Debug: log requested trip id and how many schedules were found
+    console.debug(`GET /api/trips/${id}/schedules → found ${schedules.length} schedule(s)`)
+
+
     // Get real-time available seats for each schedule
     const schedulesWithAvailability = await Promise.all(
       schedules.map(async (schedule) => {
@@ -89,6 +162,7 @@ export async function GET(
 
         return {
           id: schedule.id,
+          tripId: schedule.tripId, // include tripId so clients can validate
           startTime: schedule.startTime,
           endTime: schedule.endTime,
           departurePort: schedule.departurePort,
@@ -101,11 +175,13 @@ export async function GET(
             id: pt.id,
             name: pt.name,
             description: pt.description,
-            price: (pt.priceKobo || 0) / 100,
+            // prefer amountKobo (BigInt) when present, fallback to priceKobo
+            price: ((pt.amountKobo ? Number(pt.amountKobo) : (pt.priceKobo ?? 0)) ) / 100,
             capacity: pt.capacity,
           })),
           bookingsCount: schedule._count.bookings,
           trip: {
+            id: schedule.tripId,
             title: schedule.trip.title,
             vessel: schedule.trip.vessel?.name,
           },
@@ -113,8 +189,42 @@ export async function GET(
       }),
     )
 
-    return apiResponse({
-      schedules: schedulesWithAvailability,
+    const payload = { schedules: schedulesWithAvailability }
+
+    // Try to populate schedules cache + etag (best-effort)
+    try {
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'schedules', id, `start:${startDate||'_'}`, `end:${endDate||'_'}`, `status:${status||'_'}`)
+      const payloadStr = JSON.stringify(payload)
+      const { createHash } = await import('crypto')
+      const etag = createHash('sha1').update(payloadStr).digest('hex')
+      await Promise.all([
+        redis.setex(cacheKey, REDIS_TTL.API_CACHE_SCHEDULES, payloadStr),
+        redis.setex(`${cacheKey}:etag`, REDIS_TTL.API_CACHE_SCHEDULES, etag),
+      ])
+    } catch (cacheErr) {
+      console.warn('Schedules cache write failed', cacheErr)
+    }
+
+    // Compute ETag and support conditional GETs for schedules
+    const { createHash } = await import('crypto')
+    const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+    const ifNoneMatch = request.headers.get('if-none-match')
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      return new Response(null, {
+        status: 304,
+        headers: {
+          'ETag': etag,
+          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+          'X-Cache': 'MISS',
+        },
+      })
+    }
+
+    return apiResponse(payload, 200, {
+      'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+      'X-Cache': 'MISS',
+      'ETag': etag,
     })
 
   } catch (error) {
@@ -232,7 +342,36 @@ export async function POST(
       return { schedule: newSchedule, priceTiers }
     })
 
-    // Create audit log
+    // If the trip does not yet have canonical route fields, populate them from this schedule (best-effort)
+    try {
+      if ((!trip.departurePort || !trip.arrivalPort) && (validatedData.departurePort || validatedData.arrivalPort)) {
+        await prisma.trip.update({
+          where: { id: tripId },
+          data: {
+            departurePort: validatedData.departurePort || null,
+            arrivalPort: validatedData.arrivalPort || null,
+            routeName: (validatedData.departurePort && validatedData.arrivalPort) ? `${validatedData.departurePort} → ${validatedData.arrivalPort}` : (validatedData.departurePort || validatedData.arrivalPort) || null,
+          },
+        })
+
+        await prisma.auditLog.create({
+          data: {
+            entityType: 'trip',
+            entityId: tripId,
+            action: 'update',
+            userId: user.id,
+            changes: {
+              departurePort: validatedData.departurePort || null,
+              arrivalPort: validatedData.arrivalPort || null,
+            },
+          },
+        })
+      }
+    } catch (err) {
+      console.warn('Failed to backfill trip route from schedule (non-fatal):', err)
+    }
+
+    // Create audit log for the schedule create
     await prisma.auditLog.create({
       data: {
         entityType: 'trip_schedule',
@@ -242,6 +381,17 @@ export async function POST(
         changes: validatedData,
       },
     })
+
+    // Invalidate caches for this trip's schedules and trips listing (best-effort)
+    try {
+      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
+      if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+      const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+    } catch (err) {
+      console.warn('Failed to invalidate cache after schedule create', err)
+    }
 
     return apiResponse({
       schedule: {

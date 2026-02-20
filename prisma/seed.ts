@@ -105,40 +105,54 @@ async function main() {
     prisma.vessel.create({
       data: {
         operatorId: operators[0].id,
-        name: 'MV Blue Pearl',
+        name: 'BBC Cruiser Carrier',
         registrationNo: 'BY-2024-001',
         capacity: 50,
         description: 'Luxury cruise vessel with air-conditioned cabin',
-        vesselMetadata: {
-          amenities: ['AC', 'Restroom', 'Sound System', 'Life Jackets'],
-          maxSpeed: 25,
-        },
+        vesselMetadata: { image: '/assets/images/trips/brass-yenagoa.jpg', amenities: ['AC', 'Restroom', 'Sound System', 'Life Jackets'], maxSpeed: 25 },
       },
     }),
     prisma.vessel.create({
       data: {
         operatorId: operators[0].id,
-        name: 'SS Ocean Breeze',
-        registrationNo: 'BY-2024-002',
+        name: 'Ekelga Explorer',
+        registrationNo: 'BY-EKR-002',
         capacity: 30,
         description: 'Compact speedboat for island hopping',
-        vesselMetadata: {
-          amenities: ['Life Jackets', 'Cooler', 'Music'],
-          maxSpeed: 35,
-        },
+        vesselMetadata: { image: '/assets/images/trips/ekeremor-peretoru.jpg', amenities: ['Life Jackets', 'Cooler', 'Music'], maxSpeed: 35 },
       },
     }),
     prisma.vessel.create({
       data: {
         operatorId: operators[1].id,
-        name: 'Bayelsa Star',
+        name: 'Ogboinbiri Titanic',
         registrationNo: 'BY-GOV-2024-001',
         capacity: 80,
         description: 'Government-owned large capacity vessel for public tours',
-        vesselMetadata: {
-          amenities: ['AC', 'Restrooms', 'Food Service', 'WiFi', 'Medical Kit'],
-          maxSpeed: 20,
-        },
+        vesselMetadata: { image: '/assets/images/trips/amassoma-ogboinbiri.jpg', amenities: ['AC', 'Restrooms', 'Food Service', 'WiFi', 'Medical Kit'], maxSpeed: 20 },
+      },
+    }),
+
+    // Additional seeded vessels (use remaining trip images)
+    prisma.vessel.create({
+      data: {
+        operatorId: operators[0].id,
+        name: 'Nembe Express',
+        registrationNo: 'BY-2026-003',
+        capacity: 40,
+        description: 'Regional commuter ferry serving Nembe and nearby ports',
+        vesselMetadata: { image: '/assets/images/trips/nembe-brass.jpg', amenities: ['Life Jackets', 'Refreshments'], maxSpeed: 22 },
+      },
+    }),
+
+    prisma.vessel.create({
+      data: {
+        operatorId: operators[1].id,
+        name: 'Ekowe Cruiser',
+        registrationNo: 'BY-2026-004',
+        capacity: 28,
+        description: 'High-speed inter-jetty vessel for short routes',
+        vesselMetadata: { image: '/assets/images/trips/ekowe-angiama.jpg', amenities: ['Life Jackets', 'Cooler'], maxSpeed: 30 },
       },
     }),
   ])
@@ -156,24 +170,24 @@ async function main() {
         isRecurring: true,
       },
     }),
-    prisma.trip.create({
-      data: {
-        vesselId: vessels[1].id,
-        title: 'Island Hopping Adventure',
-        description: 'Visit 3 beautiful islands in one exciting day trip',
-        durationMinutes: 240,
-        isRecurring: true,
-      },
-    }),
-    prisma.trip.create({
-      data: {
-        vesselId: vessels[2].id,
-        title: 'Mangrove Safari Tour',
-        description: 'Explore the rich biodiversity of Bayelsa mangrove forests',
-        durationMinutes: 180,
-        isRecurring: true,
-      },
-    }),
+    // prisma.trip.create({
+    //   data: {
+    //     vesselId: vessels[1].id,
+    //     title: 'Island Hopping Adventure',
+    //     description: 'Visit 3 beautiful islands in one exciting day trip',
+    //     durationMinutes: 240,
+    //     isRecurring: true,
+    //   },
+    // }),
+    // prisma.trip.create({
+    //   data: {
+    //     vesselId: vessels[2].id,
+    //     title: 'Mangrove Safari Tour',
+    //     description: 'Explore the rich biodiversity of Bayelsa mangrove forests',
+    //     durationMinutes: 180,
+    //     isRecurring: true,
+    //   },
+    // }),
     prisma.trip.create({
       data: {
         vesselId: vessels[0].id,
@@ -181,6 +195,72 @@ async function main() {
         description: 'Exclusive private charter for corporate team building',
         durationMinutes: 300,
         isRecurring: false,
+      },
+    }),
+
+    // --- Seeded operational routes (added Feb 18, 2026)
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[3].id,
+        title: 'Nembe – Brass',
+        description: 'Regular transport service between Nembe and Brass.',
+        category: 'transport',
+        durationMinutes: 120,
+        isRecurring: true,
+        highlights: [ 'Daily departures', 'Reliable service' ],
+        amenities: [ 'Life Jackets', 'Refreshments' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[2].id,
+        title: 'Brass – Yenagoa',
+        description: 'Scheduled service between Brass and Yenagoa.',
+        category: 'transport',
+        durationMinutes: 90,
+        isRecurring: true,
+        highlights: [ 'Daily departures', 'Commuter service' ],
+        amenities: [ 'Life Jackets' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[4].id,
+        title: 'Ekowe – Angiama',
+        description: 'Short inter-jetty service for local commuters.',
+        category: 'transport',
+        durationMinutes: 45,
+        isRecurring: true,
+        highlights: [ 'Short trip', 'Frequent departures' ],
+        amenities: [ 'Life Jackets' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[0].id,
+        title: 'Amassoma – Ogboinbiri',
+        description: 'Regional connection between Amassoma and Ogboinbiri.',
+        category: 'transport',
+        durationMinutes: 70,
+        isRecurring: true,
+        highlights: [ 'Regional route', 'Comfort seating' ],
+        amenities: [ 'Life Jackets' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[1].id,
+        title: 'Ekeremor – Peretoru',
+        description: 'West Bayelsa commuter service.',
+        category: 'transport',
+        durationMinutes: 75,
+        isRecurring: true,
+        highlights: [ 'Daily service', 'Affordable fare' ],
+        amenities: [ 'Life Jackets' ],
       },
     }),
   ])
@@ -238,16 +318,142 @@ async function main() {
         },
       })
     )
+
+    // --- Seeded operational routes (daily 08:00 departures)
+    // Nembe – Brass (vessels[0])
+    const nembeDate = new Date(scheduleDate)
+    nembeDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[2].id,
+          startTime: nembeDate,
+          endTime: new Date(nembeDate.getTime() + 120 * 60000),
+          capacity: vessels[3].capacity,
+          departurePort: 'Nembe',
+          arrivalPort: 'Brass',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Brass – Yenagoa (vessels[2])
+    const brassDate = new Date(scheduleDate)
+    brassDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[3].id,
+          startTime: brassDate,
+          endTime: new Date(brassDate.getTime() + 90 * 60000),
+          capacity: vessels[2].capacity,
+          departurePort: 'Brass',
+          arrivalPort: 'Yenagoa',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Ekowe – Angiama (vessels[1])
+    const ekoweDate = new Date(scheduleDate)
+    ekoweDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[4].id,
+          startTime: ekoweDate,
+          endTime: new Date(ekoweDate.getTime() + 45 * 60000),
+          capacity: vessels[4].capacity,
+          departurePort: 'Ekowe',
+          arrivalPort: 'Angiama',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Amassoma – Ogboinbiri (vessels[0])
+    const amassomaDate = new Date(scheduleDate)
+    amassomaDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[5].id,
+          startTime: amassomaDate,
+          endTime: new Date(amassomaDate.getTime() + 70 * 60000),
+          capacity: vessels[0].capacity,
+          departurePort: 'Amassoma',
+          arrivalPort: 'Ogboinbiri',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Ekeremor – Peretoru (vessels[1])
+    const ekeremorDate = new Date(scheduleDate)
+    ekeremorDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[6].id,
+          startTime: ekeremorDate,
+          endTime: new Date(ekeremorDate.getTime() + 75 * 60000),
+          capacity: vessels[1].capacity,
+          departurePort: 'Ekeremor',
+          arrivalPort: 'Peretoru',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
   }
 
   const createdSchedules = await Promise.all(schedules)
   console.log(`✅ Created ${createdSchedules.length} trip schedules`)
 
+  // Backfill trip-level canonical route fields from earliest schedule (deterministic)
+  console.log('\n🔁 Backfilling Trip.departurePort/arrivalPort/routeName from earliest TripSchedule when missing...')
+  const tripIds = Array.from(new Set(createdSchedules.map(s => s.tripId)))
+  let backfilled = 0
+  for (const tripId of tripIds) {
+    const earliest = await prisma.tripSchedule.findFirst({
+      where: { tripId },
+      orderBy: { startTime: 'asc' },
+      select: { departurePort: true, arrivalPort: true },
+    })
+    if (!earliest) continue
+    // Only backfill if trip-level route is not already set
+    const tripRecord = await prisma.trip.findUnique({ where: { id: tripId }, select: { departurePort: true, arrivalPort: true } })
+    if (tripRecord && (!tripRecord.departurePort || !tripRecord.arrivalPort)) {
+      await prisma.trip.update({
+        where: { id: tripId },
+        data: {
+          departurePort: earliest.departurePort || null,
+          arrivalPort: earliest.arrivalPort || null,
+          routeName: (earliest.departurePort && earliest.arrivalPort) ? `${earliest.departurePort} → ${earliest.arrivalPort}` : null,
+        },
+      })
+      backfilled++
+    }
+  }
+  console.log(`✅ Backfilled canonical routes for ${backfilled} trips`)
+
   // 6. Create Price Tiers
   console.log('\n💰 Creating price tiers...')
   const priceTiers = []
   
+  // Route-specific base prices (amount in kobo)
+  const routeBasePrices = new Map([
+    [trips[2].id, BigInt(750000)],  // Nembe – Brass (₦7,500)
+    [trips[3].id, BigInt(1000000)], // Brass – Yenagoa (₦10,000)
+    [trips[4].id, BigInt(400000)],  // Ekowe – Angiama (₦4,000)
+    [trips[5].id, BigInt(700000)],  // Amassoma – Ogboinbiri (₦7,000)
+    [trips[6].id, BigInt(500000)],  // Ekeremor – Peretoru (₦5,000)
+  ])
+
   for (const schedule of createdSchedules) {
+    const baseAmountKobo = routeBasePrices.get(schedule.tripId) ?? BigInt(500000)
+    const premiumAmountKobo = baseAmountKobo * BigInt(2)
+    const vipAmountKobo = baseAmountKobo * BigInt(4)
+
     // Economy Tier
     priceTiers.push(
       prisma.priceTier.create({
@@ -255,7 +461,7 @@ async function main() {
           tripScheduleId: schedule.id,
           name: 'Economy',
           description: 'Standard seating with basic amenities',
-          amountKobo: BigInt(500000), // ₦5,000
+          amountKobo: baseAmountKobo,
           capacity: Math.floor(schedule.capacity * 0.5),
           position: 1,
         },
@@ -269,7 +475,7 @@ async function main() {
           tripScheduleId: schedule.id,
           name: 'Premium',
           description: 'Priority boarding with complimentary refreshments',
-          amountKobo: BigInt(1000000), // ₦10,000
+          amountKobo: premiumAmountKobo,
           capacity: Math.floor(schedule.capacity * 0.3),
           position: 2,
         },
@@ -283,7 +489,7 @@ async function main() {
           tripScheduleId: schedule.id,
           name: 'VIP',
           description: 'Exclusive lounge access with full catering',
-          amountKobo: BigInt(2000000), // ₦20,000
+          amountKobo: vipAmountKobo,
           capacity: Math.floor(schedule.capacity * 0.2),
           position: 3,
         },
@@ -393,6 +599,18 @@ async function main() {
             passengerName: 'John Doe',
             passengerPhone: '+2348012345678',
             ticketReference: 'BW-2026-0001',
+            status: 'checked_in',
+          },
+          {
+            priceTierId: createdPriceTiers.find(
+              (t) => t.tripScheduleId === createdSchedules[0].id && t.name === 'Premium'
+            )?.id,
+            tripSeatId: createdSeats.filter(
+              (s) => s.tripScheduleId === createdSchedules[0].id
+            )[1]?.id || createdSeats.find((s) => s.tripScheduleId === createdSchedules[0].id)?.id,
+            passengerName: 'Jane Doe',
+            passengerPhone: '+2348098765432',
+            ticketReference: 'BW-2026-0002',
             status: 'checked_in',
           },
         ],

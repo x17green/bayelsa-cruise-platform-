@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
     }
 
     const priceTier = schedule.priceTiers[0]
-    if (!priceTier || priceTier.priceKobo === null) {
+    // Require either amountKobo or priceKobo to be present
+    if (!priceTier || (priceTier.amountKobo == null && priceTier.priceKobo == null)) {
       return apiError('Price tier not found', 404)
     }
 
@@ -86,8 +87,9 @@ export async function POST(request: NextRequest) {
       return apiError(lockResult.message, 409)
     }
 
-    // 6. Calculate total amount
-    const totalAmountKobo = Number(priceTier.amountKobo) * validatedData.numberOfPassengers
+    // 6. Calculate total amount (prefer amountKobo)
+    const unitAmountKobo = priceTier.amountKobo != null ? Number(priceTier.amountKobo) : (priceTier.priceKobo || 0)
+    const totalAmountKobo = unitAmountKobo * validatedData.numberOfPassengers
 
     // 7. Create booking in database (transaction)
     const booking = await prisma.$transaction(async (tx) => {
@@ -108,14 +110,14 @@ export async function POST(request: NextRequest) {
 
       // Create booking items
       await tx.bookingItem.createMany({
-        data: validatedData.passengers.map((passenger, index) => ({
+        data: validatedData.passengers.map((passenger) => ({
           bookingId: newBooking.id,
           priceTierId: validatedData.priceTierId,
           seatNumber: null, // Assigned later if vessel has assigned seating
           passengerName: passenger.fullName,
           passengerPhone: passenger.phone,
           passengerEmail: passenger.email,
-          priceKobo: priceTier.priceKobo,
+          priceKobo: unitAmountKobo,
         })),
       })
 
@@ -134,6 +136,28 @@ export async function POST(request: NextRequest) {
     })
 
     // 8. Return booking with payment information
+
+// Invalidate caches that may be affected by this booking (schedules/trips) and availability snapshot
+    try {
+      const { redis, buildRedisKey, REDIS_KEYS } = await import('@/src/lib/redis')
+      const tripId = schedule.trip?.id
+      if (tripId) {
+        const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
+        if (scheduleKeys && scheduleKeys.length > 0) await Promise.all(scheduleKeys.map(k => redis.del(k)))
+      }
+      const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
+      if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+
+      // Remove short-lived availability snapshot for the schedule
+      try {
+        await redis.del(buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, validatedData.tripScheduleId))
+      } catch (e) {
+        console.warn('Failed to invalidate availability snapshot after booking create', e)
+      }
+    } catch (err) {
+      console.warn('Failed to invalidate cache after booking create', err)
+    }
+
     return apiResponse({
       booking: {
         id: booking.id,

@@ -1,15 +1,19 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { mdiAccountGroup, mdiArrowRight, mdiClock, mdiMagnify, mdiStar } from '@mdi/js'
+import Icon from '@mdi/react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import Icon from '@mdi/react'
-import { mdiClock, mdiMapMarker, mdiStar, mdiAccountGroup, mdiArrowRight, mdiMagnify } from '@mdi/js'
+
 
 // Trip interface matching API response
 interface Trip {
@@ -25,11 +29,22 @@ interface Trip {
     maxPrice: number
     tiers: number
   }
+  schedules?: Array<{
+    id: string
+    startTime: string
+    endTime?: string
+    capacity?: number
+    bookedSeats?: number
+    availableSeats?: number
+    status?: string
+    priceTiers?: Array<{ id: string; name?: string; price: number; capacity?: number }>
+  }>
   vessel?: {
     id: string
     name: string
     registrationNo: string
     capacity: number
+    vesselMetadata?: { image?: string, amenities?: string[] }
   }
   operator?: {
     id: string
@@ -48,45 +63,65 @@ export default function TripsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch trips from API
+  // Use SWR to cache trips client-side (cache-first, background revalidate)
+  const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Failed to fetch ${url}`)
+    return res.json()
+  }
+
+  const today = new Date()
+  const startIso = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())).toISOString()
+  const weekEnd = new Date(startIso)
+  weekEnd.setUTCDate(weekEnd.getUTCDate() + 6)
+  const weekEndIso = weekEnd.toISOString()
+
+  const tripsKey = `/api/trips?includeSchedules=true&limit=50&startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(weekEndIso)}`
+  const { data, error: swrError } = useSWR(tripsKey, fetcher, { dedupingInterval: 60000, revalidateOnFocus: false })
+
   useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        setLoading(true)
-        const response = await fetch('/api/trips?includeSchedules=true&limit=50')
-        if (!response.ok) {
-          throw new Error('Failed to fetch trips')
-        }
-        const data = await response.json()
-        setTrips(data.trips || [])
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load trips')
-        console.error('Error fetching trips:', err)
-      } finally {
-        setLoading(false)
+    let mounted = true
+    if (data) {
+      if (mounted) setTrips(data.trips || [])
+
+      const hasSchedulePorts = (data.trips || []).some((t: any) => (t.schedules || []).some((s: any) => s.departurePort && s.arrivalPort))
+      if (!hasSchedulePorts) {
+        // fallback: extend the window to 30 days (fire-and-forget)
+        ;(async () => {
+          try {
+            const extendedEnd = new Date(startIso)
+            extendedEnd.setUTCDate(extendedEnd.getUTCDate() + 30)
+            const extRes = await fetch(`/api/trips?includeSchedules=true&limit=50&startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(extendedEnd.toISOString())}`)
+            if (extRes.ok) {
+              const extData = await extRes.json()
+              if (mounted) setTrips(extData.trips || [])
+            }
+          } catch (err) {
+            console.warn('Trips: extended schedule fetch failed', err)
+          }
+        })()
       }
     }
 
-    fetchTrips()
-  }, [])
+    if (swrError) setError(swrError instanceof Error ? swrError.message : 'Failed to load trips')
+    setLoading(!data && !swrError)
+
+    return () => { mounted = false }
+  }, [data, swrError])
 
   // Filter and sort trips based on current state
   const filteredAndSortedTrips = useMemo(() => {
     let results = [...trips]
 
-    // Apply search filters
-    if (searchFrom) {
-      results = results.filter(trip =>
-        trip.title.toLowerCase().includes(searchFrom.toLowerCase()) ||
-        trip.description.toLowerCase().includes(searchFrom.toLowerCase())
-      )
+    // Apply search filters (use schedule ports when available)
+    if (searchFrom && searchFrom !== 'any') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      results = results.filter(trip => (trip.schedules || []).some((s: any) => s.departurePort === searchFrom))
     }
 
-    if (searchTo) {
-      results = results.filter(trip =>
-        trip.title.toLowerCase().includes(searchTo.toLowerCase()) ||
-        trip.description.toLowerCase().includes(searchTo.toLowerCase())
-      )
+    if (searchTo && searchTo !== 'any') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      results = results.filter(trip => (trip.schedules || []).some((s: any) => s.arrivalPort === searchTo))
     }
 
     if (maxPrice !== undefined) {
@@ -124,7 +159,6 @@ export default function TripsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Search and Filters */}
       <Card className="glass-subtle mb-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -140,23 +174,35 @@ export default function TripsPage() {
             {/* From */}
             <div className="space-y-2">
               <Label htmlFor="from">From</Label>
-              <Input
-                id="from"
-                placeholder="e.g., Yenagoa"
-                value={searchFrom}
-                onChange={(e) => setSearchFrom(e.target.value)}
-              />
+              <Select value={searchFrom} onValueChange={(v: string) => setSearchFrom(v)}>
+                <SelectTrigger id="from" className="glass w-full">
+                  <SelectValue placeholder="Any departure" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any</SelectItem>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {Array.from(new Set(trips.flatMap((t: any) => [t.departurePort].concat((t.schedules || []).map((s: any) => s.departurePort || ''))))).filter(Boolean).map((port: any) => (
+                    <SelectItem key={port} value={port}>{port}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* To */}
             <div className="space-y-2">
               <Label htmlFor="to">To</Label>
-              <Input
-                id="to"
-                placeholder="e.g., Port Harcourt"
-                value={searchTo}
-                onChange={(e) => setSearchTo(e.target.value)}
-              />
+              <Select value={searchTo} onValueChange={(v: string) => setSearchTo(v)}>
+                <SelectTrigger id="to" className="glass w-full">
+                  <SelectValue placeholder="Any arrival" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any</SelectItem>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {Array.from(new Set(trips.flatMap((t: any) => [t.arrivalPort].concat((t.schedules || []).map((s: any) => s.arrivalPort || ''))))).filter(Boolean).map((port: any) => (
+                    <SelectItem key={port} value={port}>{port}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Max Price */}
@@ -174,19 +220,19 @@ export default function TripsPage() {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Label htmlFor="sortBy">Sort by:</Label>
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                <SelectTrigger id="sortBy" className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="popularity">Most Popular</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="duration">Shortest Duration</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <Label htmlFor="sortBy">Sort by:</Label>
+                <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'popularity' | 'price-low' | 'price-high' | 'duration')}>
+                  <SelectTrigger id="sortBy" className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="popularity">Most Popular</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="duration">Shortest Duration</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
             <Button
               variant="outline"
@@ -244,7 +290,7 @@ export default function TripsPage() {
             Try Again
           </Button>
         </Card>
-      ) : trips.length === 0 ? (
+      ) : filteredAndSortedTrips.length === 0 ? (
         <Card className="glass-subtle p-12 text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
             <Icon path={mdiMagnify} size={1} className="text-muted-foreground" aria-hidden={true} />
@@ -259,7 +305,7 @@ export default function TripsPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trips.map((trip) => (
+          {filteredAndSortedTrips.map((trip) => (
             <TripCard key={trip.id} trip={trip} />
           ))}
         </div>
@@ -269,13 +315,30 @@ export default function TripsPage() {
 }
 
 function TripCard({ trip }: { trip: Trip }) {
+  // format a Date as local YYYY-MM-DD (stable across timezones)
+  const toLocalISO = (d: Date) => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${dd}`
+  }
+
   return (
     <Card className="glass-card overflow-hidden hover:glass-hover transition-all">
-      {/* Image placeholder */}
-      <div className="relative h-48 bg-gradient-to-br from-blue-500 to-cyan-600">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-white text-6xl opacity-20">🚢</span>
-        </div>
+      {/* Image (use vessel image if available, otherwise fallback) */}
+      <div className="relative h-48 bg-muted">
+        {trip.vessel?.vesselMetadata?.image ? (
+          <Image
+            src={trip.vessel.vesselMetadata.image}
+            alt={trip.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-600">
+            <span className="text-white text-6xl opacity-20">🚢</span>
+          </div>
+        )}
       </div>
 
       <CardHeader>
@@ -316,19 +379,58 @@ function TripCard({ trip }: { trip: Trip }) {
         )}
 
         {/* Amenities */}
-        {trip.amenities && trip.amenities.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {trip.amenities.slice(0, 3).map((amenity) => (
-              <Badge key={amenity} variant="secondary" className="text-xs">
-                {amenity}
-              </Badge>
-            ))}
-            {trip.amenities.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
-                +{trip.amenities.length - 3} more
-              </Badge>
-            )}
-          </div>
+        {Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])])).length > 0 && (
+          (() => {
+            const combined = Array.from(new Set([...(trip.amenities || []), ...(trip.vessel?.vesselMetadata?.amenities || [])]))
+            return (
+              <div>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {combined.slice(0, 3).map((amenity) => (
+                    <Badge key={amenity} variant="secondary" className="text-xs">
+                      {amenity}
+                    </Badge>
+                  ))}
+                  {combined.length > 3 && (
+                    <Badge variant="secondary" className="text-xs">
+                      +{combined.length - 3} more
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Weekly availability strip (next 7 days) — compare using LOCAL dates so highlights match user timezone (e.g. Lagos, GMT+1) */}
+                <div className="flex gap-2 text-xs text-muted-foreground">
+                  {getNextNDates(7).map((d) => {
+                    const localIso = toLocalISO(d)
+
+                    // compare schedule local-date (derived from schedule.startTime) to calendar localIso
+                    const has = (trip.schedules || []).some((s) => {
+                      const sd = new Date(s.startTime)
+                      return toLocalISO(sd) === localIso
+                    })
+
+                    const minPrice = (() => {
+                      const s = (trip.schedules || []).find((s) => {
+                        const sd = new Date(s.startTime)
+                        return toLocalISO(sd) === localIso
+                      })
+                      return s?.priceTiers?.[0]?.price ?? null
+                    })()
+
+                    return (
+                      <div key={localIso} className="flex flex-col items-center w-12">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${has ? 'bg-success-600 text-white' : 'bg-muted'}`}>
+                          {d.toLocaleDateString(undefined, { weekday: 'short' }).slice(0,3)}
+                        </div>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {has ? `₦${(minPrice||0).toLocaleString()}` : '—'}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()
         )}
 
         {/* Price */}
@@ -355,4 +457,19 @@ function TripCard({ trip }: { trip: Trip }) {
       </CardFooter>
     </Card>
   )
+}
+
+/**
+ * Return an array of Date objects for the next `n` calendar days (UTC-midnight).
+ * Dates are normalized to UTC midnight so `d.toISOString().split('T')[0]` matches
+ * server-side ISO date strings used in schedule.startTime comparisons.
+ */
+function getNextNDates(n: number, from?: Date): Date[] {
+  const ref = from ? new Date(from) : new Date()
+  const start = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()))
+  const dates: Date[] = []
+  for (let i = 0; i < n; i++) {
+    dates.push(new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate() + i)))
+  }
+  return dates
 }
