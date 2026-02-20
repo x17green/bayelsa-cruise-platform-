@@ -143,9 +143,10 @@ export function BlueWatersWordmark({
   size = 'lg', 
   className,
   showText = true,
+  showLogo = true,
   priority = false,
   subTextClassName,
-}: Omit<LogoProps, 'priority'> & { showText?: boolean; priority?: boolean; subTextClassName?: string }) {
+}: Omit<LogoProps, 'priority'> & { showText?: boolean; showLogo?: boolean; priority?: boolean; subTextClassName?: string }) {
   const dimensions = LOGO_SIZES[size];
   
   return (
@@ -157,19 +158,21 @@ export function BlueWatersWordmark({
       )}
     >
       {/* Bayelsa Boat Club SVG Emblem */}
-      <div 
-        className="relative flex-shrink-0"
-        style={{ width: dimensions.width, height: dimensions.height }}
-      >
-        <Image
-          src="/assets/logos/blue-waters-symbol.svg"
-          alt="Bayelsa Boat Club Emblem"
-          width={dimensions.width}
-          height={dimensions.height}
-          priority={priority}
-          className="object-contain"
-        />
-      </div>
+      {showLogo && (
+        <div 
+          className="relative flex-shrink-0"
+          style={{ width: dimensions.width, height: dimensions.height }}
+        >
+          <Image
+            src="/assets/logos/ministry-blue-economy-seal.png"
+            alt="Ministry of Marine and Blue Economy Seal"
+            width={dimensions.width}
+            height={dimensions.height}
+            priority={priority}
+            className="object-contain"
+          />
+        </div>
+      )} 
       
       {/* Wordmark Text (optional) */}
       {showText && (

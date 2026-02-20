@@ -80,6 +80,7 @@ function PublicHeader() {
             >
               <BlueWatersWordmark 
                 size="sm" 
+                showLogo={false}
                 className="uppercase text-center sm:text-md md:text-3xl lg:text-5xl font-bold" 
                 subTextClassName="text-center sm:text-sm md:text-base lg:text-2xl text-accent-500" 
               />
