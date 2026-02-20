@@ -56,6 +56,9 @@ coverage/
 .nyc_output/
 *.lcov
 .jest/
+*_test.ts
+*_test.tsx
+*/__tests__/
 
 # ==================================
 # LOGS

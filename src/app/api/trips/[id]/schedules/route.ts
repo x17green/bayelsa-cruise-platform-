@@ -63,34 +63,31 @@ export async function GET(
       where.status = status
     }
 
-    // Fetch schedules (ensure price tiers are ordered by amountKobo asc so clients can rely on index 0 == lowest price)
-    const schedules = await prisma.tripSchedule.findMany({
-      where,
-      include: {
-        trip: {
-          include: {
-            vessel: true,
-          },
-        },
-        priceTiers: {
-          orderBy: { amountKobo: 'asc' },
-        },
-        _count: {
-          select: {
-            bookings: true,
-          },
-        },
-      },
-      orderBy: { startTime: 'asc' },
-    })
-
-    // Debug: log requested trip id and how many schedules were found
-    console.debug(`GET /api/trips/${id}/schedules → found ${schedules.length} schedule(s)`)
-
-    // --- Try Redis cache for schedules (short TTL) ---
+    // --- Redis short-circuit: check ETAG and cache BEFORE hitting Prisma ---
     try {
-      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
       const cacheKey = buildRedisKey('api_cache', 'schedules', id, `start:${startDate||'_'}`, `end:${endDate||'_'}`, `status:${status||'_'}`)
+      const etagKey = `${cacheKey}:etag`
+      const ifNoneMatchHdr = request.headers.get('if-none-match')
+
+      // Fast path: if client sent If-None-Match and we have a cached ETag -> short-circuit 304 without DB
+      try {
+        const cachedEtag = await redis.get<string>(etagKey)
+        if (ifNoneMatchHdr && cachedEtag && ifNoneMatchHdr === cachedEtag) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              'ETag': cachedEtag,
+              'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=5',
+              'X-Cache': 'HIT',
+            },
+          })
+        }
+      } catch (etagErr) {
+        // continue to attempt payload read if ETag fetch fails
+        console.warn('Failed to read schedules etag key', etagErr)
+      }
+
       const cached = await redis.get<string | object>(cacheKey)
       if (cached) {
         let payload: any = null
@@ -133,6 +130,31 @@ export async function GET(
       console.warn('Schedules cache read failed', cacheErr)
     }
 
+    // Fetch schedules (ensure price tiers are ordered by amountKobo asc so clients can rely on index 0 == lowest price)
+    const schedules = await prisma.tripSchedule.findMany({
+      where,
+      include: {
+        trip: {
+          include: {
+            vessel: true,
+          },
+        },
+        priceTiers: {
+          orderBy: { amountKobo: 'asc' },
+        },
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+      orderBy: { startTime: 'asc' },
+    })
+
+    // Debug: log requested trip id and how many schedules were found
+    console.debug(`GET /api/trips/${id}/schedules → found ${schedules.length} schedule(s)`)
+
+
     // Get real-time available seats for each schedule
     const schedulesWithAvailability = await Promise.all(
       schedules.map(async (schedule) => {
@@ -169,11 +191,17 @@ export async function GET(
 
     const payload = { schedules: schedulesWithAvailability }
 
-    // Try to populate schedules cache (best-effort)
+    // Try to populate schedules cache + etag (best-effort)
     try {
       const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
       const cacheKey = buildRedisKey('api_cache', 'schedules', id, `start:${startDate||'_'}`, `end:${endDate||'_'}`, `status:${status||'_'}`)
-      await redis.setex(cacheKey, REDIS_TTL.API_CACHE_SCHEDULES, JSON.stringify(payload))
+      const payloadStr = JSON.stringify(payload)
+      const { createHash } = await import('crypto')
+      const etag = createHash('sha1').update(payloadStr).digest('hex')
+      await Promise.all([
+        redis.setex(cacheKey, REDIS_TTL.API_CACHE_SCHEDULES, payloadStr),
+        redis.setex(`${cacheKey}:etag`, REDIS_TTL.API_CACHE_SCHEDULES, etag),
+      ])
     } catch (cacheErr) {
       console.warn('Schedules cache write failed', cacheErr)
     }

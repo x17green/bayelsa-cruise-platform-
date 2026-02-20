@@ -18,6 +18,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -122,59 +123,47 @@ export default function TripDetailPage() {
   // Selected price tier for the currently-selected schedule
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null)
 
-  // fetch trip details (runs when tripId changes)
+  // fetch trip details (SWR)
+  const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Failed to fetch ${url}`)
+    return res.json()
+  }
+
+  const { data: tripData, error: tripError } = useSWR(tripId ? `/api/trips/${tripId}` : null, fetcher, { dedupingInterval: 60000, revalidateOnFocus: false })
+
   useEffect(() => {
     let mounted = true
-    const fetchTrip = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const tripResponse = await fetch(`/api/trips/${tripId}`)
-        if (!tripResponse.ok) throw new Error('Failed to fetch trip details')
-        const tripData = await tripResponse.json()
-        if (mounted) setTrip(tripData.trip)
-      } catch (err) {
-        console.error('Error fetching trip details:', err)
-        if (mounted) setError(err instanceof Error ? err.message : 'Failed to load trip data')
-      } finally {
-        if (mounted) setLoading(false)
-      }
+    if (tripData && mounted) {
+      setTrip(tripData.trip)
+      setError(null)
     }
-
-    if (tripId) fetchTrip()
+    if (tripError && mounted) setError(tripError instanceof Error ? tripError.message : 'Failed to load trip data')
+    setLoading(!tripData && !tripError)
     return () => { mounted = false }
-  }, [tripId])
+  }, [tripData, tripError])
 
-  // fetch schedules for the selected date only (separate loading state so the page content stays visible)
+  // fetch schedules for the selected date only (SWR: cache-first + background revalidate)
+  const startIsoForSelected = new Date(selectedDate + 'T00:00:00.000Z').toISOString()
+  const endDateObjForSelected = new Date(selectedDate + 'T00:00:00.000Z')
+  endDateObjForSelected.setUTCDate(endDateObjForSelected.getUTCDate() + 1)
+  const endIsoForSelected = endDateObjForSelected.toISOString()
+
+  const schedulesKey = tripId ? `/api/trips/${tripId}/schedules?startDate=${encodeURIComponent(startIsoForSelected)}&endDate=${encodeURIComponent(endIsoForSelected)}` : null
+  const { data: schedulesData, error: schedulesError, isValidating: schedulesValidating } = useSWR(schedulesKey, fetcher, { dedupingInterval: 10000, refreshInterval: 15000, revalidateOnFocus: false })
+
   useEffect(() => {
     let mounted = true
-    const fetchSchedulesForDate = async () => {
-      try {
-        setSchedulesLoading(true)
-
-        const startIso = new Date(selectedDate + 'T00:00:00.000Z').toISOString()
-        const endDateObj = new Date(selectedDate + 'T00:00:00.000Z')
-        endDateObj.setUTCDate(endDateObj.getUTCDate() + 1)
-        const endIso = endDateObj.toISOString()
-
-        const schedulesResponse = await fetch(`/api/trips/${tripId}/schedules?startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(endIso)}`)
-        if (!schedulesResponse.ok) throw new Error('Failed to fetch schedules')
-        const schedulesData = await schedulesResponse.json()
-
-        const filtered = (schedulesData.schedules || []).filter((s: any) => s.tripId === tripId)
-        if (mounted) setSchedules(filtered)
-      } catch (err) {
-        console.error('Error fetching schedules:', err)
-        if (mounted) setSchedules([])
-      } finally {
-        if (mounted) setSchedulesLoading(false)
-      }
+    if (schedulesData && mounted) {
+      const filtered = (schedulesData.schedules || []).filter((s: any) => s.tripId === tripId)
+      setSchedules(filtered)
+    } else if (schedulesError && mounted) {
+      setSchedules([])
     }
 
-    if (tripId) fetchSchedulesForDate()
+    setSchedulesLoading(Boolean(schedulesValidating && !schedulesData))
     return () => { mounted = false }
-  }, [tripId, selectedDate])
+  }, [schedulesData, schedulesError, schedulesValidating, tripId])
 
   // Default selected tier when schedule changes (server returns tiers ordered asc)
   useEffect(() => {

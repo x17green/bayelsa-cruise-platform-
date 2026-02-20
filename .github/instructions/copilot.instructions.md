@@ -165,3 +165,10 @@ Provide `/prisma/schema.prisma` or SQL DDL for Supabase:
 5. Responsiveness: UI is usable at 320px width and 1440px width.
     
 6. CI passes for build and tests.
+
+---
+
+## Route caching & API guideline (see also `.github/instructions/07-route-caching.instructions.md`)
+- All route-level cache decisions must follow the `07-route-caching.instructions.md` checklist and ETag short-circuit pattern.
+- Before adding caches to a route, add a unit/integration test that asserts `X-Cache` behavior and NO-DB on conditional GET.
+- Any deviation from the pattern requires explicit approval in PR description.

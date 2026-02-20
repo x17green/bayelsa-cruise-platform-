@@ -5,6 +5,7 @@ import Icon from '@mdi/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -62,31 +63,31 @@ export default function TripsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch trips from API
+  // Use SWR to cache trips client-side (cache-first, background revalidate)
+  const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Failed to fetch ${url}`)
+    return res.json()
+  }
+
+  const today = new Date()
+  const startIso = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())).toISOString()
+  const weekEnd = new Date(startIso)
+  weekEnd.setUTCDate(weekEnd.getUTCDate() + 6)
+  const weekEndIso = weekEnd.toISOString()
+
+  const tripsKey = `/api/trips?includeSchedules=true&limit=50&startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(weekEndIso)}`
+  const { data, error: swrError } = useSWR(tripsKey, fetcher, { dedupingInterval: 60000, revalidateOnFocus: false })
+
   useEffect(() => {
     let mounted = true
+    if (data) {
+      if (mounted) setTrips(data.trips || [])
 
-    const fetchTrips = async () => {
-      try {
-        setLoading(true)
-
-        // Prefetch trips + schedules for the next 7 days so UI can show weekly availability
-        const today = new Date()
-        const startIso = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())).toISOString()
-        const end = new Date(startIso)
-        end.setUTCDate(end.getUTCDate() + 6)
-        const endIso = end.toISOString()
-
-        const response = await fetch(`/api/trips?includeSchedules=true&limit=50&startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(endIso)}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch trips')
-        }
-        const data = await response.json()
-        if (mounted) setTrips(data.trips || [])
-
-        // If the initial 7-day prefetch returned no schedule ports, expand the window
-        const hasSchedulePorts = (data.trips || []).some((t: any) => (t.schedules || []).some((s: any) => s.departurePort && s.arrivalPort))
-        if (!hasSchedulePorts) {
+      const hasSchedulePorts = (data.trips || []).some((t: any) => (t.schedules || []).some((s: any) => s.departurePort && s.arrivalPort))
+      if (!hasSchedulePorts) {
+        // fallback: extend the window to 30 days (fire-and-forget)
+        ;(async () => {
           try {
             const extendedEnd = new Date(startIso)
             extendedEnd.setUTCDate(extendedEnd.getUTCDate() + 30)
@@ -96,23 +97,17 @@ export default function TripsPage() {
               if (mounted) setTrips(extData.trips || [])
             }
           } catch (err) {
-            // non-fatal — keep initial results
             console.warn('Trips: extended schedule fetch failed', err)
           }
-        }
-      } catch (err) {
-        if (mounted) setError(err instanceof Error ? err.message : 'Failed to load trips')
-        console.error('Error fetching trips:', err)
-      } finally {
-        if (mounted) setLoading(false)
+        })()
       }
     }
 
-    fetchTrips()
-    return () => {
-      mounted = false
-    }
-  }, [])
+    if (swrError) setError(swrError instanceof Error ? swrError.message : 'Failed to load trips')
+    setLoading(!data && !swrError)
+
+    return () => { mounted = false }
+  }, [data, swrError])
 
   // Filter and sort trips based on current state
   const filteredAndSortedTrips = useMemo(() => {

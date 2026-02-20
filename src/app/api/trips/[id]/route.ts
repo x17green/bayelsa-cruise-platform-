@@ -44,6 +44,65 @@ export async function GET(
   try {
     const { id } = await context.params
 
+    // Try Redis cache/ETag for trip detail (short-circuit before DB)
+    try {
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'trips', 'detail', id)
+      const etagKey = `${cacheKey}:etag`
+      const ifNoneMatchHdr = request.headers.get('if-none-match')
+
+      // short-circuit 304 using cached ETag only
+      try {
+        const cachedEtag = await redis.get<string>(etagKey)
+        if (ifNoneMatchHdr && cachedEtag && ifNoneMatchHdr === cachedEtag) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              'ETag': cachedEtag,
+              'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+              'X-Cache': 'HIT',
+            },
+          })
+        }
+      } catch (etagErr) {
+        console.warn('Trip detail etag read failed', etagErr)
+      }
+
+      const cached = await redis.get<string | object>(cacheKey)
+      if (cached) {
+        let payload: any = null
+        if (typeof cached === 'string') {
+          try { payload = JSON.parse(cached) } catch (parseErr) { payload = null }
+        } else if (typeof cached === 'object') {
+          payload = cached
+        }
+
+        if (payload) {
+          const { createHash } = await import('crypto')
+          const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+          const ifNoneMatch = request.headers.get('if-none-match')
+          if (ifNoneMatch && ifNoneMatch === etag) {
+            return new Response(null, {
+              status: 304,
+              headers: {
+                'ETag': etag,
+                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+                'X-Cache': 'HIT',
+              },
+            })
+          }
+
+          return apiResponse(payload, 200, {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+            'X-Cache': 'HIT',
+            'ETag': etag,
+          })
+        }
+      }
+    } catch (cacheErr) {
+      console.warn('Trip detail cache read failed', cacheErr)
+    }
+
     const trip = await prisma.trip.findUnique({
       where: { id },
       include: {
@@ -102,7 +161,7 @@ export async function GET(
       ? trip.reviews.reduce((sum: number, r) => sum + r.rating, 0) / trip.reviews.length
       : 0
 
-    return apiResponse({
+    const payload = {
       trip: {
         id: trip.id,
         title: trip.title,
@@ -147,6 +206,42 @@ export async function GET(
         createdAt: trip.createdAt,
         updatedAt: trip.updatedAt,
       },
+    }
+
+    // Best-effort: populate trip detail cache + etag
+    try {
+      const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
+      const cacheKey = buildRedisKey('api_cache', 'trips', 'detail', id)
+      const payloadStr = JSON.stringify(payload)
+      const { createHash } = await import('crypto')
+      const etagForCache = createHash('sha1').update(payloadStr).digest('hex')
+      await Promise.all([
+        redis.setex(cacheKey, REDIS_TTL.API_CACHE_TRIPS, payloadStr),
+        redis.setex(`${cacheKey}:etag`, REDIS_TTL.API_CACHE_TRIPS, etagForCache),
+      ])
+    } catch (cacheErr) {
+      console.warn('Trip detail cache write failed', cacheErr)
+    }
+
+    // Compute ETag and support conditional GETs for trip detail
+    const { createHash } = await import('crypto')
+    const etag = createHash('sha1').update(JSON.stringify(payload)).digest('hex')
+    const ifNoneMatchFinal = request.headers.get('if-none-match')
+    if (ifNoneMatchFinal && ifNoneMatchFinal === etag) {
+      return new Response(null, {
+        status: 304,
+        headers: {
+          'ETag': etag,
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+          'X-Cache': 'MISS',
+        },
+      })
+    }
+
+    return apiResponse(payload, 200, {
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      'X-Cache': 'MISS',
+      'ETag': etag,
     })
 
   } catch (error) {

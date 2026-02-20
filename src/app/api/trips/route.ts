@@ -241,11 +241,17 @@ export async function GET(request: NextRequest) {
       },
     }
 
-    // Try to populate cache (best-effort)
+    // Try to populate cache + etag (best-effort)
     try {
       const { redis, buildRedisKey, REDIS_TTL } = await import('@/src/lib/redis')
       const cacheKey = buildRedisKey('api_cache', 'trips', `cat:${category||'_'}`, `op:${operatorId||'_'}`, `q:${search||'_'}`, `incSchedules:${includeSchedules}`, `start:${scheduleStart||'_'}`, `end:${scheduleEnd||'_'}`, `l:${limit}`, `o:${offset}`)
-      await redis.setex(cacheKey, REDIS_TTL.API_CACHE_TRIPS, JSON.stringify(payload))
+      const payloadStr = JSON.stringify(payload)
+      const { createHash } = await import('crypto')
+      const etagForCache = createHash('sha1').update(payloadStr).digest('hex')
+      await Promise.all([
+        redis.setex(cacheKey, REDIS_TTL.API_CACHE_TRIPS, payloadStr),
+        redis.setex(`${cacheKey}:etag`, REDIS_TTL.API_CACHE_TRIPS, etagForCache),
+      ])
     } catch (cacheErr) {
       console.warn('Trips cache write failed', cacheErr)
     }

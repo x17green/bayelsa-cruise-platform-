@@ -137,9 +137,9 @@ export async function POST(request: NextRequest) {
 
     // 8. Return booking with payment information
 
-    // Invalidate caches that may be affected by this booking (schedules/trips)
+// Invalidate caches that may be affected by this booking (schedules/trips) and availability snapshot
     try {
-      const { redis, buildRedisKey } = await import('@/src/lib/redis')
+      const { redis, buildRedisKey, REDIS_KEYS } = await import('@/src/lib/redis')
       const tripId = schedule.trip?.id
       if (tripId) {
         const scheduleKeys = await redis.keys(buildRedisKey('api_cache', 'schedules', tripId, '*'))
@@ -147,6 +147,13 @@ export async function POST(request: NextRequest) {
       }
       const tripKeys = await redis.keys(buildRedisKey('api_cache', 'trips', '*'))
       if (tripKeys && tripKeys.length > 0) await Promise.all(tripKeys.map(k => redis.del(k)))
+
+      // Remove short-lived availability snapshot for the schedule
+      try {
+        await redis.del(buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, validatedData.tripScheduleId))
+      } catch (e) {
+        console.warn('Failed to invalidate availability snapshot after booking create', e)
+      }
     } catch (err) {
       console.warn('Failed to invalidate cache after booking create', err)
     }

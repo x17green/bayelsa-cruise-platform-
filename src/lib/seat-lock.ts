@@ -97,6 +97,22 @@ export async function lockSeats(
     const lockKey = buildRedisKey(REDIS_KEYS.SEAT_LOCK, scheduleId, userId)
     await redis.setex(lockKey, REDIS_TTL.SEAT_LOCK, JSON.stringify(lock))
 
+    // Update availability snapshot cache (best-effort)
+    try {
+      const availKey = buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, scheduleId)
+      const cached = await redis.get<number | string>(availKey)
+      if (typeof cached === 'number' || (typeof cached === 'string' && !isNaN(Number(cached)))) {
+        const newAvail = Math.max(0, Number(cached) - seats)
+        await redis.setex(availKey, REDIS_TTL.AVAILABILITY_SNAPSHOT, String(newAvail))
+      } else {
+        // no cached snapshot — set a fresh short-lived snapshot
+        const newAvail = Math.max(0, availableSeats - seats)
+        await redis.setex(availKey, REDIS_TTL.AVAILABILITY_SNAPSHOT, String(newAvail))
+      }
+    } catch (cacheErr) {
+      console.warn('Failed to update availability snapshot after lock', cacheErr)
+    }
+
     return {
       success: true,
       lockId: lockKey,
@@ -109,7 +125,7 @@ export async function lockSeats(
       message: 'Failed to lock seats',
     }
   }
-}
+} 
 
 /**
  * Release seat locks for a user
@@ -124,12 +140,21 @@ export async function releaseSeats(
   try {
     const lockKey = buildRedisKey(REDIS_KEYS.SEAT_LOCK, scheduleId, userId)
     const result = await redis.del(lockKey)
+
+    // Invalidate availability snapshot for this schedule (best-effort)
+    try {
+      const availKey = buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, scheduleId)
+      await redis.del(availKey)
+    } catch (cacheErr) {
+      console.warn('Failed to invalidate availability snapshot after release', cacheErr)
+    }
+
     return result === 1
   } catch (error) {
     console.error('Error releasing seats:', error)
     return false
   }
-}
+} 
 
 /**
  * Extend seat lock expiration (e.g., if user is still in checkout)
@@ -170,7 +195,20 @@ export async function extendSeatLock(
  */
 export async function getAvailableSeats(scheduleId: string): Promise<number> {
   try {
-    // Get schedule capacity
+    const availKey = buildRedisKey(REDIS_KEYS.TRIP_CAPACITY, scheduleId)
+
+    // 1) Try cached availability snapshot (short-lived)
+    try {
+      const cached = await redis.get<number | string>(availKey)
+      if (typeof cached === 'number' || (typeof cached === 'string' && !isNaN(Number(cached)))) {
+        return Math.max(0, Number(cached))
+      }
+    } catch (cacheErr) {
+      // continue to compute if cache unavailable
+      console.warn('Availability snapshot read failed, falling back to compute:', cacheErr)
+    }
+
+    // 2) Compute availability (DB + active locks)
     const schedule = await prisma.tripSchedule.findUnique({
       where: { id: scheduleId },
       select: {
@@ -179,31 +217,33 @@ export async function getAvailableSeats(scheduleId: string): Promise<number> {
       },
     })
 
-    if (!schedule) {
-      return 0
-    }
+    if (!schedule) return 0
 
-    // Try to get locked seats from Redis, but fall back gracefully if Redis is unavailable
     let totalLockedSeats = 0
     try {
       const lockPattern = buildRedisKey(REDIS_KEYS.SEAT_LOCK, scheduleId, '*')
       const lockKeys = await redis.keys(lockPattern)
-
       for (const key of lockKeys) {
         const lock = await redis.get<SeatLock>(key)
-        if (lock) {
-          totalLockedSeats += lock.seats
-        }
+        if (lock) totalLockedSeats += lock.seats
       }
     } catch (redisError) {
-      // Redis is not available, continue with just booked seats
-      console.warn('Redis unavailable for seat lock check, using basic calculation:', redisError)
+      console.warn('Redis unavailable for seat lock check, using DB-only calculation:', redisError)
     }
 
-    return Math.max(0, schedule.capacity - schedule.bookedSeats - totalLockedSeats)
+    const available = Math.max(0, schedule.capacity - schedule.bookedSeats - totalLockedSeats)
+
+    // 3) Write short-lived snapshot for future requests
+    try {
+      await redis.setex(availKey, REDIS_TTL.AVAILABILITY_SNAPSHOT, String(available))
+    } catch (cacheErr) {
+      console.warn('Failed to write availability snapshot', cacheErr)
+    }
+
+    return available
   } catch (error) {
     console.error('Error getting available seats:', error)
-    // Fallback: just return capacity minus booked seats if everything fails
+    // Fallback: try read-from-db-only
     try {
       const schedule = await prisma.tripSchedule.findUnique({
         where: { id: scheduleId },
@@ -215,7 +255,7 @@ export async function getAvailableSeats(scheduleId: string): Promise<number> {
       return 0
     }
   }
-}
+} 
 
 /**
  * Clean up expired locks (called by cron or background job)

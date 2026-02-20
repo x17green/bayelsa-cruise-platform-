@@ -45,6 +45,7 @@ export const REDIS_TTL = {
   SEAT_LOCK: 600, // 10 minutes for checkout
   BOOKING_HOLD: 600, // 10 minutes
   TRIP_CAPACITY: 300, // 5 minutes cache (used for capacity snapshots)
+  AVAILABILITY_SNAPSHOT: 15, // short-lived availability snapshot (seconds)
   RATE_LIMIT: 60, // 1 minute
   SESSION: 86400, // 24 hours
   API_CACHE_TRIPS: 300, // cache trips list (seconds)
