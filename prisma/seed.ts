@@ -1,21 +1,23 @@
 // prisma/seed.ts
-// Seed script for Yenagoa Boat Club Boat Cruise Booking System
+// Seed script for Bayelsa Boat Club Boat Cruise Booking System
 
 // ✅ Import from single source of truth
-import { prisma, UserRole, BookingStatus, PaymentStatus } from '../src/lib/prisma.client'
+import { prisma, UserRole, BookingStatus, PaymentStatus, CheckinStatus } from '../src/lib/prisma.client'
 
 async function main() {
-  console.log('🌊 Starting Yenagoa Boat Club database seeding...\n')
+  console.log('🌊 Starting Bayelsa Boat Club database seeding...\n')
 
   // Clear existing data (in correct order to respect foreign keys)
   console.log('🗑️  Clearing existing data...')
   await prisma.promoCode.deleteMany()
   await prisma.review.deleteMany()
   await prisma.emailLog.deleteMany()
+  await prisma.webhookEvent.deleteMany()
   await prisma.seatLock.deleteMany()
   await prisma.checkin.deleteMany()
-  await prisma.webhookEvent.deleteMany()
   await prisma.manifest.deleteMany()
+  await prisma.auditLog.deleteMany()
+  await prisma.passenger.deleteMany()
   await prisma.payment.deleteMany()
   await prisma.bookingItem.deleteMany()
   await prisma.booking.deleteMany()
@@ -79,7 +81,7 @@ async function main() {
     prisma.operator.create({
       data: {
         userId: testUsers[1].id,
-        organizationName: 'Yenagoa Boat Club Marine Services',
+        organizationName: 'Bayelsa Boat Club Marine Services',
         contactEmail: 'info@bluewaters.ng',
         contactPhone: '+2348087654321',
         verified: true,
@@ -103,40 +105,54 @@ async function main() {
     prisma.vessel.create({
       data: {
         operatorId: operators[0].id,
-        name: 'MV Blue Pearl',
+        name: 'BBC Cruiser Carrier',
         registrationNo: 'BY-2024-001',
         capacity: 50,
         description: 'Luxury cruise vessel with air-conditioned cabin',
-        vesselMetadata: {
-          amenities: ['AC', 'Restroom', 'Sound System', 'Life Jackets'],
-          maxSpeed: 25,
-        },
+        vesselMetadata: { image: '/assets/images/trips/brass-yenagoa.jpg', amenities: ['AC', 'Restroom', 'Sound System', 'Life Jackets'], maxSpeed: 25 },
       },
     }),
     prisma.vessel.create({
       data: {
         operatorId: operators[0].id,
-        name: 'SS Ocean Breeze',
-        registrationNo: 'BY-2024-002',
+        name: 'Ekelga Explorer',
+        registrationNo: 'BY-EKR-002',
         capacity: 30,
         description: 'Compact speedboat for island hopping',
-        vesselMetadata: {
-          amenities: ['Life Jackets', 'Cooler', 'Music'],
-          maxSpeed: 35,
-        },
+        vesselMetadata: { image: '/assets/images/trips/ekeremor-peretoru.jpg', amenities: ['Life Jackets', 'Cooler', 'Music'], maxSpeed: 35 },
       },
     }),
     prisma.vessel.create({
       data: {
         operatorId: operators[1].id,
-        name: 'Bayelsa Star',
+        name: 'Ogboinbiri Titanic',
         registrationNo: 'BY-GOV-2024-001',
         capacity: 80,
         description: 'Government-owned large capacity vessel for public tours',
-        vesselMetadata: {
-          amenities: ['AC', 'Restrooms', 'Food Service', 'WiFi', 'Medical Kit'],
-          maxSpeed: 20,
-        },
+        vesselMetadata: { image: '/assets/images/trips/amassoma-ogboinbiri.jpg', amenities: ['AC', 'Restrooms', 'Food Service', 'WiFi', 'Medical Kit'], maxSpeed: 20 },
+      },
+    }),
+
+    // Additional seeded vessels (use remaining trip images)
+    prisma.vessel.create({
+      data: {
+        operatorId: operators[0].id,
+        name: 'Nembe Express',
+        registrationNo: 'BY-2026-003',
+        capacity: 40,
+        description: 'Regional commuter ferry serving Nembe and nearby ports',
+        vesselMetadata: { image: '/assets/images/trips/nembe-brass.jpg', amenities: ['Life Jackets', 'Refreshments'], maxSpeed: 22 },
+      },
+    }),
+
+    prisma.vessel.create({
+      data: {
+        operatorId: operators[1].id,
+        name: 'Ekowe Cruiser',
+        registrationNo: 'BY-2026-004',
+        capacity: 28,
+        description: 'High-speed inter-jetty vessel for short routes',
+        vesselMetadata: { image: '/assets/images/trips/ekowe-angiama.jpg', amenities: ['Life Jackets', 'Cooler'], maxSpeed: 30 },
       },
     }),
   ])
@@ -154,24 +170,24 @@ async function main() {
         isRecurring: true,
       },
     }),
-    prisma.trip.create({
-      data: {
-        vesselId: vessels[1].id,
-        title: 'Island Hopping Adventure',
-        description: 'Visit 3 beautiful islands in one exciting day trip',
-        durationMinutes: 240,
-        isRecurring: true,
-      },
-    }),
-    prisma.trip.create({
-      data: {
-        vesselId: vessels[2].id,
-        title: 'Mangrove Safari Tour',
-        description: 'Explore the rich biodiversity of Bayelsa mangrove forests',
-        durationMinutes: 180,
-        isRecurring: true,
-      },
-    }),
+    // prisma.trip.create({
+    //   data: {
+    //     vesselId: vessels[1].id,
+    //     title: 'Island Hopping Adventure',
+    //     description: 'Visit 3 beautiful islands in one exciting day trip',
+    //     durationMinutes: 240,
+    //     isRecurring: true,
+    //   },
+    // }),
+    // prisma.trip.create({
+    //   data: {
+    //     vesselId: vessels[2].id,
+    //     title: 'Mangrove Safari Tour',
+    //     description: 'Explore the rich biodiversity of Bayelsa mangrove forests',
+    //     durationMinutes: 180,
+    //     isRecurring: true,
+    //   },
+    // }),
     prisma.trip.create({
       data: {
         vesselId: vessels[0].id,
@@ -179,6 +195,72 @@ async function main() {
         description: 'Exclusive private charter for corporate team building',
         durationMinutes: 300,
         isRecurring: false,
+      },
+    }),
+
+    // --- Seeded operational routes (added Feb 18, 2026)
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[3].id,
+        title: 'Nembe – Brass',
+        description: 'Regular transport service between Nembe and Brass.',
+        category: 'transport',
+        durationMinutes: 120,
+        isRecurring: true,
+        highlights: [ 'Daily departures', 'Reliable service' ],
+        amenities: [ 'Life Jackets', 'Refreshments' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[2].id,
+        title: 'Brass – Yenagoa',
+        description: 'Scheduled service between Brass and Yenagoa.',
+        category: 'transport',
+        durationMinutes: 90,
+        isRecurring: true,
+        highlights: [ 'Daily departures', 'Commuter service' ],
+        amenities: [ 'Life Jackets' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[4].id,
+        title: 'Ekowe – Angiama',
+        description: 'Short inter-jetty service for local commuters.',
+        category: 'transport',
+        durationMinutes: 45,
+        isRecurring: true,
+        highlights: [ 'Short trip', 'Frequent departures' ],
+        amenities: [ 'Life Jackets' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[0].id,
+        title: 'Amassoma – Ogboinbiri',
+        description: 'Regional connection between Amassoma and Ogboinbiri.',
+        category: 'transport',
+        durationMinutes: 70,
+        isRecurring: true,
+        highlights: [ 'Regional route', 'Comfort seating' ],
+        amenities: [ 'Life Jackets' ],
+      },
+    }),
+
+    prisma.trip.create({
+      data: {
+        vesselId: vessels[1].id,
+        title: 'Ekeremor – Peretoru',
+        description: 'West Bayelsa commuter service.',
+        category: 'transport',
+        durationMinutes: 75,
+        isRecurring: true,
+        highlights: [ 'Daily service', 'Affordable fare' ],
+        amenities: [ 'Life Jackets' ],
       },
     }),
   ])
@@ -236,16 +318,142 @@ async function main() {
         },
       })
     )
+
+    // --- Seeded operational routes (daily 08:00 departures)
+    // Nembe – Brass (vessels[0])
+    const nembeDate = new Date(scheduleDate)
+    nembeDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[2].id,
+          startTime: nembeDate,
+          endTime: new Date(nembeDate.getTime() + 120 * 60000),
+          capacity: vessels[3].capacity,
+          departurePort: 'Nembe',
+          arrivalPort: 'Brass',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Brass – Yenagoa (vessels[2])
+    const brassDate = new Date(scheduleDate)
+    brassDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[3].id,
+          startTime: brassDate,
+          endTime: new Date(brassDate.getTime() + 90 * 60000),
+          capacity: vessels[2].capacity,
+          departurePort: 'Brass',
+          arrivalPort: 'Yenagoa',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Ekowe – Angiama (vessels[1])
+    const ekoweDate = new Date(scheduleDate)
+    ekoweDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[4].id,
+          startTime: ekoweDate,
+          endTime: new Date(ekoweDate.getTime() + 45 * 60000),
+          capacity: vessels[4].capacity,
+          departurePort: 'Ekowe',
+          arrivalPort: 'Angiama',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Amassoma – Ogboinbiri (vessels[0])
+    const amassomaDate = new Date(scheduleDate)
+    amassomaDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[5].id,
+          startTime: amassomaDate,
+          endTime: new Date(amassomaDate.getTime() + 70 * 60000),
+          capacity: vessels[0].capacity,
+          departurePort: 'Amassoma',
+          arrivalPort: 'Ogboinbiri',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
+
+    // Ekeremor – Peretoru (vessels[1])
+    const ekeremorDate = new Date(scheduleDate)
+    ekeremorDate.setHours(8, 0, 0, 0)
+    schedules.push(
+      prisma.tripSchedule.create({
+        data: {
+          tripId: trips[6].id,
+          startTime: ekeremorDate,
+          endTime: new Date(ekeremorDate.getTime() + 75 * 60000),
+          capacity: vessels[1].capacity,
+          departurePort: 'Ekeremor',
+          arrivalPort: 'Peretoru',
+          baseCurrency: 'NGN',
+        },
+      })
+    )
   }
 
   const createdSchedules = await Promise.all(schedules)
   console.log(`✅ Created ${createdSchedules.length} trip schedules`)
 
+  // Backfill trip-level canonical route fields from earliest schedule (deterministic)
+  console.log('\n🔁 Backfilling Trip.departurePort/arrivalPort/routeName from earliest TripSchedule when missing...')
+  const tripIds = Array.from(new Set(createdSchedules.map(s => s.tripId)))
+  let backfilled = 0
+  for (const tripId of tripIds) {
+    const earliest = await prisma.tripSchedule.findFirst({
+      where: { tripId },
+      orderBy: { startTime: 'asc' },
+      select: { departurePort: true, arrivalPort: true },
+    })
+    if (!earliest) continue
+    // Only backfill if trip-level route is not already set
+    const tripRecord = await prisma.trip.findUnique({ where: { id: tripId }, select: { departurePort: true, arrivalPort: true } })
+    if (tripRecord && (!tripRecord.departurePort || !tripRecord.arrivalPort)) {
+      await prisma.trip.update({
+        where: { id: tripId },
+        data: {
+          departurePort: earliest.departurePort || null,
+          arrivalPort: earliest.arrivalPort || null,
+          routeName: (earliest.departurePort && earliest.arrivalPort) ? `${earliest.departurePort} → ${earliest.arrivalPort}` : null,
+        },
+      })
+      backfilled++
+    }
+  }
+  console.log(`✅ Backfilled canonical routes for ${backfilled} trips`)
+
   // 6. Create Price Tiers
   console.log('\n💰 Creating price tiers...')
   const priceTiers = []
   
+  // Route-specific base prices (amount in kobo)
+  const routeBasePrices = new Map([
+    [trips[2].id, BigInt(750000)],  // Nembe – Brass (₦7,500)
+    [trips[3].id, BigInt(1000000)], // Brass – Yenagoa (₦10,000)
+    [trips[4].id, BigInt(400000)],  // Ekowe – Angiama (₦4,000)
+    [trips[5].id, BigInt(700000)],  // Amassoma – Ogboinbiri (₦7,000)
+    [trips[6].id, BigInt(500000)],  // Ekeremor – Peretoru (₦5,000)
+  ])
+
   for (const schedule of createdSchedules) {
+    const baseAmountKobo = routeBasePrices.get(schedule.tripId) ?? BigInt(500000)
+    const premiumAmountKobo = baseAmountKobo * BigInt(2)
+    const vipAmountKobo = baseAmountKobo * BigInt(4)
+
     // Economy Tier
     priceTiers.push(
       prisma.priceTier.create({
@@ -253,7 +461,7 @@ async function main() {
           tripScheduleId: schedule.id,
           name: 'Economy',
           description: 'Standard seating with basic amenities',
-          amountKobo: BigInt(500000), // ₦5,000
+          amountKobo: baseAmountKobo,
           capacity: Math.floor(schedule.capacity * 0.5),
           position: 1,
         },
@@ -267,7 +475,7 @@ async function main() {
           tripScheduleId: schedule.id,
           name: 'Premium',
           description: 'Priority boarding with complimentary refreshments',
-          amountKobo: BigInt(1000000), // ₦10,000
+          amountKobo: premiumAmountKobo,
           capacity: Math.floor(schedule.capacity * 0.3),
           position: 2,
         },
@@ -281,7 +489,7 @@ async function main() {
           tripScheduleId: schedule.id,
           name: 'VIP',
           description: 'Exclusive lounge access with full catering',
-          amountKobo: BigInt(2000000), // ₦20,000
+          amountKobo: vipAmountKobo,
           capacity: Math.floor(schedule.capacity * 0.2),
           position: 3,
         },
@@ -393,6 +601,18 @@ async function main() {
             ticketReference: 'BW-2026-0001',
             status: 'checked_in',
           },
+          {
+            priceTierId: createdPriceTiers.find(
+              (t) => t.tripScheduleId === createdSchedules[0].id && t.name === 'Premium'
+            )?.id,
+            tripSeatId: createdSeats.filter(
+              (s) => s.tripScheduleId === createdSchedules[0].id
+            )[1]?.id || createdSeats.find((s) => s.tripScheduleId === createdSchedules[0].id)?.id,
+            passengerName: 'Jane Doe',
+            passengerPhone: '+2348098765432',
+            ticketReference: 'BW-2026-0002',
+            status: 'checked_in',
+          },
         ],
       },
       payments: {
@@ -404,6 +624,10 @@ async function main() {
           currency: 'NGN',
         },
       },
+    },
+    include: {
+      items: true,
+      payments: true,
     },
   })
 
@@ -426,6 +650,10 @@ async function main() {
           ticketReference: 'BW-2026-0002',
         },
       },
+    },
+    include: {
+      items: true,
+      payments: true,
     },
   })
 
@@ -471,7 +699,7 @@ async function main() {
         recipient: testUsers[0].email!,
         channel: 'email',
         type: 'booking_confirmation',
-        subject: 'Your Yenagoa Boat Club Booking Confirmation',
+        subject: 'Your Bayelsa Boat Club Booking Confirmation',
         body: 'Your booking for Sunset Cruise has been confirmed.',
         provider: 'sendgrid',
         providerMsgId: 'SG-2026-0001',
@@ -495,8 +723,411 @@ async function main() {
   ])
   console.log(`✅ Created ${emailLogs.length} email logs`)
 
+  // 12. Create Passengers for existing bookings
+  console.log('\n👥 Creating passengers...')
+  const passengers = await Promise.all([
+    // Passengers for booking1 (confirmed booking)
+    prisma.passenger.create({
+      data: {
+        bookingId: booking1.id,
+        priceTierId: createdPriceTiers.find(
+          (t) => t.tripScheduleId === createdSchedules[0].id && t.name === 'Premium'
+        )?.id,
+        fullName: 'John Doe',
+        phone: '+2348012345678',
+        email: 'john.doe@example.com',
+        emergencyContact: 'Jane Doe: +2348098765432',
+        specialNeeds: null,
+        metadata: {
+          age: 35,
+          nationality: 'Nigerian',
+          bookingPurpose: 'Leisure'
+        },
+      },
+    }),
+    prisma.passenger.create({
+      data: {
+        bookingId: booking1.id,
+        priceTierId: createdPriceTiers.find(
+          (t) => t.tripScheduleId === createdSchedules[0].id && t.name === 'Premium'
+        )?.id,
+        fullName: 'Jane Doe',
+        phone: '+2348098765432',
+        email: 'jane.doe@example.com',
+        emergencyContact: 'John Doe: +2348012345678',
+        specialNeeds: null,
+        metadata: {
+          age: 32,
+          nationality: 'Nigerian',
+          bookingPurpose: 'Leisure'
+        },
+      },
+    }),
+
+    // Passengers for booking2 (held booking)
+    prisma.passenger.create({
+      data: {
+        bookingId: booking2.id,
+        priceTierId: createdPriceTiers.find(
+          (t) => t.tripScheduleId === createdSchedules[1].id && t.name === 'Economy'
+        )?.id,
+        fullName: 'Mary Johnson',
+        phone: '+2348034567890',
+        email: 'mary.johnson@example.com',
+        emergencyContact: 'Emergency Contact: +2348123456789',
+        specialNeeds: 'Wheelchair accessible seating required',
+        metadata: {
+          age: 28,
+          nationality: 'Nigerian',
+          bookingPurpose: 'Business'
+        },
+      },
+    }),
+  ])
+  console.log(`✅ Created ${passengers.length} passengers`)
+
+  // 13. Create Checkins for completed bookings
+  console.log('\n✅ Creating check-ins...')
+  const checkins = await Promise.all([
+    // Check-in for John Doe (already checked in)
+    prisma.checkin.create({
+      data: {
+        bookingItemId: booking1.items[0].id,
+        passengerId: passengers[0].id,
+        checkedInById: testUsers[2].id, // Staff user
+        checkedInAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+        method: 'qr',
+      },
+    }),
+
+    // Check-in for Jane Doe (already checked in)
+    prisma.checkin.create({
+      data: {
+        bookingItemId: booking1.items[1]?.id || booking1.items[0].id,
+        passengerId: passengers[1].id,
+        checkedInById: testUsers[2].id, // Staff user
+        checkedInAt: new Date(Date.now() - 25 * 60 * 1000), // 25 minutes ago
+        method: 'manual',
+      },
+    }),
+  ])
+  console.log(`✅ Created ${checkins.length} check-ins`)
+
+  // 14. Create Manifests for trip schedules
+  console.log('\n📋 Creating manifests...')
+  const manifests = await Promise.all([
+    // Manifest for today's sunset cruise
+    prisma.manifest.create({
+      data: {
+        tripScheduleId: createdSchedules[0].id,
+        generatedById: testUsers[1].id, // Operator user
+        generatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        payload: {
+          tripId: trips[0].id,
+          tripTitle: trips[0].title,
+          vesselName: vessels[0].name,
+          departureTime: createdSchedules[0].startTime,
+          totalCapacity: vessels[0].capacity,
+          bookedPassengers: 2,
+          checkedInPassengers: 2,
+          noShowPassengers: 0,
+          passengers: [
+            {
+              name: 'John Doe',
+              ticketReference: 'BW-2026-0001',
+              seatLabel: 'P01',
+              status: 'checked_in',
+              checkedInAt: new Date(Date.now() - 30 * 60 * 1000),
+            },
+            {
+              name: 'Jane Doe',
+              ticketReference: 'BW-2026-0002',
+              seatLabel: 'P02',
+              status: 'checked_in',
+              checkedInAt: new Date(Date.now() - 25 * 60 * 1000),
+            },
+          ],
+          crew: [
+            { name: 'Captain Ahmed', role: 'Captain' },
+            { name: 'Staff Member', role: 'Deck Hand' },
+          ],
+          safetyEquipment: ['Life Jackets', 'Life Rings', 'First Aid Kit'],
+          weatherConditions: 'Clear skies, calm waters',
+        },
+      },
+    }),
+
+    // Manifest for island hopping trip
+    prisma.manifest.create({
+      data: {
+        tripScheduleId: createdSchedules[1].id,
+        generatedById: testUsers[1].id, // Operator user
+        generatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+        payload: {
+          tripId: trips[1].id,
+          tripTitle: trips[1].title,
+          vesselName: vessels[1].name,
+          departureTime: createdSchedules[1].startTime,
+          totalCapacity: vessels[1].capacity,
+          bookedPassengers: 1,
+          checkedInPassengers: 0,
+          noShowPassengers: 0,
+          passengers: [
+            {
+              name: 'Mary Johnson',
+              ticketReference: 'BW-2026-0003',
+              seatLabel: 'E01',
+              status: 'confirmed',
+              specialNeeds: 'Wheelchair accessible seating required',
+            },
+          ],
+          crew: [
+            { name: 'Captain Musa', role: 'Captain' },
+            { name: 'Guide Emmanuel', role: 'Tour Guide' },
+          ],
+          safetyEquipment: ['Life Jackets', 'First Aid Kit'],
+          weatherConditions: 'Partly cloudy, moderate winds',
+        },
+      },
+    }),
+  ])
+  console.log(`✅ Created ${manifests.length} manifests`)
+
+  // 15. Create Audit Logs for tracking changes
+  console.log('\n📊 Creating audit logs...')
+  const auditLogs = await Promise.all([
+    // Booking creation audit
+    prisma.auditLog.create({
+      data: {
+        entityType: 'booking',
+        entityId: booking1.id,
+        action: 'create',
+        userId: testUsers[0].id, // Customer user
+        changes: {
+          status: 'pending',
+          totalAmount: '1000000',
+          passengerCount: 2,
+        },
+        metadata: {
+          ipAddress: '192.168.1.100',
+          userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        },
+      },
+    }),
+
+    // Payment confirmation audit
+    prisma.auditLog.create({
+      data: {
+        entityType: 'payment',
+        entityId: booking1.payments[0].id,
+        action: 'update',
+        userId: testUsers[0].id, // Customer user
+        changes: {
+          status: 'pending → succeeded',
+          confirmedAt: new Date().toISOString(),
+        },
+        metadata: {
+          provider: 'metatickets',
+          transactionId: 'MT-2026-0001',
+        },
+      },
+    }),
+
+    // Booking status change audit
+    prisma.auditLog.create({
+      data: {
+        entityType: 'booking',
+        entityId: booking1.id,
+        action: 'update',
+        userId: testUsers[1].id, // Operator user
+        changes: {
+          status: 'confirmed',
+          confirmedAt: new Date().toISOString(),
+        },
+        metadata: {
+          reason: 'Payment confirmed',
+          operatorId: operators[0].id,
+        },
+      },
+    }),
+
+    // Check-in audit
+    prisma.auditLog.create({
+      data: {
+        entityType: 'checkin',
+        entityId: checkins[0].id,
+        action: 'create',
+        userId: testUsers[2].id, // Staff user
+        changes: {
+          passengerId: passengers[0].id,
+          method: 'qr',
+          checkedInAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+        },
+        metadata: {
+          tripScheduleId: createdSchedules[0].id,
+          vesselId: vessels[0].id,
+        },
+      },
+    }),
+
+    // Trip creation audit
+    prisma.auditLog.create({
+      data: {
+        entityType: 'trip',
+        entityId: trips[0].id,
+        action: 'create',
+        userId: testUsers[1].id, // Operator user
+        changes: {
+          title: trips[0].title,
+          vesselId: vessels[0].id,
+          durationMinutes: 120,
+        },
+        metadata: {
+          operatorId: operators[0].id,
+          category: 'tour',
+        },
+      },
+    }),
+
+    // Manifest generation audit
+    prisma.auditLog.create({
+      data: {
+        entityType: 'manifest',
+        entityId: manifests[0].id,
+        action: 'create',
+        userId: testUsers[1].id, // Operator user
+        changes: {
+          tripScheduleId: createdSchedules[0].id,
+          passengerCount: 2,
+          generatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        },
+        metadata: {
+          complianceCheck: 'passed',
+          weatherCheck: 'approved',
+        },
+      },
+    }),
+  ])
+  console.log(`✅ Created ${auditLogs.length} audit logs`)
+
+  // 16. Create Seat Locks for temporary reservations
+  console.log('\n🔒 Creating seat locks...')
+  const seatLocks = await Promise.all([
+    // Lock a seat for booking2 (held booking)
+    prisma.seatLock.create({
+      data: {
+        tripScheduleId: createdSchedules[1].id,
+        tripSeatId: createdSeats.find(
+          (s) => s.tripScheduleId === createdSchedules[1].id
+        )?.id,
+        bookingId: booking2.id,
+        lockedById: testUsers[0].id, // Customer user
+        lockedAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000), // Expires in 5 minutes
+      },
+    }),
+
+    // Lock another seat for future booking
+    prisma.seatLock.create({
+      data: {
+        tripScheduleId: createdSchedules[2].id,
+        tripSeatId: createdSeats.find(
+          (s) => s.tripScheduleId === createdSchedules[2].id && s.seatLabel === 'V01'
+        )?.id,
+        lockedById: testUsers[0].id, // Customer user
+        lockedAt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // Expires in 10 minutes
+      },
+    }),
+  ])
+  console.log(`✅ Created ${seatLocks.length} seat locks`)
+
+  // 17. Create Webhook Events for payment processing
+  console.log('\n🔗 Creating webhook events...')
+  const webhookEvents = await Promise.all([
+    // Successful payment webhook
+    prisma.webhookEvent.create({
+      data: {
+        provider: 'metatickets',
+        eventType: 'payment.succeeded',
+        providerEventId: 'evt_1234567890',
+        payload: {
+          id: 'evt_1234567890',
+          type: 'payment.succeeded',
+          data: {
+            paymentId: booking1.payments[0].id,
+            bookingId: booking1.id,
+            amount: 1000000,
+            currency: 'NGN',
+            status: 'succeeded',
+            customerId: testUsers[0].id,
+          },
+          created: Math.floor(Date.now() / 1000),
+        },
+        signature: 't=1234567890,v1=signature123',
+        receivedAt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+        processed: true,
+        processedAt: new Date(Date.now() - 4 * 60 * 1000), // 4 minutes ago
+      },
+    }),
+
+    // Booking confirmation webhook
+    prisma.webhookEvent.create({
+      data: {
+        provider: 'metatickets',
+        eventType: 'booking.confirmed',
+        providerEventId: 'evt_0987654321',
+        payload: {
+          id: 'evt_0987654321',
+          type: 'booking.confirmed',
+          data: {
+            bookingId: booking1.id,
+            bookingReference: 'BW-2026-0001',
+            customerId: testUsers[0].id,
+            tripId: trips[0].id,
+            scheduleId: createdSchedules[0].id,
+            totalAmount: 1000000,
+            currency: 'NGN',
+          },
+          created: Math.floor(Date.now() / 1000),
+        },
+        signature: 't=1234567891,v1=signature456',
+        receivedAt: new Date(Date.now() - 3 * 60 * 1000), // 3 minutes ago
+        processed: true,
+        processedAt: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
+      },
+    }),
+
+    // Failed payment webhook (for testing error handling)
+    prisma.webhookEvent.create({
+      data: {
+        provider: 'metatickets',
+        eventType: 'payment.failed',
+        providerEventId: 'evt_failed_001',
+        payload: {
+          id: 'evt_failed_001',
+          type: 'payment.failed',
+          data: {
+            bookingId: 'failed-booking-123',
+            amount: 500000,
+            currency: 'NGN',
+            failureReason: 'Insufficient funds',
+            customerId: testUsers[0].id,
+          },
+          created: Math.floor(Date.now() / 1000),
+        },
+        signature: 't=1234567892,v1=signature789',
+        receivedAt: new Date(Date.now() - 1 * 60 * 1000), // 1 minute ago
+        processed: true,
+        processedAt: new Date(Date.now() - 30 * 1000), // 30 seconds ago
+        processingError: null,
+      },
+    }),
+  ])
+  console.log(`✅ Created ${webhookEvents.length} webhook events`)
+
   console.log('\n✅ Database seeding completed successfully!')
-  console.log('\n📊 Summary:')
+  console.log('\n📊 Final Summary:')
   console.log(`   • ${testUsers.length} users`)
   console.log(`   • ${operators.length} operators`)
   console.log(`   • ${vessels.length} vessels`)
@@ -506,6 +1137,12 @@ async function main() {
   console.log(`   • ${createdSeats.length} trip seats`)
   console.log(`   • ${promoCodes.length} promo codes`)
   console.log(`   • 2 bookings`)
+  console.log(`   • ${passengers.length} passengers`)
+  console.log(`   • ${checkins.length} check-ins`)
+  console.log(`   • ${manifests.length} manifests`)
+  console.log(`   • ${auditLogs.length} audit logs`)
+  console.log(`   • ${seatLocks.length} seat locks`)
+  console.log(`   • ${webhookEvents.length} webhook events`)
   console.log(`   • ${reviews.length} reviews`)
   console.log(`   • ${emailLogs.length} email logs`)
 }

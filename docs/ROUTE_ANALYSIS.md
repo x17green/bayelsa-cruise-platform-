@@ -1,4 +1,4 @@
-# 🗺️ Yenagoa Boat Club - Complete Route Analysis
+# 🗺️ Bayelsa Boat Club - Complete Route Analysis
 
 **Date:** February 14, 2026  
 **Status:** In Development (MVP Phase) - **UPDATED ANALYSIS**
@@ -51,6 +51,19 @@
 | `/vessels` | ❌ Missing | - | Public vessel showcase |
 | `/routes` | ❌ Missing | - | Popular routes |
 | `/blog` | ❌ Missing | - | Travel blog / guides |
+
+### 📌 Seeded operational routes (added to `prisma/seed.ts` — Feb 18, 2026)
+These routes have been added to the database seed and will appear via the Trips API and TripSchedules.
+
+| Route | Price (₦) | Region | Vessel (seeded) | Default schedule |
+|-------|----------:|--------|------------------|------------------|
+| Nembe – Brass | 7,500 | Bayelsa East | MV Blue Pearl | Daily — 08:00 |
+| Brass – Yenagoa | 10,000 | Bayelsa East / Central | Bayelsa Star | Daily — 08:00 |
+| Ekowe – Angiama | 4,000 | Bayelsa Central | SS Ocean Breeze | Daily — 08:00 |
+| Amassoma – Ogboinbiri | 7,000 | Bayelsa Central | MV Blue Pearl | Daily — 08:00 |
+| Ekeremor – Peretoru | 5,000 | Bayelsa West | SS Ocean Breeze | Daily — 08:00 |
+
+> Notes: economy fares are seeded as the route base price; premium/VIP tiers are generated proportionally. Trip images referenced under `public/assets/images/trips/<route-slug>.jpg`.
 
 #### ❌ **MISSING CRITICAL PUBLIC ROUTES** (3 routes - was 11)
 | Route | Priority | Purpose | SDLC Reference |

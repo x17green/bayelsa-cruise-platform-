@@ -27,7 +27,22 @@ export const prisma =
     log: process.env.NODE_ENV === 'development' 
       ? ['query', 'error', 'warn'] 
       : ['error'],
-  })
+  });
+
+// Optional test-only instrumentation: increment an in-memory counter for every Prisma query
+// Enabled when PRISMA_CAPTURE_QUERIES_FOR_TEST === 'true' (dev/test only)
+if (process.env.PRISMA_CAPTURE_QUERIES_FOR_TEST === 'true') {
+  // initialize counter
+  (globalThis as any).__prismaTestQueryCount = 0;
+  // Use prisma.$on('query') to count executed queries (works with `log: ['query']`)
+  (prisma as any).$on('query', () => {
+    try {
+      (globalThis as any).__prismaTestQueryCount = ((globalThis as any).__prismaTestQueryCount || 0) + 1;
+    } catch (_) {
+      /* ignore */
+    }
+  });
+}
 
 // Prevent multiple instances in development
 if (process.env.NODE_ENV !== 'production') {
