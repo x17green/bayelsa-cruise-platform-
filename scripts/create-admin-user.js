@@ -40,9 +40,9 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
   }
 });
 
-const ADMIN_EMAIL = 'admin@bluewaters.ng';
-const ADMIN_PASSWORD = 'Admin123!';
-const ADMIN_FULL_NAME = 'Admin User';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@bluewaters.ng';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin123!';
+const ADMIN_FULL_NAME = process.env.ADMIN_FULL_NAME || 'Admin User';
 
 async function createUserWithRetry(payload, attempts = 3) {
   for (let i = 0; i < attempts; i++) {

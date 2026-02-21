@@ -59,6 +59,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // if we already know the user's role, make sure a direct hit to /dashboard
+  // sends them to the correct dashboard immediately; this prevents a
+  // cached server component from later mis‑redirecting.
+  if (user && userRole && request.nextUrl.pathname === '/dashboard') {
+    if (userRole === 'admin') {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
+    if (['operator', 'staff'].includes(userRole)) {
+      return NextResponse.redirect(new URL('/operator/dashboard', request.url))
+    }
+    // otherwise let the customer stay on /dashboard
+  }
+
   // Role-based route protection
   if (user && userRole) {
     const isOperatorRoute = request.nextUrl.pathname.startsWith('/operator')
